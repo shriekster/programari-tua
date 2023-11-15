@@ -47,25 +47,15 @@ export default function Verify() {
 
     };
 
-    const formatValueLabel = (number, index) => {
+    const formatValueLabel = (number) => {
 
-        if (number < 50) {
+        if (number < 100) {
 
             return 'Hmm...'
 
         }
 
-        else if (number >= 50 && number < 100) {
-
-            return 'Continuă...';
-
-        }
-
-        else {
-
-            return 'Suuper!';
-
-        }
+        return 'Suuper!';
 
     }
 
