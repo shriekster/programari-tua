@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+import { useLocation } from 'wouter';
+
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Slider from '@mui/material/Slider';
 
+import useGlobalStore from './useGlobalStore';
+
 import robotImage from './assets/robot.png';
+import loadingImage from './assets/loading.gif';
 
 const marks = [
     {
@@ -22,6 +28,10 @@ export default function Verify() {
 
     const [value, setValue] = useState(0);
     const [color, setColor] = useState('error');
+
+    const [location, setLocation] = useLocation();
+
+    const [isHuman, setHumanity] = useGlobalStore((state) => [state.isHuman, state.setHumanity]);
 
     const handleChange = (event, newValue) => {
 
@@ -57,7 +67,17 @@ export default function Verify() {
 
         return 'Suuper!';
 
-    }
+    };
+
+    useEffect(() => {
+
+        if (100 === value) {
+
+            setLocation('/');
+
+        }
+
+    }, [value]);
 
     return (
         <>
@@ -66,16 +86,23 @@ export default function Verify() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                margin: 'auto'
+                justifyContent: 'space-evenly',
+                minHeight: '-webkit-fill-available',
+                height: '100vh'
             }}>
                 <img src={robotImage} width={100} height={100}/>
                 <Box sx={{
                     width: '50%',
-                    maxWidth: '300px'
+                    maxWidth: '400px',
+                    height: '150px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'space-evenly'
                 }}>
                     <Typography id='custom-slider' 
-                        gutterBottom>
+                        gutterBottom
+                        textAlign='center'>
                         Glisează pentru a demonstra că nu ești robot
                     </Typography>
                     <Slider value={value}
@@ -94,8 +121,9 @@ export default function Verify() {
                             }
                         }}
                         aria-labelledby='custom-slider'
-                        valueLabelDisplay='auto'
+                        valueLabelDisplay='on'
                         valueLabelFormat={formatValueLabel}
+                        
                     />
                 </Box>
             </Container>
