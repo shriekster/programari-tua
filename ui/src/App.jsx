@@ -1,11 +1,17 @@
+import { lazy, Suspense } from 'react';
 import { Route } from 'wouter';
-import Verify from './Verify';
+
+import Loading from './Loading';
+
+const Verify = lazy(() => import('./Verify'));
 
 function App() {
 
   return (
-    <Route path='/verify' component={Verify} />
+    <Suspense fallback={<Loading />}>
+      <Verify />
+    </Suspense>
   )
 }
 
-export default App
+export default App;

@@ -11,7 +11,6 @@ import Slider from '@mui/material/Slider';
 import useGlobalStore from './useGlobalStore';
 
 import robotImage from './assets/robot.png';
-import loadingImage from './assets/loading.gif';
 
 const marks = [
     {
