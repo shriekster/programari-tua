@@ -1,4 +1,8 @@
 {
+  "version": "1.0.0",
+  "private": true,
+  "author": "shriekster",
+  "license": "MIT",
   "dependencies": {
     "rpio": "^2.4.2",
     "serialport-gsm": "^4.0.1",

@@ -8,9 +8,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Slider from '@mui/material/Slider';
 
-import useGlobalStore from './useGlobalStore';
+import PedalBikeIcon from '@mui/icons-material/PedalBike';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import NightsStayIcon from '@mui/icons-material/NightsStay';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import LocalFloristIcon from '@mui/icons-material/LocalFlorist';
+import SearchIcon from '@mui/icons-material/Search';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import BeachAccessIcon from '@mui/icons-material/BeachAccess';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 
-import robotImage from './assets/robot.png';
+import useGlobalStore from './useGlobalStore';
 
 const marks = [
     {
@@ -89,7 +97,6 @@ export default function Verify() {
                 minHeight: '-webkit-fill-available',
                 height: '100vh'
             }}>
-                <img src={robotImage} width={100} height={100}/>
                 <Box sx={{
                     width: '50%',
                     maxWidth: '400px',
