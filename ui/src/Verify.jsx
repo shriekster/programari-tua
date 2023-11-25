@@ -7,6 +7,7 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Slider from '@mui/material/Slider';
+import Grid from '@mui/material/Unstable_Grid2';
 
 import PedalBikeIcon from '@mui/icons-material/PedalBike';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
@@ -20,120 +21,37 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 
 import useGlobalStore from './useGlobalStore';
 
-const marks = [
-    {
-      value: 0,
-      label: '🤖',
-    },
-    {
-      value: 100,
-      label: '😀',
-    },
-  ];
+const icons = [ PedalBikeIcon, DirectionsCarIcon, NightsStayIcon, WbSunnyIcon, LocalFloristIcon, SearchIcon, LightbulbIcon, BeachAccessIcon, PhotoCameraIcon];
+
+
+function Item ({name}) {
+
+    
+    let Icon = icons[name];
+
+    return (
+        <Icon />
+    )
+
+}
 
 export default function Verify() {
-
-    const [value, setValue] = useState(0);
-    const [color, setColor] = useState('error');
 
     const [location, setLocation] = useLocation();
 
     const [isHuman, setHumanity] = useGlobalStore((state) => [state.isHuman, state.setHumanity]);
 
-    const handleChange = (event, newValue) => {
-
-        if (newValue < 50) {
-
-            setColor('error');
-
-        }
-
-        else if (newValue >= 50 && newValue < 100) {
-
-            setColor('warning');
-
-        }
-
-        else {
-
-            setColor('success');
-
-        }
-
-        setValue(newValue);
-
-    };
-
-    const formatValueLabel = (number) => {
-
-        if (number < 100) {
-
-            return 'Hmm...'
-
-        }
-
-        return 'Suuper!';
-
-    };
-
-    useEffect(() => {
-
-        if (100 === value) {
-
-            setLocation('/');
-
-        }
-
-    }, [value]);
-
     return (
-        <>
-            <CssBaseline />
-            <Container maxWidth='lg' sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                minHeight: '-webkit-fill-available',
-                height: '100vh'
-            }}>
-                <Box sx={{
-                    width: '50%',
-                    maxWidth: '400px',
-                    height: '150px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly'
-                }}>
-                    <Typography id='custom-slider' 
-                        gutterBottom
-                        textAlign='center'>
-                        Glisează pentru a demonstra că nu ești robot
-                    </Typography>
-                    <Slider value={value}
-                        color={color}
-                        marks={marks}
-                        onChange={handleChange}
-                        sx={{
-                            transition: 'color .25s linear',
-                            '& .MuiSlider-markLabel': {
-                                fontSize: '1.5rem',
-                                color: 'rgba(0, 0, 0, 0.5)'
-                            },
-                            '& .MuiSlider-markLabelActive': {
-                                fontSize: '1.5rem',
-                                color: 'rgba(0, 0, 0, 1)'
-                            }
-                        }}
-                        aria-labelledby='custom-slider'
-                        valueLabelDisplay='on'
-                        valueLabelFormat={formatValueLabel}
-                        
-                    />
-                </Box>
-            </Container>
-        </>
+
+        <Box sx={{ flexGrow: 1 }}>
+            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+            {Array.from(Array(2)).map((_, index) => (
+                <Grid xs={2} sm={4} md={4} key={index}>
+                    <Item name={index}>xs=2</Item>
+                </Grid>
+            ))}
+            </Grid>
+        </Box>
     );
 
 }
