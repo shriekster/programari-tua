@@ -16,9 +16,4 @@ router.get('/', function(req, res, next) {
   res.status(200).send("HELLO")
 });
 
-/**
- * GET humanity status
- */
-router.get('/')
-
 module.exports = router;

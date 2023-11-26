@@ -1,12 +1,10 @@
-import { useState }from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 import useGlobalStore from './useGlobalStore';
-
-import { Turnstile } from '@marsidev/react-turnstile';
 
 export default function Verifier() {
 
@@ -54,9 +52,6 @@ export default function Verifier() {
     <div style={{
       position: 'relative'
     }}>
-      <Turnstile siteKey='1x00000000000000000000BB'
-        onSuccess={handleSuccess}
-        onError={() => console.warn('Challenge failed!')} />
       <Snackbar
         open={open}
         autoHideDuration={6000}
