@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import { useLocation } from 'wouter';
-
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -19,8 +17,6 @@ import LightbulbIcon from '@mui/icons-material/Lightbulb';
 import BeachAccessIcon from '@mui/icons-material/BeachAccess';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 
-import useGlobalStore from './useGlobalStore';
-
 const icons = [ PedalBikeIcon, DirectionsCarIcon, NightsStayIcon, WbSunnyIcon, LocalFloristIcon, SearchIcon, LightbulbIcon, BeachAccessIcon, PhotoCameraIcon];
 
 
@@ -36,10 +32,6 @@ function Item ({name}) {
 }
 
 export default function Verify() {
-
-    const [location, setLocation] = useLocation();
-
-    const [isHuman, setHumanity] = useGlobalStore((state) => [state.isHuman, state.setHumanity]);
 
     return (
 

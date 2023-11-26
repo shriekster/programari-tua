@@ -20,15 +20,10 @@ body, h1, h2, h3, h4, h5, h6, p, ol, ul {
 }
 
 body, #root {
-  min-height: 100vh;
-  /* mobile viewport bug fix */
-  min-height: -webkit-fill-available;
-}
-
-#root {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  height: 100dvh;
+  width: 100dvw;
+  margin: 0;
+  padding: 0;
 }
 
 img {
@@ -36,3 +31,8 @@ img {
   height: auto;
 }
 
+#cf-turnstile {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}

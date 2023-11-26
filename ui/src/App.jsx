@@ -6,9 +6,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Switch, Route } from 'wouter';
 
 import Loading from './Loading';
+import Verifier from './Verifier';
+import NotFound from './404';
 
 const Verify = lazy(() => import('./Verify'));
-const NotFound = lazy(() => import('./404'));
 
 const darkTheme = createTheme({
   palette: {
@@ -17,6 +18,8 @@ const darkTheme = createTheme({
 });
 
 function App() {
+
+  
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -28,6 +31,7 @@ function App() {
           <Route path='/:other' component={NotFound} />
         </Switch>
       </Suspense>
+      <Verifier />
     </ThemeProvider>
   )
 }
