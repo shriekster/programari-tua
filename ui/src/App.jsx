@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 import { Switch, Route } from 'wouter';
 
+import useGlobalStore from './useGlobalStore';
+
 import Verifier from './Verifier';
 import NotFound from './404';
 import Home from './Home';
@@ -20,6 +22,14 @@ const darkTheme = createTheme({
 
 
 function App() {
+
+  const [verifying, setVerifying] = useGlobalStore((state) => [state.verifying, state.setVerifying]);
+
+  useEffect(() => {
+    const v = Boolean(Math.round(Math.random()));
+    console.log('verifying', v)
+    setVerifying(v);
+  }, [setVerifying]);
 
   return (
     <ThemeProvider theme={darkTheme}>

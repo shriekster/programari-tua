@@ -11,10 +11,9 @@ export default function Verifier() {
   const [verifying, setVerifying] = useGlobalStore((state) => [state.verifying, state.setVerifying]);
 
   const [loading, setLoading] = useState(true);
-  const [open, setOpen] = useState(true);
 
   const handleClick = () => {
-    setOpen(true);
+    setVerifying(true);
   };
 
   const handleClose = (event, reason) => {
@@ -22,7 +21,7 @@ export default function Verifier() {
       return;
     }
 
-    setOpen(false);
+    setVerifying(false);
   };
 
   const handleSuccess = (token) => {
@@ -53,7 +52,7 @@ export default function Verifier() {
       position: 'relative'
     }}>
       <Snackbar
-        open={open}
+        open={verifying}
         autoHideDuration={6000}
         onClose={handleClose}
         message="Note archived"
