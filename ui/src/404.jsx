@@ -1,9 +1,17 @@
+import { useEffect } from 'react';
+
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import CustomLink from './CustomLink';
 
 function NotFound() {
+
+  useEffect(() => {
+
+    console.log('Mounted 404')
+
+  }, [])
 
   return (
     <Box sx={{
