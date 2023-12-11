@@ -9,24 +9,20 @@ export async function middleware(request) {
     const refreshToken = request.cookies.get('refresh_token') ?? null;
 
     // TODO: get the private API endpoint from env variable
-    const privateApiEndpoint = 'http://localhost:5000/api/private';
-
-    // TODO: get API key from env variable
-    const apiKey = 'hXmL4OYgsn5Fu1Hr';
+    const authorizationApiEndpoint = 'http://localhost:5000/api';
 
     const requestOptions = {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           accessToken,
           refreshToken,
-          apiKey
         }),
     };
 
-    const response = await fetch(`${privateApiEndpoint}/authorizations`, requestOptions);
+    const response = await fetch(`${authorizationApiEndpoint}/authorizations`, requestOptions);
     console.log(response.status)
 
     

@@ -51,7 +51,7 @@ router.put('/sessions/current', async function (req, res) {
 
 });
 
-router.post('/private/authorizations', async function (req, res) {
+router.put('/authorizations', async function (req, res) {
 
   if (req.body) {
 
