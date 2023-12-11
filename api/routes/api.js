@@ -75,7 +75,7 @@ router.post('/tokens', async function (req, res) {
     .json({
       error: false,
       message: 'OK'
-    })
+    });
 
   }
 
