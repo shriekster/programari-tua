@@ -154,7 +154,6 @@ export default function LoginForm() {
         }}
         autoComplete='on'
         onSubmit={handleSubmit}>
-          {/*
           <TextField sx={{
               minWidth: '300px',
               width: '50%',
@@ -237,7 +236,6 @@ export default function LoginForm() {
               />
             )
           }
-          */}
       </form>
     </ThemeProvider>
   )

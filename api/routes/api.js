@@ -32,8 +32,22 @@ router.post('/sessions', async function (req, res) {
       responseMessage.error = false;
       responseMessage.message = 'OK';
 
-      res.setHeader('Set-Cookie', `access_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
-      res.setHeader('Set-Cookie', `refresh_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
+      //res.setHeader('Set-Cookie', `access_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
+      //res.setHeader('Set-Cookie', `refresh_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
+
+      res.cookie('access_token', 'testing', {
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
+
+      res.cookie('refresh_token', 'testing', {
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
 
       res//.status(status)
       //.json(responseMessage)
@@ -51,11 +65,11 @@ router.post('/sessions', async function (req, res) {
 
 });
 
-router.put('/authorizations', async function (req, res) {
+router.post('/tokens', async function (req, res) {
 
   if (req.body) {
 
-    const { accessToken, apiKey } = req.body;
+    const { accessToken, refreshToken } = req.body;
 
     // TODO: check API key
 

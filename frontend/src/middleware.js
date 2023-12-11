@@ -12,7 +12,7 @@ export async function middleware(request) {
     const apiBaseUrl = 'http://localhost:5000/api';
 
     const requestOptions = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -22,7 +22,7 @@ export async function middleware(request) {
         }),
     };
 
-    const response = await fetch(`${apiBaseUrl}/authorizations`, requestOptions);
+    const response = await fetch(`${apiBaseUrl}/tokens`, requestOptions);
     console.log(response.status)
 
     
@@ -35,6 +35,6 @@ export async function middleware(request) {
 // to learn more about matching paths
 export const config = {
   matcher: [
-        '/admin/:path*'
+        '/admin'
     ],
 };
