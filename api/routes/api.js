@@ -11,7 +11,7 @@ import('nanoid').then((module) => {
 
 });
 
-router.put('/sessions/current', async function (req, res) {
+router.post('/sessions', async function (req, res) {
 
   let status = 400, responseMessage = {
     error: true,

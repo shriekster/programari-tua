@@ -98,7 +98,7 @@ export default function LoginForm() {
       setLoading(true);
 
       const requestOptions = {
-        method: 'PUT',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -111,7 +111,7 @@ export default function LoginForm() {
 
       try {
 
-        const response = await fetch('/api/sessions/current', requestOptions);
+        const response = await fetch('/api/sessions', requestOptions);
         console.log('redirected?', response.redirected, response)
 
         if (response.redirected) {

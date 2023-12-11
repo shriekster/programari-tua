@@ -9,7 +9,7 @@ export async function middleware(request) {
     const refreshToken = request.cookies.get('refresh_token') ?? null;
 
     // TODO: get the private API endpoint from env variable
-    const authorizationApiEndpoint = 'http://localhost:5000/api';
+    const apiBaseUrl = 'http://localhost:5000/api';
 
     const requestOptions = {
         method: 'PUT',
@@ -22,7 +22,7 @@ export async function middleware(request) {
         }),
     };
 
-    const response = await fetch(`${authorizationApiEndpoint}/authorizations`, requestOptions);
+    const response = await fetch(`${apiBaseUrl}/authorizations`, requestOptions);
     console.log(response.status)
 
     
