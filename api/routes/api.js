@@ -71,8 +71,6 @@ router.post('/tokens', async function (req, res) {
 
     const { accessToken, refreshToken } = req.body;
 
-    // TODO: check API key
-
     return res.status(200)
     .json({
       error: false,
