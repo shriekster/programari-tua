@@ -8,7 +8,6 @@
     "start": "nodemon ./bin/www"
   },
   "dependencies": {
-    "@node-oauth/express-oauth-server": "^3.0.1",
     "argon2": "^0.31.2",
     "better-sqlite3": "^9.2.2",
     "cookie-parser": "~1.4.4",
