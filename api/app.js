@@ -3,7 +3,8 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-const apiRouter = require('./routes/api');
+const apiRoutes = require('./routes/api/index');
+const defaultRoute = require('./routes/default');
 
 const app = express();
 
@@ -12,13 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/api', apiRouter);
-app.all('*', function(req, res) {
-
-    return res.status(404).json({
-        message: 'Not Found'
-    });
-
-})
+app.use('/api', apiRoutes);
+app.use('*', defaultRoute);
 
 module.exports = app;

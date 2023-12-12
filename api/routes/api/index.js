@@ -1,9 +1,11 @@
-const express = require('express');
+const { Router } = require('express');
 const validator = require('validator');
 
-const router = express.Router();
+const router = Router();
 
 let nanoid;
+
+
 
 import('nanoid').then((module) => {
 
@@ -49,7 +51,7 @@ router.post('/sessions', async function (req, res) {
         httpOnly: true,
       });
 
-      res//.status(status)
+      return res//.status(status)
       //.json(responseMessage)
       .redirect(303, '/admin');
 
@@ -60,6 +62,9 @@ router.post('/sessions', async function (req, res) {
       responseMessage.message = 'Unauthorized';
 
     }
+
+    return res.status(401)
+    .json(responseMessage);
 
   }
 
