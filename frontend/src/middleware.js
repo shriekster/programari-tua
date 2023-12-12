@@ -20,6 +20,7 @@ export async function middleware(request) {
           accessToken,
           refreshToken,
         }),
+        credentials: 'include'
     };
 
     const response = await fetch(`${apiBaseUrl}/tokens`, requestOptions);
