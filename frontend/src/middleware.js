@@ -8,7 +8,7 @@ export async function middleware(request) {
     const accessToken = request.cookies.get('access_token') ?? null;
     const refreshToken = request.cookies.get('refresh_token') ?? null;
 
-    // TODO: get the private API endpoint from env variable
+    // TODO: get the API base URL from env variable
     const apiBaseUrl = 'http://localhost:5000/api';
 
     const requestOptions = {
