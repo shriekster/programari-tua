@@ -1,5 +1,4 @@
 const { Router } = require('express');
-const validator = require('validator');
 
 const router = Router();
 

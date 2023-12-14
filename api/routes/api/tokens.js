@@ -13,7 +13,7 @@ import('nanoid').then((module) => {
 
 });
 
-router.post('/tokens', async function (req, res) {
+router.post('/', async function (req, res) {
 
   if (req.body) {
 

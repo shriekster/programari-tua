@@ -13,8 +13,8 @@ import('nanoid').then((module) => {
 
 });
 
-router.post('/sessions', async function (req, res) {
-
+router.post('/', function (req, res) {
+  console.log('/api/sessions')
   let status = 400, responseMessage = {
     error: true,
     message: 'Bad Request'
@@ -67,6 +67,9 @@ router.post('/sessions', async function (req, res) {
     .json(responseMessage);
 
   }
+
+  return res.status(status)
+  .json(responseMessage);
 
 });
 

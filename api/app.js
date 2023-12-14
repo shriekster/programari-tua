@@ -8,6 +8,10 @@ const defaultRoute = require('./routes/default');
 
 const app = express();
 
+app.set('x-powered-by', false);
+app.set('strict routing', false);
+app.set('trust proxy', 'loopback');
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
