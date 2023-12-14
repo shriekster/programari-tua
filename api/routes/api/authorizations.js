@@ -13,8 +13,8 @@ const authorizationTypes = ['password', 'token'];
 
 
 
-router.post('/', function (req, res) {
-  
+router.post('/', function (req, res, next) {
+
   console.log(getSecret('access'))
 
   let status = 400, responseMessage = {
@@ -22,10 +22,11 @@ router.post('/', function (req, res) {
     message: 'Bad Request'
   };
 
+  console.log(req.body)
+
   if (req?.body) {
 
     const { username, password } = req.body;
-    console.log({username, password})
 
     const isValidUsername = validator.isLength('' + username, { min: 3, max: 64 });
     const isValidPassword = validator.isLength('' + password, {min: 8, max: 64 });
