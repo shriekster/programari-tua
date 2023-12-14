@@ -6,6 +6,11 @@ import Login from './pages/Login';
 import Admin from './pages/Admin';
 import NotFound from './pages/NotFound';
 
+/* 
+  in wouter, any Route with empty path is considered always active. 
+  This can be used to achieve "default" route behaviour within Switch. 
+  Note: the order matters! 
+*/
 function App() {
 
   return (
@@ -14,13 +19,7 @@ function App() {
       <Route path='/admin' component={Admin} />
       <Route path='/appointments/:pageId' component={Appointments} />
       <Route path='/' component={Home} />
-
-      {/* 
-        in wouter, any Route with empty path is considered always active. 
-        This can be used to achieve "default" route behaviour within Switch. 
-        Note: the order matters! See examples below.
-      */}
-      <Route component={NotFound}/>
+      <Route path='/:anything*' component={NotFound}/>
     </Switch>
   )
 }
