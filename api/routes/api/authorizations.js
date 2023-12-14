@@ -1,20 +1,22 @@
 const { Router } = require('express');
 const validator = require('validator');
-
-const router = Router({
-  mergeParams: true,
-});
-
 let nanoid;
-
 import('nanoid').then((module) => {
-
   nanoid = module;
-
 });
+
+const { getSecret } = require('../../lib/db');
+
+const router = Router();
+
+const authorizationTypes = ['password', 'token'];
+
+
 
 router.post('/', function (req, res) {
-  console.log('/api/sessions')
+  
+  console.log(getSecret('access'))
+
   let status = 400, responseMessage = {
     error: true,
     message: 'Bad Request'
@@ -33,9 +35,6 @@ router.post('/', function (req, res) {
       status = 303;
       responseMessage.error = false;
       responseMessage.message = 'OK';
-
-      //res.setHeader('Set-Cookie', `access_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
-      //res.setHeader('Set-Cookie', `refresh_token=testing; Path=/; Max-Age=${60 * 60 * 24 * 7}; SameSite=Strict; HttpOnly`);
 
       res.cookie('access_token', 'testing', {
         maxAge: 60 * 60 * 24 * 7,

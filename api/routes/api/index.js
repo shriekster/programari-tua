@@ -1,8 +1,6 @@
 const { Router } = require('express');
 
-const router = Router({
-  mergeParams: true,
-});
+const router = Router();
 
 const authorizationRoute = require('./authorizations');
 
