@@ -67,7 +67,11 @@ export default function Login() {
     
       };
     
-      const handleClickShowPassword = () => setShowPassword((show) => !show);
+      const handleClickShowPassword = () => {
+        
+        setShowPassword((show) => !show);
+
+      }
     
       const handleMouseDownPassword = (event) => {
         event.preventDefault();
@@ -103,14 +107,15 @@ export default function Login() {
             },
             redirect: 'follow',
             body: JSON.stringify({
-              username: username.value,
-              password: password.value,
+                type: 'password',
+                username: username.value,
+                password: password.value,
             }),
           };
     
           try {
     
-            const response = await fetch('/api/sessions', requestOptions);
+            const response = await fetch('/api/authorizations', requestOptions);
             console.log('redirected?', response.redirected, response)
     
             if (response.redirected) {
