@@ -5,7 +5,16 @@ import Box from '@mui/system/Box';
 import tuaImage from './assets/tua.webp';
 import LoginForm from './components/LoginForm';
 
-export default function Login() {
+async function getApiUrl() {
+
+  return process.env.API_URL;
+
+}
+
+export default async function Login() {
+
+  const apiUrl = await getApiUrl();
+
   return (
     <Box component='main'
       sx={{
@@ -25,7 +34,7 @@ export default function Login() {
             margin: 'auto'
           }}
           />
-        <LoginForm />
+        <LoginForm apiUrl={apiUrl}/>
     </Box>
   )
 }

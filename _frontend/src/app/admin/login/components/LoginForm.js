@@ -30,7 +30,9 @@ const theme = createTheme({
 // TODO: test and change the project's file and folder structure
 // TODO: add validation and error state to the text fields (input maxsize, empty input)
 // TODO: add an error message when the username and/or password are/is wrong
-export default function LoginForm() {
+export default function LoginForm(props) {
+
+  console.log({props})
 
   const [username, setUsername] = useState({
     value: '',

@@ -14,10 +14,12 @@ import('nanoid').then((module) => {
 });
 
 router.post('/', async function (req, res) {
-
+  
   if (req.body) {
 
     const { accessToken, refreshToken } = req.body;
+
+    console.log(req.body)
 
     return res.status(200)
     .json({

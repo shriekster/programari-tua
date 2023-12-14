@@ -5,8 +5,10 @@ import { NextResponse } from 'next/server';
 // This function can be marked `async` if using `await` inside
 export async function middleware(request) {
 
-    const accessToken = request.cookies.get('access_token') ?? null;
-    const refreshToken = request.cookies.get('refresh_token') ?? null;
+    const accessToken = request.cookies.get('access_token')?.value ?? null;
+    const refreshToken = request.cookies.get('refresh_token')?.value ?? null;
+
+    console.log(accessToken, refreshToken)
 
     // TODO: get the API base URL from env variable
     const apiBaseUrl = 'http://localhost:5000/api';
@@ -20,7 +22,6 @@ export async function middleware(request) {
           accessToken,
           refreshToken,
         }),
-        credentials: 'include'
     };
 
     const response = await fetch(`${apiBaseUrl}/tokens`, requestOptions);
