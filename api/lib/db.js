@@ -7,8 +7,8 @@ const dbFilePath = path.resolve(__dirname, '../data/tua.db');
 let stmtError = null;
 const statements = {};
 
-let _getSecret = null;
-let _getCredentials = null;
+let getSecret = null;
+let getCredentials = null;
 
 try {
 
@@ -41,13 +41,13 @@ try {
 
 if (!stmtError) {
 
-    _getSecret = (scope) => {
+    getSecret = (scope) => {
 
         let error = null, secret = null;
 
         try {
 
-            secret = statements['get_secret'].get('' + scope); console.log(secret)
+            secret = statements['get_secret'].get('' + scope);
 
         } catch (err) {
 
@@ -55,12 +55,7 @@ if (!stmtError) {
 
         }
 
-        return {
-            error,
-            data: {
-                secret
-            }
-        };
+        return secret?.value ?? '';
 
     }
 
@@ -68,6 +63,6 @@ if (!stmtError) {
 
 module.exports = {
 
-    getSecret: function (scope) { _getSecret?.(scope) },
+    getSecret,
 
 }

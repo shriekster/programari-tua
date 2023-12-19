@@ -15,14 +15,13 @@ const authorizationTypes = ['password', 'token'];
 
 router.post('/', function (req, res, next) {
 
-  console.log(getSecret('access'))
+  const accessToken = getSecret('access');
+  const refreshToken = getSecret('refresh');
 
   let status = 400, responseMessage = {
     error: true,
     message: 'Bad Request'
   };
-
-  console.log(req.body)
 
   if (req?.body) {
 
