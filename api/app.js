@@ -33,7 +33,9 @@ app.use('*', defaultRoute);
 // that status and a JSON body containing the message
 app.use(function(err, req, res, next) {
     console.log('err', err);
-    res.status(500).send();
+    res.status(500).json({
+        message: 'Internal Server Error'
+    });
 })
 
 module.exports = app;

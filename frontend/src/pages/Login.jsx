@@ -107,7 +107,6 @@ export default function Login() {
             },
             redirect: 'follow',
             body: JSON.stringify({
-                type: 'password',
                 username: username.value,
                 password: password.value,
             }),
@@ -115,7 +114,7 @@ export default function Login() {
     
           try {
     
-            const response = await fetch('/api/authorizations', requestOptions);
+            const response = await fetch('/api/sessions', requestOptions);
             console.log('redirected?', response.redirected, response)
     
             if (response.redirected) {

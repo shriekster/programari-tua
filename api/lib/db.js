@@ -32,6 +32,11 @@ try {
         FROM secrets
         WHERE scope = ?`);
 
+    statements['get_credentials'] = db.prepare(`
+        SELECT username, password
+        FROM users
+        WHERE username = ?`);
+
 
 } catch (err) {
     
@@ -57,12 +62,31 @@ if (!stmtError) {
 
         return secret?.value ?? '';
 
-    }
+    };
+
+    getCredentials = (username) => {
+
+        let error = null, credentials = null;
+
+        try {
+
+            credentials = statements['get_credentials'].get('' + username);
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return credentials ?? null;
+
+    };
 
 }
 
 module.exports = {
 
     getSecret,
+    getCredentials
 
 }

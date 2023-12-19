@@ -9,9 +9,6 @@ const { getSecret } = require('../../lib/db');
 
 const router = Router();
 
-const authorizationTypes = ['password', 'token'];
-
-
 
 router.post('/', function (req, res, next) {
 
