@@ -3,10 +3,10 @@ const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
 let nanoid;
 import('nanoid').then((module) => {
-  nanoid = module;
+  nanoid = module.nanoid;
 });
 
-const validator = require('../../middlewares/validate_authentication_payload');
+const validator = require('../../middlewares/validateCredentials');
 const { getSecret, getCredentials } = require('../../lib/db');
 
 const router = Router();
@@ -17,7 +17,9 @@ router.post('/', validator, async function (req, res, next) {
   let status = 401, responseMessage = {
     error: true,
     message: 'Unauthorized'
-  };
+  },
+  error = null,
+  accessToken = '', refreshToken = '';
 
   const credentials = getCredentials(req.authentication.username);
   
@@ -32,84 +34,57 @@ router.post('/', validator, async function (req, res, next) {
       const accessSecret = getSecret('access');
       const refreshSecret = getSecret('refresh');
 
-      if (accessSecret && refreshSecret) {
+      const now = Math.floor(Date.now() / 1000);
+      
+      const jwtId = nanoid();
 
-        const now = Math.floor(Date.now() / 1000);
+      accessToken = jwt.sign({
+        iat: now,
+        exp: now + 60 * 10, // the access token should expire after 10 minutes
+        jti: jwtId,
+      }, accessSecret, {
+        algorithm: 'HS512'
+      });
 
-        const jwtId = await nanoid();
-
-        const access_token = jwt.sign({
-          iat: now,
-          exp: now + 60 * 10, // the access token should expire after 10 minutes
-          jti: jwtId,
-        }, accessSecret, {
-          algorithm: 'HS512'
-        });
-
-        const refresh_token = jwt.sign({
-          iat: now,
-          exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days
-        }, refreshSecret, {
-          algorithm: 'HS512'
-        });
-
-      }
+      refreshToken = jwt.sign({
+        iat: now,
+        exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days
+      }, refreshSecret, {
+        algorithm: 'HS512'
+      });
 
     }
 
     } catch (err) {
 
-      //
+      error = err; console.log(err)
+
+    } finally {
+
+      if (!error) {
+
+        res.cookie('access_token', accessToken, {
+          maxAge: 60 * 60 * 24 * 7,
+          path: '/api',
+          sameSite: 'Strict',
+          httpOnly: true,
+        });
+
+        res.cookie('refresh_token', refreshToken, {
+          maxAge: 60 * 60 * 24 * 7,
+          path: '/api/authorizations',
+          sameSite: 'Strict',
+          httpOnly: true,
+        });
+
+        return res.redirect(303, '/admin');
+
+      }
 
     }
 
   }
 
-  /*
-  if (req?.body) {
-
-    const { username, password } = req.body;
-
-    const isValidUsername = validator.isLength('' + username, { min: 3, max: 64 });
-    const isValidPassword = validator.isLength('' + password, {min: 8, max: 64 });
-
-    if (isValidUsername && isValidPassword) {
-
-      status = 303;
-      responseMessage.error = false;
-      responseMessage.message = 'OK';
-
-      res.cookie('access_token', 'testing', {
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-        sameSite: 'Strict',
-        httpOnly: true,
-      });
-
-      res.cookie('refresh_token', 'testing', {
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-        sameSite: 'Strict',
-        httpOnly: true,
-      });
-
-      return res//.status(status)
-      //.json(responseMessage)
-      .redirect(303, '/admin');
-
-    } else {
-
-      status = 401;
-      responseMessage.error = true;
-      responseMessage.message = 'Unauthorized';
-
-    }
-
-    return res.status(401)
-    .json(responseMessage);
-
-  }
-  */
   return res.status(status)
   .json(responseMessage);
 
