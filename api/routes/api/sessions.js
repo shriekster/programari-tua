@@ -27,37 +27,37 @@ router.post('/', validator, async function (req, res, next) {
 
     try {
 
-    const isCorrectPassword = await argon2.verify(credentials.password, req.authentication.password);
+      const isCorrectPassword = await argon2.verify(credentials.password, req.authentication.password);
 
-    if (isCorrectPassword) {
+      if (isCorrectPassword) {
 
-      const accessSecret = getSecret('access');
-      const refreshSecret = getSecret('refresh');
+        const accessSecret = getSecret('access');
+        const refreshSecret = getSecret('refresh');
 
-      const now = Math.floor(Date.now() / 1000);
-      
-      const jwtId = nanoid();
+        const now = Math.floor(Date.now() / 1000);
+        
+        const jwtId = nanoid();
 
-      accessToken = jwt.sign({
-        iat: now,
-        exp: now + 60 * 10, // the access token should expire after 10 minutes
-        jti: jwtId,
-      }, accessSecret, {
-        algorithm: 'HS512'
-      });
+        accessToken = jwt.sign({
+          iat: now,
+          exp: now + 60 * 10, // the access token should expire after 10 minutes, *expressed in seconds, because it's a numeric value*
+          jti: jwtId,
+        }, accessSecret, {
+          algorithm: 'HS512'
+        });
 
-      refreshToken = jwt.sign({
-        iat: now,
-        exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days
-      }, refreshSecret, {
-        algorithm: 'HS512'
-      });
+        refreshToken = jwt.sign({
+          iat: now,
+          exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
+        }, refreshSecret, {
+          algorithm: 'HS512'
+        });
 
-    }
+      }
 
     } catch (err) {
 
-      error = err; console.log(err)
+      error = err;
 
     } finally {
 

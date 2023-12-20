@@ -10,16 +10,23 @@ const { getSecret } = require('../../lib/db');
 
 const router = Router();
 
-
+// TODO: rewrite this route handler
+// if the access token has expired and the refresh token is valid, recreate both tokens and send them in the response;
+// if both tokens have expired, redirect to /admin/login
+// if any token is missing or is not valid, send a HTTP 401 response
 router.post('/', function (req, res, next) {
   
   const accessSecret = getSecret('access');
   const refreshSecret = getSecret('refresh');
 
+  let accessTokenError = null, refreshTokenError = null, signError = null;
+
   let status = 401, responseMessage = {
     error: true,
     message: 'Unauthorized'
   };
+
+  let newAccessToken = '', newRefreshToken = '';
 
   const { access_token, refresh_token } = req.cookies;
 
@@ -31,61 +38,99 @@ router.post('/', function (req, res, next) {
         algorithms: ['HS512']
       });
 
-      console.log(accessClaims)
-
     } catch (err) {
 
-      //
+      accessTokenError = err;
 
     }
 
-  }
+    if (accessTokenError && 'TokenExpiredError' === accessTokenError?.name) {
 
-  /*
-  if (req?.body) {
+      try {
 
-    const { username, password } = req.body;
+        const refreshClaims = jwt.decode(refresh_token, refreshSecretSecret, {
+          algorithms: ['HS512']
+        });
+  
+      } catch (err) {
+  
+        refreshTokenErrorTokenError = err;
+  
+      }
 
-    const isValidUsername = validator.isLength('' + username, { min: 3, max: 64 });
-    const isValidPassword = validator.isLength('' + password, {min: 8, max: 64 });
+      if (!refreshTokenError) {
 
-    if (isValidUsername && isValidPassword) {
+        try {
 
-      status = 303;
-      responseMessage.error = false;
-      responseMessage.message = 'OK';
+          const jwtId = nanoid();
 
-      res.cookie('access_token', 'testing', {
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-        sameSite: 'Strict',
-        httpOnly: true,
-      });
+          newAccessToken = jwt.sign({
+            iat: now,
+            exp: now + 60 * 10, // the access token should expire after 10 minutes, *expressed in seconds, because it's a numeric value*
+            jti: jwtId,
+          }, accessSecret, {
+            algorithm: 'HS512'
+          });
+    
+          newRefreshToken = jwt.sign({
+            iat: now,
+            exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
+          }, refreshSecret, {
+            algorithm: 'HS512'
+          });
 
-      res.cookie('refresh_token', 'testing', {
-        maxAge: 60 * 60 * 24 * 7,
-        path: '/',
-        sameSite: 'Strict',
-        httpOnly: true,
-      });
+        } catch (err) {
 
-      return res//.status(status)
-      //.json(responseMessage)
-      .redirect(303, '/admin');
+          signError = err;
+
+        } finally {
+
+          if (!signError) {
+
+            res.cookie('access_token', newAccessToken, {
+              maxAge: 1000 * 60 * 10, // the access token cookie should expire after 10 minutes, *expressed in milliseconds*
+              path: '/api',
+              sameSite: 'Strict',
+              httpOnly: true,
+            });
+    
+            res.cookie('refresh_token', newRefreshToken, {
+              maxAge: 1000 * 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
+              path: '/api/authorizations',
+              sameSite: 'Strict',
+              httpOnly: true,
+            });
+
+            return res.redirect(303, '/admin/login');
+
+          }
+
+        }
+
+      }
 
     } else {
 
-      status = 401;
-      responseMessage.error = true;
-      responseMessage.message = 'Unauthorized';
+      res.cookie('access_token', '', {
+        maxAge: 0, // the access token cookie should expire instantly
+        path: '/api',
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
+
+      res.cookie('refresh_token', '', {
+        maxAge: 0, // the refresh token cookie should expire instantly
+        path: '/api/authorizations',
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
+
+      return res.redirect(303, '/admin/login');
 
     }
 
-    return res.status(401)
-    .json(responseMessage);
-
   }
-  */
+
   return res.status(status)
   .json(responseMessage);
 
