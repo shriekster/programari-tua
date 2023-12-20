@@ -14,6 +14,7 @@ export default function Admin() {
   useEffect(() => {
 
     // TODO: check if the admin is authorized after mounting the component
+    // if redirected, follow the redirect, otherwise display the appropriate error message
     const checkAuthorization = async () => {
 
       setLoading(true);
