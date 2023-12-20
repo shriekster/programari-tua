@@ -64,14 +64,14 @@ router.post('/', validator, async function (req, res, next) {
       if (!error) {
 
         res.cookie('access_token', accessToken, {
-          maxAge: 60 * 10, // the access token cookie should expire after 10 minutes
+          maxAge: 1000 * 60 * 10, // the access token cookie should expire after 10 minutes, *expressed in milliseconds*
           path: '/api',
           sameSite: 'Strict',
           httpOnly: true,
         });
 
         res.cookie('refresh_token', refreshToken, {
-          maxAge: 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days
+          maxAge: 1000 * 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
           path: '/api/authorizations',
           sameSite: 'Strict',
           httpOnly: true,

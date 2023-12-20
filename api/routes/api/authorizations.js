@@ -1,8 +1,9 @@
 const { Router } = require('express');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
 let nanoid;
 import('nanoid').then((module) => {
-  nanoid = module;
+  nanoid = module.nanoid;
 });
 
 const { getSecret } = require('../../lib/db');
@@ -11,15 +12,36 @@ const router = Router();
 
 
 router.post('/', function (req, res, next) {
+  
+  const accessSecret = getSecret('access');
+  const refreshSecret = getSecret('refresh');
 
-  const accessToken = getSecret('access');
-  const refreshToken = getSecret('refresh');
-
-  let status = 400, responseMessage = {
+  let status = 401, responseMessage = {
     error: true,
-    message: 'Bad Request'
+    message: 'Unauthorized'
   };
 
+  const { access_token, refresh_token } = req.cookies;
+
+  if (access_token && refresh_token) {
+
+    try {
+
+      const accessClaims = jwt.decode(access_token, accessSecret, {
+        algorithms: ['HS512']
+      });
+
+      console.log(accessClaims)
+
+    } catch (err) {
+
+      //
+
+    }
+
+  }
+
+  /*
   if (req?.body) {
 
     const { username, password } = req.body;
@@ -63,7 +85,7 @@ router.post('/', function (req, res, next) {
     .json(responseMessage);
 
   }
-
+  */
   return res.status(status)
   .json(responseMessage);
 

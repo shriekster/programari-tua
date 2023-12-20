@@ -115,16 +115,12 @@ export default function Login() {
           try {
     
             const response = await fetch('/api/sessions', requestOptions);
-            console.log('redirected?', response.redirected, response)
-    
+            
             if (response.redirected) {
     
               setLocation(response.url, { replace: true });
     
             }
-            //const json = await response.json();
-    
-            //console.log(json)
     
           } catch (err) {
     
