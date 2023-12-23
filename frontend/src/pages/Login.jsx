@@ -46,7 +46,8 @@ export default function Login() {
       });
       const [showPassword, setShowPassword] = useState(false);
       const [loading, setLoading] = useState(false);
-      const [showAuthError, setAuthError] = useState(false);
+      const [showError, setError] = useState(false);
+      const [errorMessage, setErrorMessage] = useState('');
     
       const [location, setLocation] = useLocation();
 
@@ -81,11 +82,22 @@ export default function Login() {
       const handleMouseDownPassword = (event) => {
         event.preventDefault();
       };
+
+      const handleClose = (event, reason) => {
+
+        if (reason === 'clickaway') {
+          return;
+        }
     
-      // TODO: finish the submit handler -> fetch + display a loader while fetching
+        setError(false);
+
+      };
+    
+      // TODO: finish the submit handler
       const handleSubmit = async (event) => {
     
         event.preventDefault();
+
         let status = 0, error = null;
     
         if (!username.value || !password.value) {
@@ -105,6 +117,7 @@ export default function Login() {
         } else {
     
           setLoading(true);
+          setError(false);
     
           const requestOptions = {
             method: 'POST',
@@ -122,6 +135,12 @@ export default function Login() {
     
             const response = await fetch('/api/sessions', requestOptions);
             status = response.status;
+
+            if (!response.ok) {
+
+              throw new Error('Something happened')
+
+            }
             
             if (response.redirected) {
 
@@ -140,16 +159,25 @@ export default function Login() {
 
             if (error) {
 
-              switch (status) {
+              setError(true);
 
-                case 'test': break;
+              if (401 === status) {
+
+                setErrorMessage('Ai greșit utilizatorul sau parola!');
+
+              } else {
+
+                if (400 <= status && status <= 599) {
+
+                  setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+
+                }
 
               }
 
             }
     
           }
-    
     
         }
     
@@ -271,6 +299,11 @@ export default function Login() {
                     )
                 }
             </form>
+            <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
+              <Alert onClose={handleClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
+                {errorMessage}
+              </Alert>
+            </Snackbar>
         </Box>
       </ThemeProvider>
     )
