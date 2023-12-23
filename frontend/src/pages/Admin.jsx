@@ -17,7 +17,9 @@ export default function Admin() {
 
   useEffect(() => {
 
-    // TODO: check if the admin is authorized after mounting the component
+    // TODO: fetch data after mounting the component
+    // after every data fetch which returns a 401 status code, try to refresh the access token (globalStore hook which exposes a fetching method);
+    // if the refresh attempt fails, redirect (from server) to /admin/login
     // if redirected, follow the redirect, otherwise display the appropriate error message
     const checkAuthorization = async () => {
 
