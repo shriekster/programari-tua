@@ -21,7 +21,7 @@ const issue = (req, res, next) => {
 
     newAccessToken = jwt.sign({
       iat: now,
-      exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
+      exp: now + 60 * 1, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
       jti: jwtId,
     }, accessSecret, {
       algorithm: 'HS512'

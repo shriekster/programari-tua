@@ -45,7 +45,7 @@ router.post('/', validator, async function (req, res, next) {
         accessToken = jwt.sign({
           iss: 'AST',
           iat: now,
-          exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
+          exp: now + 60 * 1, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
           aud: 'man',
           jti: jwtId,
         }, accessSecret, {

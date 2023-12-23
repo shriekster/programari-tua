@@ -63,11 +63,11 @@ export default function Admin() {
     };
 
     
-    if (!isAdmin) {
+    //if (!isAdmin) {
 
       checkAuthorization();
 
-    }
+    //}
 
   }, []);
 
