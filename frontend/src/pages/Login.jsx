@@ -34,154 +34,154 @@ const loginTheme = createTheme({
 
 export default function Login() {
 
-    const [username, setUsername] = useState({
-        value: '',
+  const [username, setUsername] = useState({
+      value: '',
+      helperText: ' ',
+      error: false,
+    });
+    const [password, setPassword] = useState({
+      value: '',
+      helperText: ' ',
+      error: false,
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [showError, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+  
+    const [location, setLocation] = useLocation();
+
+    const setAdmin = useGlobalStore((state) => state.setAdmin);
+  
+    const handleUsernameChange = (event) => {
+  
+      setUsername({
+        value: event.target.value,
         helperText: ' ',
         error: false,
       });
-      const [password, setPassword] = useState({
-        value: '',
+  
+    };
+  
+    const handlePasswordChange = (event) => {
+  
+      setPassword({
+        value: event.target.value,
         helperText: ' ',
         error: false,
       });
-      const [showPassword, setShowPassword] = useState(false);
-      const [loading, setLoading] = useState(false);
-      const [showError, setError] = useState(false);
-      const [errorMessage, setErrorMessage] = useState('');
-    
-      const [location, setLocation] = useLocation();
+  
+    };
+  
+    const handleClickShowPassword = () => {
+      
+      setShowPassword((show) => !show);
 
-      const setAdmin = useGlobalStore((state) => state.setAdmin);
-    
-      const handleUsernameChange = (event) => {
-    
-        setUsername({
-          value: event.target.value,
-          helperText: ' ',
-          error: false,
-        });
-    
-      };
-    
-      const handlePasswordChange = (event) => {
-    
-        setPassword({
-          value: event.target.value,
-          helperText: ' ',
-          error: false,
-        });
-    
-      };
-    
-      const handleClickShowPassword = () => {
-        
-        setShowPassword((show) => !show);
+    }
+  
+    const handleMouseDownPassword = (event) => {
+      event.preventDefault();
+    };
 
+    const handleClose = (event, reason) => {
+
+      if (reason === 'clickaway') {
+        return;
       }
-    
-      const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-      };
+  
+      setError(false);
 
-      const handleClose = (event, reason) => {
+    };
+  
+    // TODO: finish the submit handler
+    const handleSubmit = async (event) => {
+  
+      event.preventDefault();
 
-        if (reason === 'clickaway') {
-          return;
-        }
-    
+      let status = 0, error = null;
+  
+      if (!username.value || !password.value) {
+  
+        setUsername((username) => ({
+          value: username.value,
+          helperText: 'Completează câmpul!',
+          error: true,
+        }));
+  
+        setPassword((password) => ({
+          value: password.value,
+          helperText: 'Completează câmpul!',
+          error: true,
+        }));
+  
+      } else {
+  
+        setLoading(true);
         setError(false);
+  
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          redirect: 'follow',
+          body: JSON.stringify({
+              username: username.value,
+              password: password.value,
+          }),
+        };
+  
+        try {
+  
+          const response = await fetch('/api/sessions', requestOptions);
+          status = response.status;
 
-      };
-    
-      // TODO: finish the submit handler
-      const handleSubmit = async (event) => {
-    
-        event.preventDefault();
+          if (!response.ok) {
 
-        let status = 0, error = null;
-    
-        if (!username.value || !password.value) {
-    
-          setUsername((username) => ({
-            value: username.value,
-            helperText: 'Completează câmpul!',
-            error: true,
-          }));
-    
-          setPassword((password) => ({
-            value: password.value,
-            helperText: 'Completează câmpul!',
-            error: true,
-          }));
-    
-        } else {
-    
-          setLoading(true);
-          setError(false);
-    
-          const requestOptions = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            redirect: 'follow',
-            body: JSON.stringify({
-                username: username.value,
-                password: password.value,
-            }),
-          };
-    
-          try {
-    
-            const response = await fetch('/api/sessions', requestOptions);
-            status = response.status;
+            throw new Error('Something happened')
 
-            if (!response.ok) {
+          }
+          
+          if (response.redirected) {
 
-              throw new Error('Something happened')
+            setLocation(response.url, { replace: true });
+            setAdmin(true);
+  
+          }
+  
+        } catch (err) {
+  
+          error = err;
+  
+        } finally {
+  
+          setLoading(false);
 
-            }
-            
-            if (response.redirected) {
+          if (error) {
 
-              setLocation(response.url, { replace: true });
-              setAdmin(true);
-    
-            }
-    
-          } catch (err) {
-    
-            error = err;
-    
-          } finally {
-    
-            setLoading(false);
+            if (401 === status) {
 
-            if (error) {
+              setErrorMessage('Ai greșit utilizatorul sau parola!');
 
-              if (401 === status) {
+            } else {
 
-                setErrorMessage('Ai greșit utilizatorul sau parola!');
+              if (400 <= status && status <= 599) {
 
-              } else {
-
-                if (400 <= status && status <= 599) {
-
-                  setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-
-                }
+                setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
 
               }
 
-              setError(true);
-
             }
-    
+
+            setError(true);
+
           }
-    
+  
         }
-    
-      };
+  
+      }
+  
+    };
 
     return (
       <ThemeProvider theme={loginTheme}>
@@ -307,5 +307,6 @@ export default function Login() {
         </Box>
       </ThemeProvider>
     )
+
   }
   
