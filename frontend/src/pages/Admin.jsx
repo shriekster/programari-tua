@@ -9,7 +9,7 @@ import Box from '@mui/system/Box';
 
 export default function Admin() {
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [location, setLocation] = useLocation();
 
