@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use('/api', apiRoutes);
 app.use('*', defaultRoute);
 
-
+// TODO: add a SSE route that will allow the server to keep connections for normal users and for admin(s)
 
 // TODO: finish the error handler
 // console.log(createError(413).message)
