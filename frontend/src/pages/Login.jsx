@@ -97,7 +97,11 @@ export default function Login() {
   
       event.preventDefault();
 
-      let status = 0, error = null;
+      let status = 0, 
+      ok = false, 
+      redirected = false,
+      url = '',
+      error = null;
   
       if (!username.value || !password.value) {
   
@@ -134,18 +138,14 @@ export default function Login() {
   
           const response = await fetch('/api/sessions', requestOptions);
           status = response.status;
+          ok = response.ok;
+          redirected = response.redirected;
+          url = response.url;
 
           if (!response.ok) {
 
             throw new Error('Something happened')
 
-          }
-          
-          if (response.redirected) {
-
-            setLocation(response.url, { replace: true });
-            setAdmin(true);
-  
           }
   
         } catch (err) {
@@ -158,12 +158,14 @@ export default function Login() {
 
           if (error) {
 
+            // HTTP 401: Unauthorized
             if (401 === status) {
 
               setErrorMessage('Ai greșit utilizatorul sau parola!');
 
             } else {
 
+              // Any other client-side or server-side error
               if (400 <= status && status <= 599) {
 
                 setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
@@ -173,6 +175,15 @@ export default function Login() {
             }
 
             setError(true);
+
+          } else {
+
+            if (ok && redirected && url) {
+
+              setLocation(url, { replace: true });
+              setAdmin(true);
+    
+            }
 
           }
   

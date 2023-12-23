@@ -23,13 +23,7 @@ const validateToken = (type, token) => {
 
     if (!tokenError) {
 
-      const {iss, aud} = claims;
-
-      if ('AST' === '' + iss && 'man' === '' + aud) {
-
-        return 'ok';
-
-      }
+      return 'ok';
 
     } else {
 

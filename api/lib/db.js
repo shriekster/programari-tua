@@ -33,7 +33,7 @@ try {
         WHERE scope = ?`);
 
     statements['get_credentials'] = db.prepare(`
-        SELECT username, password AS passwordHash
+        SELECT username, password AS passwordHash, type
         FROM users
         WHERE username = ?`);
 

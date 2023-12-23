@@ -23,13 +23,14 @@ router.post('/', validator, async function (req, res, next) {
 
   const { username, password } = req.body;
 
-  req.body = {};
+  req.body = {}; // could be redundant
   
   if (username && password) {
 
-    const credentials = getCredentials(username);
-
     try {
+
+      const credentials = getCredentials(username); // maybe I should check if the correct username was provided, but this middleware is good enough for now
+      console.log(credentials)
 
       const isCorrectPassword = await argon2.verify(credentials.passwordHash, password);
 
@@ -45,10 +46,12 @@ router.post('/', validator, async function (req, res, next) {
         accessToken = jwt.sign({
           iss: 'AST',
           iat: now,
-          exp: now + 60 * 1, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
-          aud: 'man',
+          exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
+          aud: credentials.type,
           jti: jwtId,
-        }, accessSecret, {
+        }, 
+        accessSecret,
+        {
           algorithm: 'HS512'
         });
 
@@ -57,7 +60,9 @@ router.post('/', validator, async function (req, res, next) {
           iat: now,
           exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
           aud: 'man',
-        }, refreshSecret, {
+        },
+        refreshSecret,
+        {
           algorithm: 'HS512'
         });
 
