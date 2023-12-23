@@ -85,6 +85,7 @@ export default function Login() {
       const handleSubmit = async (event) => {
     
         event.preventDefault();
+        let status = 0, error = null;
     
         if (!username.value || !password.value) {
     
@@ -119,9 +120,10 @@ export default function Login() {
           try {
     
             const response = await fetch('/api/sessions', requestOptions);
+            status = response.status;
             
             if (response.redirected) {
-              
+
               setLocation(response.url, { replace: true });
               setAdmin(true);
     
@@ -129,11 +131,21 @@ export default function Login() {
     
           } catch (err) {
     
-            // TODO
+            error = err;
     
           } finally {
     
             setLoading(false);
+
+            if (error) {
+
+              switch (status) {
+
+
+
+              }
+
+            }
     
           }
     
