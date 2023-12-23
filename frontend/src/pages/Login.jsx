@@ -159,8 +159,6 @@ export default function Login() {
 
             if (error) {
 
-              setError(true);
-
               if (401 === status) {
 
                 setErrorMessage('Ai greșit utilizatorul sau parola!');
@@ -174,6 +172,8 @@ export default function Login() {
                 }
 
               }
+
+              setError(true);
 
             }
     

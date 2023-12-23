@@ -89,6 +89,8 @@ router.post('/', validator, async function (req, res, next) {
           httpOnly: true,
         });
 
+        return res.status(404).json({test:'test'})
+
         return res.redirect(303, '/admin');
 
       }
