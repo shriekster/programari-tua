@@ -11,7 +11,7 @@ const validateToken = (type, token) => {
 
     try {
 
-      claims = jwt.decode(token, secret, {
+      claims = jwt.verify(token, secret, {
         algorithms: ['HS512']
       });
 

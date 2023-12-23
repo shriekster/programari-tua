@@ -31,7 +31,7 @@ router.post('/', validator, async function (req, res, next) {
 
     try {
 
-      const isCorrectPassword = await argon2.verify(credentials.password, password);
+      const isCorrectPassword = await argon2.verify(credentials.passwordHash, password);
 
       if (isCorrectPassword) {
 
