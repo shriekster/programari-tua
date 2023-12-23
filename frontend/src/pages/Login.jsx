@@ -14,6 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
+import CloseIcon from '@mui/icons-material/Close';
 import Alert from '@mui/material/Alert';
 
 import useGlobalStore from '../globalStore';
@@ -45,7 +46,7 @@ export default function Login() {
       });
       const [showPassword, setShowPassword] = useState(false);
       const [loading, setLoading] = useState(false);
-      const [authError, setAuthError] = useState(false);
+      const [showAuthError, setAuthError] = useState(false);
     
       const [location, setLocation] = useLocation();
 
@@ -141,7 +142,7 @@ export default function Login() {
 
               switch (status) {
 
-
+                case 'test': break;
 
               }
 
@@ -188,17 +189,17 @@ export default function Login() {
                 autoComplete='on'
                 onSubmit={handleSubmit}>
                 <TextField sx={{
-                    minWidth: '300px',
-                    width: '50%',
-                    maxWidth: '350px',
+                      minWidth: '300px',
+                      width: '50%',
+                      maxWidth: '350px',
                     }}
                     autoFocus
                     color='primary'
                     InputProps={{
-                    startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
+                      startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
                     }}
                     inputProps={{
-                    maxLength: 64
+                      maxLength: 64
                     }}
                     name='username'
                     autoComplete='username'
@@ -208,28 +209,28 @@ export default function Login() {
                     disabled={loading}
                     onChange={handleUsernameChange}/>
                 <TextField sx={{
-                    minWidth: '300px',
-                    width: '50%',
-                    maxWidth: '350px',
+                      minWidth: '300px',
+                      width: '50%',
+                      maxWidth: '350px',
                     }}
                     color='primary'
                     InputProps={{
-                    startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
-                    endAdornment: <InputAdornment position='end'>
-                        <IconButton
-                            aria-label='schimba vizibilitatea parolei'
-                            onClick={handleClickShowPassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge='end'
-                            color={password.error ? 'error' : 'primary'}
-                            disabled={loading}
-                            >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                        </InputAdornment>,
+                      startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
+                      endAdornment: <InputAdornment position='end'>
+                          <IconButton
+                              aria-label='schimba vizibilitatea parolei'
+                              onClick={handleClickShowPassword}
+                              onMouseDown={handleMouseDownPassword}
+                              edge='end'
+                              color={password.error ? 'error' : 'primary'}
+                              disabled={loading}
+                              >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                          </InputAdornment>,
                     }}
                     inputProps={{
-                    maxLength: 64
+                      maxLength: 64
                     }}
                     name='password'
                     type={showPassword ? 'text' : 'password'}
@@ -243,9 +244,9 @@ export default function Login() {
                     type='submit'
                     variant='contained'
                     sx={{
-                    minWidth: '300px',
-                    width: '50%',
-                    maxWidth: '350px',
+                      minWidth: '300px',
+                      width: '50%',
+                      maxWidth: '350px',
                     }}
                     color='primary'
                     size='large'

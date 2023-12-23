@@ -61,6 +61,10 @@ router.post('/', validator, async function (req, res, next) {
           algorithm: 'HS512'
         });
 
+      } else {
+
+        throw new Error('Incorrect credentials');
+
       }
 
     } catch (err) {
