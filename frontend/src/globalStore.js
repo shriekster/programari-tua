@@ -8,6 +8,7 @@ const useGlobalStore = create((set, get) => ({
   refreshToken: async () => {
 
     // try to refresh the access token
+    // and redirect to /admin/login programmatically, from the client, if the server responds with a redirect (303)
 
   },
 
