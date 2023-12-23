@@ -11,8 +11,8 @@ const validate = (req, res, next) => {
     const isValidPassword = validator.isLength('' + password, {min: 8, max: 64 });
 
     if (isValidUsername && isValidPassword) {
-
-      req.authentication = { username, password };
+      
+      req.body = { username, password };
 
       return next();
 

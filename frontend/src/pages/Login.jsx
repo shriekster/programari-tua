@@ -16,6 +16,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+import useGlobalStore from '../globalStore';
+
 import tuaImage from '../assets/tua.webp';
 
 
@@ -46,6 +48,8 @@ export default function Login() {
       const [authError, setAuthError] = useState(false);
     
       const [location, setLocation] = useLocation();
+
+      const setAdmin = useGlobalStore((state) => state.setAdmin);
     
       const handleUsernameChange = (event) => {
     
@@ -117,8 +121,9 @@ export default function Login() {
             const response = await fetch('/api/sessions', requestOptions);
             
             if (response.redirected) {
-    
+              
               setLocation(response.url, { replace: true });
+              setAdmin(true);
     
             }
     

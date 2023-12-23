@@ -13,7 +13,7 @@ const router = Router();
 
 
 router.post('/', validator, async function (req, res, next) {
-
+  
   let status = 401, responseMessage = {
     error: true,
     message: 'Unauthorized'
@@ -21,13 +21,17 @@ router.post('/', validator, async function (req, res, next) {
   error = null,
   accessToken = '', refreshToken = '';
 
-  const credentials = getCredentials(req.authentication.username);
+  const { username, password } = req.body;
+
+  req.body = {};
   
-  if (credentials) {
+  if (username && password) {
+
+    const credentials = getCredentials(username);
 
     try {
 
-      const isCorrectPassword = await argon2.verify(credentials.password, req.authentication.password);
+      const isCorrectPassword = await argon2.verify(credentials.password, password);
 
       if (isCorrectPassword) {
 
@@ -39,16 +43,20 @@ router.post('/', validator, async function (req, res, next) {
         const jwtId = nanoid();
 
         accessToken = jwt.sign({
+          iss: 'AST',
           iat: now,
-          exp: now + 60 * 10, // the access token should expire after 10 minutes, *expressed in seconds, because it's a numeric value*
+          exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
+          aud: 'man',
           jti: jwtId,
         }, accessSecret, {
           algorithm: 'HS512'
         });
 
         refreshToken = jwt.sign({
+          iss: 'AST',
           iat: now,
           exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
+          aud: 'man',
         }, refreshSecret, {
           algorithm: 'HS512'
         });
@@ -64,7 +72,7 @@ router.post('/', validator, async function (req, res, next) {
       if (!error) {
 
         res.cookie('access_token', accessToken, {
-          maxAge: 1000 * 60 * 10, // the access token cookie should expire after 10 minutes, *expressed in milliseconds*
+          maxAge: 1000 * 60 * 30, // the access token cookie should expire after 30 minutes, *expressed in milliseconds*
           path: '/api',
           sameSite: 'Strict',
           httpOnly: true,

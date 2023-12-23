@@ -7,26 +7,30 @@ import('nanoid').then((module) => {
 });
 
 const { getSecret } = require('../../lib/db');
+const validateTokens = require('../../middlewares/validateTokens');
 
 const router = Router();
 
 // TODO: rewrite this route handler
+// if the both tokens are valid, send an OK response (message: 'authorized')
 // if the access token has expired and the refresh token is valid, recreate both tokens and send them in the response;
 // if both tokens have expired, redirect to /admin/login
 // if any token is missing or is not valid, send a HTTP 401 response
-router.post('/', function (req, res, next) {
+router.post('/', validateTokens, function (req, res, next) {
   
   const accessSecret = getSecret('access');
   const refreshSecret = getSecret('refresh');
 
-  let accessTokenError = null, refreshTokenError = null, signError = null;
+  let accessTokenError = null, refreshTokenError = null, signError = null,
 
-  let status = 401, responseMessage = {
+  status = 401, responseMessage = {
     error: true,
     message: 'Unauthorized'
-  };
+  },
 
-  let newAccessToken = '', newRefreshToken = '';
+  newAccessToken = '', newRefreshToken = '',
+
+  accessClaims = null, refreshClaims = null;
 
   const { access_token, refresh_token } = req.cookies;
 
@@ -34,7 +38,7 @@ router.post('/', function (req, res, next) {
 
     try {
 
-      const accessClaims = jwt.decode(access_token, accessSecret, {
+      accessClaims = jwt.decode(access_token, accessSecret, {
         algorithms: ['HS512']
       });
 
@@ -101,7 +105,7 @@ router.post('/', function (req, res, next) {
               httpOnly: true,
             });
 
-            return res.redirect(303, '/admin/login');
+            //return res.redirect(303, '/admin/login');
 
           }
 

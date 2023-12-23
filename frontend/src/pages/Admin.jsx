@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 
 import { useLocation } from 'wouter';
 
+import useGlobalStore from '../globalStore';
+
 import Box from '@mui/system/Box';
 
 
@@ -10,6 +12,8 @@ export default function Admin() {
   const [loading, setLoading] = useState(false);
 
   const [location, setLocation] = useLocation();
+
+  const [isAdmin, setAdmin] = useGlobalStore((state) => [state.isAdmin, state.setAdmin]);
 
   useEffect(() => {
 
@@ -56,7 +60,12 @@ export default function Admin() {
 
     };
 
-    checkAuthorization();
+    
+    if (!isAdmin) {
+
+      checkAuthorization();
+
+    }
 
   }, []);
 
