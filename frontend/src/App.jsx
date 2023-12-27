@@ -1,10 +1,9 @@
 import { Route, Switch } from 'wouter';
 
-import Home from './pages/Home';
-import Appointments from './pages/Appointments';
-import Login from './pages/Login';
-import Admin from './pages/Admin';
-import NotFound from './pages/NotFound';
+import Home from './components/Home';
+import Appointments from './components/Appointments';
+import Admin from './components/Admin';
+import NotFound from './components/NotFound';
 
 /* 
   in wouter, any Route with empty path is considered always active. 
@@ -15,11 +14,10 @@ function App() {
 
   return (
     <Switch>
-      <Route path='/admin/login' component={Login}/>
       <Route path='/admin' component={Admin} />
       <Route path='/appointments/:pageId' component={Appointments} />
       <Route path='/' component={Home} />
-      <Route path='/:anything*' component={NotFound}/>
+      <Route path='/:anything*' component={NotFound} />
     </Switch>
   )
 }
