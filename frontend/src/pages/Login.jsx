@@ -16,7 +16,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-import useGlobalStore from '../globalStore';
+import useGlobalStore from '../useGlobalStore';
 
 import tuaImage from '../assets/tua.webp';
 

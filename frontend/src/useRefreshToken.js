@@ -1,29 +1,15 @@
 import { useState, useEffect } from 'react';
-
 import { useLocation } from 'wouter';
 
-import useGlobalStore from '../useGlobalStore';
-
-import Box from '@mui/system/Box';
-
-
-export default function Admin() {
-
-  const [loading, setLoading] = useState(true);
+export function useRefreshToken() {
 
   const [location, setLocation] = useLocation();
 
-  const [isAdmin, setAdmin] = useGlobalStore((state) => [state.isAdmin, state.setAdmin]);
-
   useEffect(() => {
 
-    // TODO: fetch data after mounting the component
-    // after every data fetch which returns a 401 status code, try to refresh the access token (globalStore hook which exposes a fetching method);
-    // if the refresh attempt fails, redirect (from server) to /admin/login
-    // if redirected, follow the redirect, otherwise display the appropriate error message
     const checkAuthorization = async () => {
 
-      setLoading(true);
+      //setLoading(true);
     
       const requestOptions = {
         method: 'POST',
@@ -56,23 +42,14 @@ export default function Admin() {
 
       } finally {
 
-        setLoading(false);
+        //setLoading(false);
 
       }
 
     };
 
-    
-    //if (!isAdmin) {
+    checkAuthorization();
 
-      checkAuthorization();
+  }, [setLocation]);
 
-    //}
-
-  }, []);
-
-    return (
-      <>ADMIN</>
-    )
-  }
-  
+}
