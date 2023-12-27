@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { useLocation } from 'wouter';
-
-import useGlobalStore from '../useGlobalStore';
+import useRefreshToken from '../useRefreshToken';
 
 import Box from '@mui/system/Box';
 
@@ -13,46 +12,40 @@ export default function Admin() {
 
   const [location, setLocation] = useLocation();
 
-  const [isAdmin, setAdmin] = useGlobalStore((state) => [state.isAdmin, state.setAdmin]);
+  const tryRefreshToken = useRefreshToken();
 
   useEffect(() => {
-
+    console.log('EFFECT')
     // TODO: fetch data after mounting the component
-    // after every data fetch which returns a 401 status code, try to refresh the access token (globalStore hook which exposes a fetching method);
+    // after every data fetch which returns a 401 status code, try to refresh the access token
     // if the refresh attempt fails, redirect (from server) to /admin/login
     // if redirected, follow the redirect, otherwise display the appropriate error message
-    const checkAuthorization = async () => {
+    const fetchInitialData = async () => {
+
+      let status = 401;
 
       setLoading(true);
     
       const requestOptions = {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        redirect: 'follow',
-        body: JSON.stringify({
-            test: 'test'
-        }),
+        redirect: 'follow'
       };
 
       try {
 
-        const response = await fetch('/api/authorizations', requestOptions);
-        console.log('redirected?', response.redirected, response)
+        const response = await fetch('/api/dates', requestOptions);
+        status = response.status;
 
-        if (response.redirected) {
+        const json = await response.json();
 
-          setLocation(response.url, { replace: true });
-
-        }
-        //const json = await response.json();
-
-        //console.log(json)
+        console.log(json)
 
       } catch (err) {
 
-        // TODO
+        console.log(err)
 
       } finally {
 
@@ -60,16 +53,19 @@ export default function Admin() {
 
       }
 
+      return status;
+
     };
 
-    
-    //if (!isAdmin) {
+    //const status = fetchInitialData();
 
-      checkAuthorization();
+    //if (401 === status) {
+
+      //tryRefreshToken();
 
     //}
 
-  }, []);
+  }, [tryRefreshToken]);
 
     return (
       <>ADMIN</>
