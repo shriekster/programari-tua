@@ -1,4 +1,4 @@
-import { useState, forwardRef } from 'react';
+import { useState } from 'react';
 
 import { useLocation } from 'wouter';
 
@@ -29,7 +29,7 @@ const loginTheme = createTheme({
     
 });
 
-const Login = forwardRef((props, ref) => {
+export function Login({ setLoggedIn }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -45,8 +45,6 @@ const Login = forwardRef((props, ref) => {
     const [loading, setLoading] = useState(false);
     const [showError, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-  
-    const [location, setLocation] = useLocation();
   
     const handleUsernameChange = (event) => {
   
@@ -135,8 +133,6 @@ const Login = forwardRef((props, ref) => {
           const response = await fetch('/api/sessions', requestOptions);
           status = response.status;
           ok = response.ok;
-          redirected = response.redirected;
-          url = response.url;
 
           if (!response.ok) {
 
@@ -174,9 +170,9 @@ const Login = forwardRef((props, ref) => {
 
           } else {
 
-            if (ok && redirected && url) {
+            if (ok) {
 
-              setLocation(url, { replace: true });
+              setLoggedIn(true);
     
             }
 
@@ -190,7 +186,7 @@ const Login = forwardRef((props, ref) => {
 
     return (
       <ThemeProvider theme={loginTheme}>
-        <Box ref={ref}
+        <Box
             sx={{
                 margin: 0,
                 padding: '2.5%',
@@ -313,9 +309,4 @@ const Login = forwardRef((props, ref) => {
       </ThemeProvider>
     )
 
-  });
-
-  Login.displayName = 'Login';
-  
-
-  export default Login;
+  }

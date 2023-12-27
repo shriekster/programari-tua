@@ -4,7 +4,6 @@ import useRefreshToken from '../useRefreshToken';
 import Login from './Login';
 
 import Box from '@mui/system/Box';
-import Grow from '@mui/material/Grow';
 
 
 export default function Admin() {
@@ -114,17 +113,15 @@ export default function Admin() {
     if (isLoggedIn) {
 
       return (
-        <Grow in>
+        <>
           ADMIN
-        </Grow>
+        </>
       )
 
     }
 
     return (
-      <Grow in={!isLoggedIn} timeout={15000}>
-        <Login />
-      </Grow>
+      <Login setLoggedIn={setLoggedIn}/>
     )
   }
   
