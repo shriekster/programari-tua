@@ -142,6 +142,7 @@ export default function Login({ setLoggedIn }) {
 
         } catch (err) {
 
+          // eslint-disable-next-line no-unused-vars
           error = err;
 
         } finally {
