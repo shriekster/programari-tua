@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-
-import { useLocation } from 'wouter';
 import useRefreshToken from '../useRefreshToken';
 
 import Login from './Login';
@@ -10,18 +8,61 @@ import Box from '@mui/system/Box';
 
 export default function Admin() {
 
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const [location, setLocation] = useLocation();
-
-  const tryRefreshToken = useRefreshToken();
+  //const tryRefreshToken = useRefreshToken();
 
   useEffect(() => {
-    console.log('EFFECT')
+
+    const checkAuthorization = async () => {
+
+      setLoading(true);
+    
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'refresh_token'
+        }),
+      };
+
+      try {
+
+        const response = await fetch('/api/authorizations', requestOptions);
+        const json = await response.json();
+
+        
+
+      } catch (err) {
+
+        console.log(err)
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
+
+    // this is for when the page is first loaded or refreshed
+    if (!isLoggedIn) {
+
+      checkAuthorization();
+
+    }
+
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+
     // TODO: fetch data after mounting the component
     // after every data fetch which returns a 401 status code, try to refresh the access token
-    // if the refresh attempt fails, redirect (from server) to /admin/login
-    // if redirected, follow the redirect, otherwise display the appropriate error message
+    // if the refresh attempt fails, display the login component
     const fetchInitialData = async () => {
 
       let status = 401;
@@ -33,7 +74,6 @@ export default function Admin() {
         headers: {
           'Content-Type': 'application/json',
         },
-        redirect: 'follow'
       };
 
       try {
@@ -67,7 +107,7 @@ export default function Admin() {
 
     //}
 
-  }, [tryRefreshToken]);
+  }, []);
 
     return (
       <>ADMIN</>

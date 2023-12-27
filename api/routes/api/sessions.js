@@ -76,13 +76,6 @@ router.post('/', validate, async function (req, res, next) {
 
       if (!error) {
 
-        res.cookie('access_token', accessToken, {
-          maxAge: 1000 * 60 * 30, // the access token cookie should expire after 30 minutes, *expressed in milliseconds*
-          path: '/api',
-          sameSite: 'Strict',
-          httpOnly: true,
-        });
-
         res.cookie('refresh_token', refreshToken, {
           maxAge: 1000 * 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
           path: '/api/authorizations',
@@ -90,7 +83,11 @@ router.post('/', validate, async function (req, res, next) {
           httpOnly: true,
         });
 
-        return res.redirect(303, '/admin');
+        return res.json({
+          data: {
+            accessToken
+          }
+        });
 
       }
 
