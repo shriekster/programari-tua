@@ -43,7 +43,7 @@ const validateToken = (type, token) => {
 
 };
 
-const validate = (req, res, next) => {
+export const validateRefreshToken = (req, res, next) => {
 
   const { refresh_token } = req.cookies;
 
@@ -75,5 +75,3 @@ const validate = (req, res, next) => {
   });
 
 };
-
-export default validate;

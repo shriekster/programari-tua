@@ -3,7 +3,7 @@ import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 import { getSecret } from '../../lib/db.js';
 
-import validateRefreshToken from '../../middlewares/validateRefreshToken.js';
+import { validateRefreshToken } from '../../middlewares/validateRefreshToken.js';
 
 const router = Router();
 
