@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Route, Switch } from 'wouter';
 
 import Home from './pages/Home';
@@ -14,29 +13,15 @@ import NotFound from './pages/NotFound';
 */
 function App() {
 
-  const [accessToken, setAccessToken] = useState('');
-
   return (
     <Switch>
-      <Route path='/admin/login'>
-        <Login setAccessToken={setAccessToken} />
-      </Route>
-      <Route path='/admin'>
-        <Admin accessToken={accessToken}
-          setAccessToken={setAccessToken} />
-      </Route>
-      <Route path='/appointments/:pageId'>
-        <Appointments />
-      </Route>
-      <Route path='/'>
-        <Home />
-      </Route>
-      <Route path='/:anything*'>
-        <NotFound />
-      </Route>
+      <Route path='/admin/login' component={Login}/>
+      <Route path='/admin' component={Admin} />
+      <Route path='/appointments/:pageId' component={Appointments} />
+      <Route path='/' component={Home} />
+      <Route path='/:anything*' component={NotFound}/>
     </Switch>
-  );
-  
+  )
 }
 
 export default App
