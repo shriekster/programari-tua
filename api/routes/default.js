@@ -5,7 +5,9 @@ const router = Router();
 router.all('*', function (req, res){
 
   return res.status(404).json({
-    message: 'Not Found'
+    data: {
+      message: 'Not Found'
+    }
   });
 
 });

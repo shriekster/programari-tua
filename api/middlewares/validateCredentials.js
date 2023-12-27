@@ -1,6 +1,6 @@
 import validator from 'validator';
 
-const validate = (req, res, next) => {
+export const validateCredentials = (req, res, next) => {
 
   if (req?.body) {
 
@@ -26,6 +26,3 @@ const validate = (req, res, next) => {
   });
 
 };
-
-
-export default validate; 

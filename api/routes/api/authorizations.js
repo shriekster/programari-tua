@@ -7,11 +7,12 @@ import { validateRefreshToken } from '../../middlewares/validateRefreshToken.js'
 
 const router = Router();
 
-// TODO: explain a bit what's happening here
+// The last middleware in this route handler issues a new access token and a new refresh token
 router.post('/', validateRefreshToken, function (req, res) {
 
-  let newAccessToken = null, newRefreshToken = null,
+  let newAccessToken = '', newRefreshToken = '',
   status = 500,
+  maxAge = 0,
   error = null;
 
   const accessSecret = getSecret('access');
@@ -21,19 +22,17 @@ router.post('/', validateRefreshToken, function (req, res) {
 
     const jwtId = nanoid();
 
-    newAccessToken = jwt.sign({
-      iat: now,
-      exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
-      jti: jwtId,
-    }, accessSecret, {
-      algorithm: 'HS512'
+    newAccessToken = jwt.sign(accessSecret, {
+      algorithm: 'HS512',
+      expiresIn: '30m', // the access token should expire after 30 minutes, *expressed in seconds or a string describing a time span (vercel/ms)*
+      issuer: 'AST',
+      jwtid: jwtId,
     });
 
-    newRefreshToken = jwt.sign({
-      iat: now,
-      exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
-    }, refreshSecret, {
-      algorithm: 'HS512'
+    newRefreshToken = jwt.sign(refreshSecret, {
+      algorithm: 'HS512',
+      expiresIn: '7d', // the refresh token should expire after 7 days, *expressed in seconds or a string describing a time span (vercel/ms)*
+      issuer: 'AST',
     });
 
   } catch (err) {
@@ -45,26 +44,22 @@ router.post('/', validateRefreshToken, function (req, res) {
   if (!error) {
 
     status = 200;
-
-    res.cookie('refresh_token', newRefreshToken, {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
-      path: '/api/authorizations',
-      sameSite: 'Strict',
-      httpOnly: true,
-    });
+    maxAge = 1000 * 60 * 60 * 24 * 7; // the refresh token cookie should expire after 7 days, *expressed in milliseconds*;
 
   } else {
 
     status = 500;
-
-    res.cookie('refresh_token', '', {
-      maxAge: 0, // the refresh token cookie should expire instantly
-      path: '/api/authorizations',
-      sameSite: 'Strict',
-      httpOnly: true,
-    });
+    maxAge = 0; // the refresh token cookie should expire instantly
+    newRefreshToken = ''; // explicitly set newRefreshToken to an empty string
 
   }
+
+  res.cookie('refresh_token', newRefreshToken, {
+    maxAge: maxAge,
+    path: '/api/authorizations',
+    sameSite: 'Strict',
+    httpOnly: true,
+  });
 
   return res.status(status)
   .json({

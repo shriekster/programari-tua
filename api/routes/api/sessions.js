@@ -3,20 +3,17 @@ import * as argon2 from 'argon2';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 
-import validate from '../../middlewares/validateCredentials.js';
+import { validateCredentials } from '../../middlewares/validateCredentials.js';
 import { getSecret, getCredentials } from '../../lib/db.js';
 
 const router = Router();
 
 
-router.post('/', validate, async function (req, res, next) {
+router.post('/', validateCredentials, async function (req, res) {
 
-  let status = 401, responseMessage = {
-    error: true,
-    message: 'Unauthorized'
-  },
-  error = null,
-  accessToken = '', refreshToken = '';
+  let error = null,
+  accessToken = '', refreshToken = '',
+  credentials;
 
   const { username, password } = req.body;
   
@@ -24,7 +21,8 @@ router.post('/', validate, async function (req, res, next) {
 
     try {
 
-      const credentials = getCredentials(username); // maybe I should check if the correct username was provided, but this middleware is good enough for now
+      // if the correct username is provided, the credentials object will contain data, otherwise it will be undefined or null
+      credentials = getCredentials(username);
 
       const isCorrectPassword = await argon2.verify(credentials.passwordHash, password);
 
@@ -32,32 +30,20 @@ router.post('/', validate, async function (req, res, next) {
 
         const accessSecret = getSecret('access');
         const refreshSecret = getSecret('refresh');
-
-        const now = Math.floor(Date.now() / 1000);
         
         const jwtId = nanoid();
 
-        accessToken = jwt.sign({
-          iss: 'AST',
-          iat: now,
-          exp: now + 60 * 30, // the access token should expire after 30 minutes, *expressed in seconds, because it's a numeric value*
-          aud: credentials.type,
-          jti: jwtId,
-        }, 
-        accessSecret,
-        {
-          algorithm: 'HS512'
+        accessToken = jwt.sign(accessSecret, {
+          algorithm: 'HS512',
+          expiresIn: '30m', // the access token should expire after 30 minutes, *expressed in seconds or a string describing a time span (vercel/ms)*
+          issuer: 'AST',
+          jwtid: jwtId,
         });
 
-        refreshToken = jwt.sign({
-          iss: 'AST',
-          iat: now,
-          exp: now + 60 * 60 * 24 * 7, // the refresh token should expire after 7 days, *expressed in seconds, because it's a numeric value*
-          aud: 'man',
-        },
-        refreshSecret,
-        {
-          algorithm: 'HS512'
+        refreshToken = jwt.sign(refreshSecret, {
+          algorithm: 'HS512',
+          expiresIn: '7d', // the refresh token should expire after 7 days, *expressed in seconds or a string describing a time span (vercel/ms)*
+          issuer: 'AST',
         });
 
       } else {
@@ -70,9 +56,13 @@ router.post('/', validate, async function (req, res, next) {
 
       error = err;
 
-    } finally {
+    }
 
-      if (!error) {
+    if (!error) {
+
+      // only set the cookie containing the refresh token if the user is human, because 
+      // a device (that is, the sms gateway) doesn't need the refresh token
+      if ('human' === credentials?.type) {
 
         res.cookie('refresh_token', refreshToken, {
           maxAge: 1000 * 60 * 60 * 24 * 7, // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
@@ -81,20 +71,24 @@ router.post('/', validate, async function (req, res, next) {
           httpOnly: true,
         });
 
-        return res.json({
-          data: {
-            accessToken
-          }
-        });
-
       }
+
+      return res.json({
+        data: {
+          accessToken
+        }
+      });
 
     }
 
   }
 
-  return res.status(status)
-  .json(responseMessage);
+  return res.status(401)
+  .json({
+    data: {
+      message: 'Unauthorized'
+    }
+  });
 
 });
 
