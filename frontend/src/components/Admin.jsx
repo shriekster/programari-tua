@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import useRefreshToken from '../useRefreshToken';
 
 import Login from './Login';
+import Dashboard from './Dashboard';
 
 import Box from '@mui/system/Box';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -160,15 +161,16 @@ export default function Admin() {
     else if (isLoggedIn) {
 
       return (
-        <>
-          ADMIN
-        </>
+        <Dashboard setLoggedIn={setLoggedIn} 
+          accessToken={accessToken}
+          setAccessToken={setAccessToken}/>
       )
 
     }
 
     return (
-      <Login setLoggedIn={setLoggedIn}/>
+      <Login setLoggedIn={setLoggedIn}
+        setAccessToken={setAccessToken}/>
     )
   }
   
