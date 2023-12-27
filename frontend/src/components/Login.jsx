@@ -122,7 +122,6 @@ export default function Login({ setLoggedIn }) {
           headers: {
             'Content-Type': 'application/json',
           },
-          redirect: 'follow',
           body: JSON.stringify({
               username: username.value,
               password: password.value,

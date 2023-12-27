@@ -7,7 +7,6 @@ export default function useRefreshToken() {
       headers: {
         'Content-Type': 'application/json',
       },
-      redirect: 'follow',
       body: JSON.stringify({
           api: true
       }),
