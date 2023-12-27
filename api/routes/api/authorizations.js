@@ -74,4 +74,23 @@ router.post('/', validateRefreshToken, function (req, res) {
 
 });
 
+// logout route handler
+router.delete('/current', validateRefreshToken, function(req, res) {
+
+  // the cookie holding the refresh token should expire
+  return res.status(200)
+  .cookie('refresh_token', '', {
+    maxAge: 0,
+    path: '/api/authorizations',
+    sameSite: 'Strict',
+    httpOnly: true,
+  })
+  .json({
+    data: {
+      message: 'See you next time!'
+    }
+  });
+
+});
+
 export default router;

@@ -203,16 +203,16 @@ export default function Login({ setLoggedIn }) {
             }}
             />
             <form style={{
-                margin: 'auto',
-                padding: 0,
-                height: '50dvh',
-                minHeight: '350px',
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                position: 'relative'
+                  margin: 'auto',
+                  padding: 0,
+                  height: '50dvh',
+                  minHeight: '350px',
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'space-evenly',
+                  position: 'relative'
                 }}
                 autoComplete='on'
                 onSubmit={handleSubmit}>
@@ -284,15 +284,15 @@ export default function Login({ setLoggedIn }) {
                 {
                     loading && (
                     <CircularProgress
-                        size={48}
+                        size={64}
                         color='primary'
                         thickness={8}
                         sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        marginTop: '-24px',
-                        marginLeft: '-24px',
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          marginTop: '-24px',
+                          marginLeft: '-24px',
                         }}
                         disableShrink
                     />

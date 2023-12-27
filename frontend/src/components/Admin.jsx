@@ -4,6 +4,7 @@ import useRefreshToken from '../useRefreshToken';
 import Login from './Login';
 
 import Box from '@mui/system/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 export default function Admin() {
@@ -17,6 +18,9 @@ export default function Admin() {
   useEffect(() => {
 
     const checkAuthorization = async () => {
+
+      let accessToken = '',
+      error = null;
 
       setLoading(true);
     
@@ -33,18 +37,30 @@ export default function Admin() {
       try {
 
         const response = await fetch('/api/authorizations', requestOptions);
-        const json = await response.json();
-        console.log(json)
 
-        
+        if (!response.ok) {
+
+          throw new Error('Invalid authorization!');
+
+        }
+
+        const json = await response.json();
+        accessToken = json?.data?.accessToken;
 
       } catch (err) {
 
-        console.log(err)
+        error = err;
 
       } finally {
 
         setLoading(false);
+
+        if (!error) {
+
+          setAccessToken(accessToken);
+          setLoggedIn(true);
+
+        }
 
       }
 
@@ -57,7 +73,7 @@ export default function Admin() {
 
     }
 
-  }, [isLoggedIn]);
+  }, [isLoggedIn, setAccessToken, setLoggedIn]);
 
   useEffect(() => {
 
@@ -110,7 +126,38 @@ export default function Admin() {
 
   }, []);
 
-    if (isLoggedIn) {
+    if (loading) {
+
+      return (
+        <Box
+          sx={{
+              margin: 0,
+              padding: '2.5%',
+              height: '100dvh',
+              width: '100dvw',
+              display: 'flex',
+              flexDirection: 'column',
+              position: 'relative'
+          }}>
+          <CircularProgress
+              size={64}
+              color='primary'
+              thickness={8}
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: '-32px',
+                marginLeft: '-32px',
+              }}
+              disableShrink
+          />
+        </Box>
+      )
+
+    }
+
+    else if (isLoggedIn) {
 
       return (
         <>
