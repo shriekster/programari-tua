@@ -1,3 +1,4 @@
+/*
 const { Router } = require('express');
 const argon2 = require('argon2');
 const jwt = require('jsonwebtoken');
@@ -8,12 +9,21 @@ import('nanoid').then((module) => {
 
 const validator = require('../../middlewares/validateCredentials');
 const { getSecret, getCredentials } = require('../../lib/db');
+*/
+import { Router } from 'express';
+import * as argon2 from 'argon2';
+import { default as jwt } from 'jsonwebtoken';
+import { nanoid } from 'nanoid';
+
+import validator from '../../middlewares/validateCredentials.js';
+import { getSecret, getCredentials } from '../../lib/db.js';
+
 
 const router = Router();
 
 
 router.post('/', validator, async function (req, res, next) {
-  
+
   let status = 401, responseMessage = {
     error: true,
     message: 'Unauthorized'
@@ -74,7 +84,7 @@ router.post('/', validator, async function (req, res, next) {
 
     } catch (err) {
 
-      error = err;
+      error = err; console.log(err)
 
     } finally {
 
@@ -107,4 +117,5 @@ router.post('/', validator, async function (req, res, next) {
 
 });
 
-module.exports = router;
+//module.exports = router;
+export default router;

@@ -1,3 +1,4 @@
+/*
 const jwt = require('jsonwebtoken');
 let nanoid;
 import('nanoid').then((module) => {
@@ -5,6 +6,10 @@ import('nanoid').then((module) => {
 });
 
 const { getSecret } = require('../lib/db');
+*/
+import { default as jwt } from 'jsonwebtoken';
+import { nanoid } from 'nanoid';
+import { getSecret } from '../lib/db.js';
 
 // this middleware should execute only if the new access token if it expired and the refresh token is valid
 // and is should issue the new tokens (new access token, obtained with the refresh token, then the new refresh token, 'rotated')
@@ -85,4 +90,5 @@ const issue = (req, res, next) => {
 
 };
 
-module.exports = issue;
+//module.exports = issue;
+export default issue;

@@ -1,4 +1,5 @@
-const validator = require('validator');
+//const validator = require('validator');
+import validator from 'validator';
 
 const validate = (req, res, next) => {
 
@@ -28,4 +29,4 @@ const validate = (req, res, next) => {
 };
 
 
-module.exports = validate; 
+export default validate; 

@@ -4,6 +4,7 @@
   "private": true,
   "author": "shriekster",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "start": "nodemon ./bin/www"
   },

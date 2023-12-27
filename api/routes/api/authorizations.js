@@ -1,6 +1,5 @@
+/*
 const { Router } = require('express');
-const validator = require('validator');
-const jwt = require('jsonwebtoken');
 let nanoid;
 import('nanoid').then((module) => {
   nanoid = module.nanoid;
@@ -9,6 +8,12 @@ import('nanoid').then((module) => {
 const { getSecret } = require('../../lib/db');
 const validateTokens = require('../../middlewares/validateTokens');
 const issueTokens = require('../../middlewares/issueTokens');
+*/
+
+import { Router } from 'express';
+
+import validateTokens from '../../middlewares/validateTokens.js';
+import issueTokens from '../../middlewares/validateTokens.js';
 
 const router = Router();
 
@@ -18,4 +23,5 @@ const router = Router();
 // if any token is missing or is not valid, send a HTTP 401 response
 router.post('/', validateTokens, issueTokens);
 
-module.exports = router;
+//module.exports = router;
+export default router;

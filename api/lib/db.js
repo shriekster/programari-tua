@@ -1,8 +1,10 @@
-const path = require('node:path');
-const Database = require('better-sqlite3');
+//const path = require('node:path');
+//const Database = require('better-sqlite3');
+import path from 'node:path';
+import Database from 'better-sqlite3';
 
 let db = null, dbOpenError = null;
-const dbFilePath = path.resolve(__dirname, '../data/tua.db');
+const dbFilePath = path.resolve(process.cwd(), './data/tua.db');
 
 let stmtError = null;
 const statements = {};
@@ -84,9 +86,9 @@ if (!stmtError) {
 
 }
 
-module.exports = {
+export {
 
     getSecret,
     getCredentials
 
-}
+};

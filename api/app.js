@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
@@ -6,6 +7,16 @@ const createError = require('http-errors');
 
 const apiRoutes = require('./routes/api/index');
 const defaultRoute = require('./routes/default');
+*/
+
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
+import createHttpError from 'http-errors';
+
+import apiRoutes from './routes/api/index.js';
+import defaultRoute from './routes/default.js';
 
 const app = express();
 
@@ -44,4 +55,5 @@ app.use(function(err, req, res, next) {
     });
 })
 
-module.exports = app;
+//module.exports = app;
+export default app;
