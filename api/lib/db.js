@@ -1,5 +1,3 @@
-//const path = require('node:path');
-//const Database = require('better-sqlite3');
 import path from 'node:path';
 import Database from 'better-sqlite3';
 

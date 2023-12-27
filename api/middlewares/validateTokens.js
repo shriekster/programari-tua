@@ -1,6 +1,3 @@
-//const jwt = require('jsonwebtoken');
-//const { getSecret } = require('../lib/db');
-
 import { default as jwt } from 'jsonwebtoken';
 import { getSecret } from '../lib/db.js';
 

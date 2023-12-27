@@ -1,28 +1,15 @@
-/*
-const { Router } = require('express');
-const argon2 = require('argon2');
-const jwt = require('jsonwebtoken');
-let nanoid;
-import('nanoid').then((module) => {
-  nanoid = module.nanoid;
-});
-
-const validator = require('../../middlewares/validateCredentials');
-const { getSecret, getCredentials } = require('../../lib/db');
-*/
 import { Router } from 'express';
 import * as argon2 from 'argon2';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 
-import validator from '../../middlewares/validateCredentials.js';
+import validate from '../../middlewares/validateCredentials.js';
 import { getSecret, getCredentials } from '../../lib/db.js';
-
 
 const router = Router();
 
 
-router.post('/', validator, async function (req, res, next) {
+router.post('/', validate, async function (req, res, next) {
 
   let status = 401, responseMessage = {
     error: true,
@@ -40,7 +27,6 @@ router.post('/', validator, async function (req, res, next) {
     try {
 
       const credentials = getCredentials(username); // maybe I should check if the correct username was provided, but this middleware is good enough for now
-      console.log(credentials)
 
       const isCorrectPassword = await argon2.verify(credentials.passwordHash, password);
 
@@ -84,7 +70,7 @@ router.post('/', validator, async function (req, res, next) {
 
     } catch (err) {
 
-      error = err; console.log(err)
+      error = err;
 
     } finally {
 
@@ -117,5 +103,4 @@ router.post('/', validator, async function (req, res, next) {
 
 });
 
-//module.exports = router;
 export default router;

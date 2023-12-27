@@ -1,12 +1,3 @@
-/*
-const jwt = require('jsonwebtoken');
-let nanoid;
-import('nanoid').then((module) => {
-  nanoid = module.nanoid;
-});
-
-const { getSecret } = require('../lib/db');
-*/
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 import { getSecret } from '../lib/db.js';
@@ -90,5 +81,4 @@ const issue = (req, res, next) => {
 
 };
 
-//module.exports = issue;
 export default issue;

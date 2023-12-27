@@ -1,4 +1,3 @@
-//const validator = require('validator');
 import validator from 'validator';
 
 const validate = (req, res, next) => {
