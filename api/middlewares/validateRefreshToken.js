@@ -45,51 +45,33 @@ const validateToken = (type, token) => {
 
 const validate = (req, res, next) => {
 
-  const { access_token, refresh_token } = req.cookies;
+  const { refresh_token } = req.cookies;
 
-  if (access_token && refresh_token) {
+  if (refresh_token) {
 
-    const accessTokenStatus = validateToken('access', access_token);
+    const tokenStatus = validateToken('refresh', refresh_token);
 
-    switch (accessTokenStatus) {
+    // if the refresh token is valid...
+    if ('ok' === tokenStatus) {
 
-      case 'ok': {
-
-        return res.status(200)
-        .json({
-          message: 'Authorized'
-        });
-
-      }
-
-      case 'expired': {
-
-        const refreshTokenStatus = validateToken('refresh', refresh_token);
-
-        if ('ok' === refreshTokenStatus) {
-
-          return next(); // the next middleware should issue the new tokens
-
-        }
-
-        break;
-
-      }
-
-      case 'invalid':
-      default: {
-
-        break;
-
-      }
+      return next(); // ...the next middleware should issue the new tokens
 
     }
+
+    return res.status(401)
+    .json({
+      data: {
+        message: 'Unauthorized'
+      }
+    });
 
   }
 
   return res.status(400)
   .json({
-    message: 'Bad Request'
+    data: {
+      message: 'Bad Request'
+    }
   });
 
 };

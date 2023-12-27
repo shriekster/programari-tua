@@ -19,8 +19,6 @@ router.post('/', validate, async function (req, res, next) {
   accessToken = '', refreshToken = '';
 
   const { username, password } = req.body;
-
-  req.body = {}; // could be redundant
   
   if (username && password) {
 
