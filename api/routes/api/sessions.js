@@ -33,17 +33,21 @@ router.post('/', validateCredentials, async function (req, res) {
         
         const jwtId = nanoid();
 
-        accessToken = jwt.sign(accessSecret, {
+        accessToken = jwt.sign({
+          iss: 'AST',
+          jti: jwtId
+        }, 
+        accessSecret, {
           algorithm: 'HS512',
           expiresIn: '30m', // the access token should expire after 30 minutes, *expressed in seconds or a string describing a time span (vercel/ms)*
-          issuer: 'AST',
-          jwtid: jwtId,
         });
 
-        refreshToken = jwt.sign(refreshSecret, {
+        refreshToken = jwt.sign({
+          iss: 'AST',
+        }, 
+        refreshSecret, {
           algorithm: 'HS512',
           expiresIn: '7d', // the refresh token should expire after 7 days, *expressed in seconds or a string describing a time span (vercel/ms)*
-          issuer: 'AST',
         });
 
       } else {
