@@ -29,7 +29,8 @@ const loginTheme = createTheme({
     
 });
 
-export function Login({ setLoggedIn }) {
+// eslint-disable-next-line react/prop-types
+export default function Login({ setLoggedIn }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -93,8 +94,6 @@ export function Login({ setLoggedIn }) {
 
       let status = 0, 
       ok = false, 
-      redirected = false,
-      url = '',
       error = null;
   
       if (!username.value || !password.value) {
