@@ -1,8 +1,4 @@
-import { useLocation } from 'wouter';
-
 export default function useRefreshToken() {
-
-  const [location, setLocation] = useLocation();
 
   const tryRefreshToken = async () => {
 
@@ -21,11 +17,6 @@ export default function useRefreshToken() {
 
       const response = await fetch('/api/authorizations', requestOptions);
 
-      if (response.redirected) {
-
-        setLocation(response.url, { replace: true });
-
-      }
 
     } catch (err) {
 

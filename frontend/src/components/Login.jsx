@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-import { useLocation } from 'wouter';
-
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
 import TextField from '@mui/material/TextField';
@@ -26,7 +24,6 @@ const loginTheme = createTheme({
         },
         mode: 'dark'
     },
-    
 });
 
 // eslint-disable-next-line react/prop-types
@@ -92,29 +89,34 @@ export default function Login({ setLoggedIn }) {
   
       event.preventDefault();
 
-      let status = 0, 
-      ok = false, 
+      let status = 401, 
       error = null;
   
-      if (!username.value || !password.value) {
-  
+      if (!username.value) {
+
         setUsername((username) => ({
           value: username.value,
           helperText: 'Completează câmpul!',
           error: true,
         }));
-  
+
+      }
+
+      if (!password.value) {
+
         setPassword((password) => ({
           value: password.value,
           helperText: 'Completează câmpul!',
           error: true,
         }));
-  
-      } else {
-  
+
+      }
+
+      if (username.value && password.value) {
+
         setLoading(true);
         setError(false);
-  
+
         const requestOptions = {
           method: 'POST',
           headers: {
@@ -126,59 +128,55 @@ export default function Login({ setLoggedIn }) {
               password: password.value,
           }),
         };
-  
+
         try {
-  
+
           const response = await fetch('/api/sessions', requestOptions);
           status = response.status;
-          ok = response.ok;
 
           if (!response.ok) {
 
             throw new Error('Something happened')
 
           }
-  
+
         } catch (err) {
-  
+
           error = err;
-  
+
         } finally {
-  
+
           setLoading(false);
 
-          if (error) {
+          switch (status) {
 
-            // HTTP 401: Unauthorized
-            if (401 === status) {
+            case 200: {
 
-              setErrorMessage('Ai greșit utilizatorul sau parola!');
-
-            } else {
-
-              // Any other client-side or server-side error
-              if (400 <= status && status <= 599) {
-
-                setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-
-              }
+              setLoggedIn(true);
+              break;
 
             }
 
-            setError(true);
+            case 401: {
 
-          } else {
+              setErrorMessage('Ai greșit utilizatorul sau parola!');
+              setError(true);
+              break;
 
-            if (ok) {
+            }
 
-              setLoggedIn(true);
-    
+            default: {
+
+              setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+              setError(true);
+              break;
+
             }
 
           }
-  
+
         }
-  
+
       }
   
     };
@@ -284,7 +282,7 @@ export default function Login({ setLoggedIn }) {
                 {
                     loading && (
                     <CircularProgress
-                        size={64}
+                        size={48}
                         color='primary'
                         thickness={8}
                         sx={{
