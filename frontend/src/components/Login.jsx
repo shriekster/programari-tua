@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 
 import { useLocation } from 'wouter';
 
@@ -29,7 +29,7 @@ const loginTheme = createTheme({
     
 });
 
-export default function Login(props) {
+const Login = forwardRef((props, ref) => {
   
   const [username, setUsername] = useState({
       value: '',
@@ -190,7 +190,7 @@ export default function Login(props) {
 
     return (
       <ThemeProvider theme={loginTheme}>
-        <Box component='main'
+        <Box ref={ref}
             sx={{
                 margin: 0,
                 padding: '2.5%',
@@ -313,5 +313,9 @@ export default function Login(props) {
       </ThemeProvider>
     )
 
-  }
+  });
+
+  Login.displayName = 'Login';
   
+
+  export default Login;

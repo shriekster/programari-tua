@@ -17,7 +17,7 @@ const validateToken = (type, token) => {
 
     } catch (err) {
 
-      tokenError = err;
+      tokenError = err; console.log(err)
 
     }
 
