@@ -6,6 +6,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
 // TODO: add a responsive AppBar with a menu
 // TODO: think about calendar views (probably only day)
+// TODO: think about calendar editing controls (CRUD)
 export default function Dashboard({ setLoggedIn, accessToken, setAccessToken }) {
 
   const handleLogout = async () => {
