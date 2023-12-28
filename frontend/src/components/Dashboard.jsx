@@ -2,7 +2,10 @@
 import { useState, useEffect } from 'react';
 
 import Button from '@mui/material/Button';
+import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 
+// TODO: add a responsive AppBar with a menu
+// TODO: think about calendar views (probably only day)
 export default function Dashboard({ setLoggedIn, accessToken, setAccessToken }) {
 
   const handleLogout = async () => {
@@ -75,6 +78,12 @@ export default function Dashboard({ setLoggedIn, accessToken, setAccessToken }) 
     <Button onClick={handleLogout}>
       LOGOUT
     </Button>
+    <DateCalendar
+      //views={['day', 'month']}
+      displayWeekNumber
+      showDaysOutsideCurrentMonth
+      //fixedWeekNumber={6}
+      />
     </>
   )
 
