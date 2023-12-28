@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import useLocation from 'wouter/use-location';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
 import TextField from '@mui/material/TextField';
@@ -27,7 +29,7 @@ const loginTheme = createTheme({
 });
 
 // eslint-disable-next-line react/prop-types
-export default function Login({ setLoggedIn }) {
+export default function Login({ setAccessToken }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -43,6 +45,9 @@ export default function Login({ setLoggedIn }) {
     const [loading, setLoading] = useState(false);
     const [showError, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+
+    // eslint-disable-next-line no-unused-vars
+    const [location, setLocation] = useLocation();
   
     const handleUsernameChange = (event) => {
   
@@ -84,13 +89,13 @@ export default function Login({ setLoggedIn }) {
 
     };
   
-    // TODO: finish the submit handler
     const handleSubmit = async (event) => {
   
       event.preventDefault();
 
       let status = 401, 
-      error = null;
+      error = null,
+      accessToken = '';
   
       if (!username.value) {
 
@@ -131,6 +136,9 @@ export default function Login({ setLoggedIn }) {
         try {
 
           const response = await fetch('/api/sessions', requestOptions);
+          const json = await response.json();
+
+          accessToken = json?.data?.accessToken;
           status = response.status;
 
           if (!response.ok) {
@@ -152,7 +160,11 @@ export default function Login({ setLoggedIn }) {
 
             case 200: {
 
-              setLoggedIn(true);
+              setAccessToken(accessToken);
+              setLocation('/admin', {
+                replace: true
+              });
+
               break;
 
             }

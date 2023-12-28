@@ -1,12 +1,11 @@
-import { Route, Switch } from 'wouter';
+import { useState } from 'react';
 
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import 'dayjs/locale/ro';
+import { Route, Switch } from 'wouter';
 
 import Home from './components/Home';
 import Appointments from './components/Appointments';
 import Admin from './components/Admin';
+import Login from './components/Login';
 import NotFound from './components/NotFound';
 
 /* 
@@ -16,15 +15,21 @@ import NotFound from './components/NotFound';
 */
 function App() {
 
+  const [accessToken, setAccessToken] = useState('');
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
       <Switch>
-        <Route path='/admin' component={Admin} />
+        <Route path='/admin'>
+          <Admin accessToken={accessToken}
+            setAccessToken={setAccessToken}/>
+        </Route>
+        <Route path='/admin/login'>
+          <Login setAccessToken={setAccessToken}/>
+        </Route>
         <Route path='/appointments/:pageId' component={Appointments} />
         <Route path='/' component={Home} />
         <Route path='/:anything*' component={NotFound} />
       </Switch>
-    </LocalizationProvider>
   )
 }
 
