@@ -1,5 +1,9 @@
 import { Route, Switch } from 'wouter';
 
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/ro';
+
 import Home from './components/Home';
 import Appointments from './components/Appointments';
 import Admin from './components/Admin';
@@ -13,12 +17,14 @@ import NotFound from './components/NotFound';
 function App() {
 
   return (
-    <Switch>
-      <Route path='/admin' component={Admin} />
-      <Route path='/appointments/:pageId' component={Appointments} />
-      <Route path='/' component={Home} />
-      <Route path='/:anything*' component={NotFound} />
-    </Switch>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
+      <Switch>
+        <Route path='/admin' component={Admin} />
+        <Route path='/appointments/:pageId' component={Appointments} />
+        <Route path='/' component={Home} />
+        <Route path='/:anything*' component={NotFound} />
+      </Switch>
+    </LocalizationProvider>
   )
 }
 
