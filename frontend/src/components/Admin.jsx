@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useRefreshToken from '../useRefreshToken';
 
-import useLocation from 'wouter/use-location';
+import { useLocation } from 'wouter';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import CircularProgress from '@mui/material/CircularProgress';
@@ -43,6 +44,20 @@ export default function Admin({ accessToken, setAccessToken }) {
       },
     };
 
+    setMenuAnchor(null);
+    setLoading(true);
+
+    await new Promise((resolve) => {
+
+      let t = setTimeout(() => {
+
+        clearTimeout(t);
+        resolve();
+
+      }, 2000);
+
+    })
+
     try {
 
       const response = await fetch('/api/authorizations/current', requestOptions);
@@ -64,6 +79,7 @@ export default function Admin({ accessToken, setAccessToken }) {
       //setLoading(false);
 
       switch (status) {
+
 
         case 200: {
 
@@ -206,7 +222,9 @@ export default function Admin({ accessToken, setAccessToken }) {
   };
 
   const handleCloseUserMenu = () => {
+
     setMenuAnchor(null);
+
   };
 
   return (
@@ -273,6 +291,7 @@ export default function Admin({ accessToken, setAccessToken }) {
         showDaysOutsideCurrentMonth
         //fixedWeekNumber={6}
         loading={loading}
+        renderLoading={() => <DayCalendarSkeleton />}
         />
     </>
   );

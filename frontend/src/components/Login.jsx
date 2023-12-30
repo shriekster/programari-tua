@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import useLocation from 'wouter/use-location';
+import { useLocation } from 'wouter';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
