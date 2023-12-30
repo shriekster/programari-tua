@@ -1,9 +1,10 @@
 import SvgIcon from '@mui/material/SvgIcon';
 
-export default function TuaIcon() {
+export default function TuaIcon(props) {
 
     return (
-        <SvgIcon fontSize='large'>
+        // eslint-disable-next-line react/prop-types
+        <SvgIcon fontSize='large' sx={{...props?.sx}}>
             <svg xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny" viewBox="0.00 0.00 822.00 676.00">
                 <g strokeWidth="0.50" fill="none" strokeLinecap="butt">
                 <path stroke="#99a2d4" vectorEffect="non-scaling-stroke" d="

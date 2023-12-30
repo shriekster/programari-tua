@@ -26,10 +26,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import TuaIcon from './TuaIcon';
 
-import Layout from './Layout';
 
-
-export default function Admin({ accessToken, setAccessToken }) {
+export default function Profile({ accessToken, setAccessToken }) {
 
   const [loading, setLoading] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
@@ -228,11 +226,113 @@ export default function Admin({ accessToken, setAccessToken }) {
   };
 
   return (
-    <Layout accessToken={accessToken}
-      setAccessToken={setAccessToken}
-      loading={loading}
-      setLoading={setLoading}
-      hasMenu/>
+    <Box sx={{
+      margin: 0,
+      padding: 0,
+      position: 'relative'
+    }}>
+      <AppBar position="static" elevation={2}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+            <TuaIcon sx={{ fontSize: '28px' }} />
+            <Typography
+              variant='h5'
+              noWrap
+              sx={{
+                mr: 2,
+                display: 'flex',
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
+            >
+              TUA
+            </Typography>
+            <Box sx={{ flexGrow: 0}}>
+              <Tooltip title='Setări'>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                  size='large'
+                  disabled={loading}>
+                  <MenuIcon fontSize='large' />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                id='menu'
+                keepMounted
+                anchorEl={menuAnchor}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                open={Boolean(menuAnchor)}
+                onClose={handleCloseUserMenu}
+                slotProps={{
+                  paper: {
+                    elevation: 6,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: .5,
+                      '&::before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 12,
+                        width: 10,
+                        height: 10,
+                        backgroundColor: 'rgb(18, 18, 18)',
+                        backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }
+                }}
+                >
+                <MenuItem onClick={handleGoToProfile}>
+                  <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+                  <ListItemText>Profil</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
+                  <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+      <DateCalendar
+        views={['day']}
+        displayWeekNumber
+        showDaysOutsideCurrentMonth
+        disabled={loading}
+        loading={loading}
+        renderLoading={() => <DayCalendarSkeleton />}
+        />
+      {
+        loading && (
+        <CircularProgress
+            size={48}
+            color='primary'
+            thickness={8}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-24px',
+              marginLeft: '-24px',
+            }}
+            disableShrink
+        />
+        )
+      }
+    </Box>
   );
 
 }
