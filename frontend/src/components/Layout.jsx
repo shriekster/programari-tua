@@ -19,15 +19,17 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import TuaIcon from './TuaIcon';
+import Profile from './Profile';
 
 
 // eslint-disable-next-line react/prop-types
-export default function Layout({ accessToken, setAccessToken, loading, setLoading, hasMenu, children }) {
+export default function Layout({ accessToken, setAccessToken, loading, setLoading, hasMenu, profileInfo, children }) {
     
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [showProfile, setShowProfile] = useState(false);
 
   // eslint-disable-next-line no-unused-vars
-  const [location, setLocation] = useLocation(); console.log(location)
+  const [location, setLocation] = useLocation();
 
   const handleLogout = async () => {
 
@@ -88,6 +90,38 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
       }
 
     }
+
+  };
+
+  const handleOpenUserMenu = (event) => {
+
+    setMenuAnchor(event.currentTarget);
+
+  };
+
+  const handleCloseUserMenu = () => {
+
+    setMenuAnchor(null);
+
+  };
+
+  const handleOpenProfile = () => {
+
+    setMenuAnchor(null);
+    // TODO: open the admin profile dialog
+    setShowProfile(true);
+
+  };
+
+  const handleCloseProfile = (event, reason) => {
+
+    if (loading) {
+
+        return;
+
+    }
+    // TODO: close the admin profile dialog
+    setShowProfile(false);
 
   };
 
@@ -155,32 +189,6 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
     }
 
   }, [accessToken, setLocation, setAccessToken, setLoading]);
-
-
-  const handleOpenUserMenu = (event) => {
-
-    setMenuAnchor(event.currentTarget);
-
-  };
-
-  const handleCloseUserMenu = () => {
-
-    setMenuAnchor(null);
-
-  };
-
-  const handleOpenProfile = () => {
-
-    setMenuAnchor(null);
-    // TODO: open the admin profile dialog
-
-  };
-
-  const handleCloseProfile = () => {
-
-    // TODO: close the admin profile dialog
-
-  };
 
   return (
     <Box sx={{
@@ -271,22 +279,26 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
         </AppBar>
         {children}
         {
-        loading && (
-        <CircularProgress
-            size={48}
-            color='primary'
-            thickness={8}
-            sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-24px',
-                marginLeft: '-24px',
-            }}
-            disableShrink
-        />
-        )
+            loading && (
+            <CircularProgress
+                size={48}
+                color='primary'
+                thickness={8}
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-24px',
+                    marginLeft: '-24px',
+                }}
+                disableShrink
+            />
+            )
         }
+        <Profile open={showProfile}
+            handleClose={handleCloseProfile}
+            profileInfo={profileInfo}
+            setLoading={setLoading}/>
     </Box>
   );
 

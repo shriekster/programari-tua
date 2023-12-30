@@ -33,6 +33,7 @@ export default function Admin({ accessToken, setAccessToken }) {
 
   const [loading, setLoading] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [profileInfo, setProfileInfo] = useState({});
 
   const [location, setLocation] = useLocation();
 
@@ -233,6 +234,8 @@ export default function Admin({ accessToken, setAccessToken }) {
       loading={loading}
       setLoading={setLoading}
       hasMenu
+      profileInfo={profileInfo}
+      setProfileInfo={setProfileInfo}
       />
   );
 
