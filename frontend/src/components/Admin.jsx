@@ -236,7 +236,9 @@ export default function Admin({ accessToken, setAccessToken }) {
       hasMenu
       profileInfo={profileInfo}
       setProfileInfo={setProfileInfo}
-      />
+    >
+      TEST
+    </Layout>
   );
 
 }

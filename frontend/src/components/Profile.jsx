@@ -13,6 +13,9 @@ export default function Profile({ open, handleClose, setLoading, profileInfo }) 
 
     const [phoneNumber, setPhoneNumber] = useState('');
 
+    // TODO: phone number is internal state, but its initial value is the profileInfo.phoneNumber prop
+    // TODO: validate phone number before saving (Romanian mobile number)
+    // TODO: set loading to true (setLoading) while saving
     const handleSave = () => {
 
     };

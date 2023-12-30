@@ -277,6 +277,10 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
             </Toolbar>
         </Container>
         </AppBar>
+        <Profile open={showProfile}
+            handleClose={handleCloseProfile}
+            profileInfo={profileInfo}
+            setLoading={setLoading}/>
         {children}
         {
             loading && (
@@ -295,10 +299,6 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
             />
             )
         }
-        <Profile open={showProfile}
-            handleClose={handleCloseProfile}
-            profileInfo={profileInfo}
-            setLoading={setLoading}/>
     </Box>
   );
 
