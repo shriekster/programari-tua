@@ -3,9 +3,6 @@ import useRefreshToken from '../useRefreshToken';
 
 import useLocation from 'wouter/use-location';
 
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import 'dayjs/locale/ro';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,25 +11,21 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import AdbIcon from '@mui/icons-material/Adb';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import TuaIcon from './TuaIcon'; console.log(TuaIcon)
+import TuaIcon from './TuaIcon';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 export default function Admin({ accessToken, setAccessToken }) {
 
   const [loading, setLoading] = useState(true);
-  const [anchorElNav, setAnchorElNav] = useState(null);
-  const [anchorElUser, setAnchorElUser] = useState(null);
+  const [menuAnchor, setMenuAnchor] = useState(null);
 
   const [location, setLocation] = useLocation();
 
@@ -75,14 +68,9 @@ export default function Admin({ accessToken, setAccessToken }) {
         case 200: {
 
           setAccessToken('');
-          break;
-
-        }
-
-        case 401: {
-
-          //setErrorMessage('Ai greșit utilizatorul sau parola!');
-          //setError(true);
+          setLocation('/admin/login', {
+            replace: true
+          });
           break;
 
         }
@@ -213,107 +201,80 @@ export default function Admin({ accessToken, setAccessToken }) {
 
   }, []);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
+    setMenuAnchor(event.currentTarget);
   };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+    setMenuAnchor(null);
   };
 
   return (
-<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/*<TuaIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />*/}
-          <TuaIcon sx={{ display: { xs: 'flex', md: 'none', }, mr: 1, fontSize: '28px' }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            TUA
-          </Typography>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            TUA
-          </Typography>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+    <>
+      <AppBar position="static">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+            <TuaIcon sx={{ fontSize: '28px' }} />
+            <Typography
+              variant='h5'
+              noWrap
+              sx={{
+                mr: 2,
+                display: 'flex',
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
               }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              TUA
+            </Typography>
+            <Box sx={{ flexGrow: 0}}>
+              <Tooltip title='Setări'>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <AccountCircleIcon />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: '45px' }}
+                id="menu-appbar"
+                anchorEl={menuAnchor}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={Boolean(menuAnchor)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem onClick={handleCloseUserMenu}>
+                  <Typography textAlign='center'>Profil</Typography>
                 </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
-    <Button onClick={handleLogout}
-      disabled={loading}>
-      LOGOUT
-    </Button>
-    <DateCalendar
-      //views={['day', 'month']}
-      displayWeekNumber
-      showDaysOutsideCurrentMonth
-      //fixedWeekNumber={6}
-      loading={loading}
-      />
-    </LocalizationProvider>
+                <MenuItem onClick={handleLogout}>
+                  <Typography textAlign='center'>Deconectare</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+      <DateCalendar
+        //views={['day', 'month']}
+        displayWeekNumber
+        showDaysOutsideCurrentMonth
+        //fixedWeekNumber={6}
+        loading={loading}
+        />
+    </>
   );
 
 }

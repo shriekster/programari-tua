@@ -1,5 +1,9 @@
 import { useState } from 'react';
 
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import 'dayjs/locale/ro';
+
 import { Route, Switch } from 'wouter';
 
 import Home from './components/Home';
@@ -18,6 +22,7 @@ function App() {
   const [accessToken, setAccessToken] = useState('');
 
   return (
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
       <Switch>
         <Route path='/admin'>
           <Admin accessToken={accessToken}
@@ -30,6 +35,7 @@ function App() {
         <Route path='/' component={Home} />
         <Route path='/:anything*' component={NotFound} />
       </Switch>
+    </LocalizationProvider>
   )
 }
 
