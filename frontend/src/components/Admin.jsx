@@ -237,7 +237,7 @@ export default function Admin({ accessToken, setAccessToken }) {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar position="static" elevation={2}>
         <Container maxWidth="xl">
           <Toolbar disableGutters sx={{
               display: 'flex',
@@ -263,26 +263,43 @@ export default function Admin({ accessToken, setAccessToken }) {
             <Box sx={{ flexGrow: 0}}>
               <Tooltip title='Setări'>
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                  size='large'
                   disabled={loading}>
-                  <AccountCircleIcon />
+                  <MenuIcon fontSize='large' />
                 </IconButton>
               </Tooltip>
               <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={menuAnchor}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
+                id='menu'
                 keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
+                anchorEl={menuAnchor}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 open={Boolean(menuAnchor)}
                 onClose={handleCloseUserMenu}
-              >
+                slotProps={{
+                  paper: {
+                    elevation: 6,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: .5,
+                      '&::before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 12,
+                        width: 10,
+                        height: 10,
+                        backgroundColor: 'rgb(18, 18, 18)',
+                        backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }
+                }}
+                >
                 <MenuItem onClick={handleCloseUserMenu}>
                   <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
                   <ListItemText>Profil</ListItemText>
