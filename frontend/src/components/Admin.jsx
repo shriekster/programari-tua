@@ -9,6 +9,8 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
@@ -17,6 +19,8 @@ import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -25,7 +29,7 @@ import TuaIcon from './TuaIcon';
 
 export default function Admin({ accessToken, setAccessToken }) {
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   const [location, setLocation] = useLocation();
@@ -161,10 +165,14 @@ export default function Admin({ accessToken, setAccessToken }) {
 
     };
 
-    // this is for when the page is first loaded or refreshed
-    checkAuthorization();
+    // skip the request if the user is already logged in
+    if (!accessToken) {
+      
+      checkAuthorization();
 
-  }, [setLocation, setAccessToken]);
+    }
+
+  }, [accessToken, setLocation, setAccessToken]);
 
   useEffect(() => {
 
@@ -254,7 +262,8 @@ export default function Admin({ accessToken, setAccessToken }) {
             </Typography>
             <Box sx={{ flexGrow: 0}}>
               <Tooltip title='Setări'>
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                  disabled={loading}>
                   <AccountCircleIcon />
                 </IconButton>
               </Tooltip>
@@ -275,10 +284,12 @@ export default function Admin({ accessToken, setAccessToken }) {
                 onClose={handleCloseUserMenu}
               >
                 <MenuItem onClick={handleCloseUserMenu}>
-                  <Typography textAlign='center'>Profil</Typography>
+                  <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+                  <ListItemText>Profil</ListItemText>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
-                  <Typography textAlign='center'>Deconectare</Typography>
+                  <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
+                  <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
                 </MenuItem>
               </Menu>
             </Box>
@@ -286,10 +297,10 @@ export default function Admin({ accessToken, setAccessToken }) {
         </Container>
       </AppBar>
       <DateCalendar
-        //views={['day', 'month']}
+        views={['day']}
         displayWeekNumber
         showDaysOutsideCurrentMonth
-        //fixedWeekNumber={6}
+        disabled={loading}
         loading={loading}
         renderLoading={() => <DayCalendarSkeleton />}
         />
