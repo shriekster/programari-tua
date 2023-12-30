@@ -232,7 +232,8 @@ export default function Admin({ accessToken, setAccessToken }) {
       setAccessToken={setAccessToken}
       loading={loading}
       setLoading={setLoading}
-      hasMenu/>
+      hasMenu
+      />
   );
 
 }

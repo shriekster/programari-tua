@@ -23,11 +23,11 @@ import TuaIcon from './TuaIcon';
 
 // eslint-disable-next-line react/prop-types
 export default function Layout({ accessToken, setAccessToken, loading, setLoading, hasMenu, children }) {
-
+    
   const [menuAnchor, setMenuAnchor] = useState(null);
 
   // eslint-disable-next-line no-unused-vars
-  const [location, setLocation] = useLocation();
+  const [location, setLocation] = useLocation(); console.log(location)
 
   const handleLogout = async () => {
 
@@ -169,10 +169,16 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
 
   };
 
-  const handleGoToProfile = () => {
+  const handleOpenProfile = () => {
 
     setMenuAnchor(null);
-    setLocation('/admin/profile');
+    // TODO: open the admin profile dialog
+
+  };
+
+  const handleCloseProfile = () => {
+
+    // TODO: close the admin profile dialog
 
   };
 
@@ -248,7 +254,7 @@ export default function Layout({ accessToken, setAccessToken, loading, setLoadin
                                 }
                             }}
                             >
-                            <MenuItem onClick={handleGoToProfile}>
+                            <MenuItem onClick={handleOpenProfile}>
                                 <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
                                 <ListItemText>Profil</ListItemText>
                             </MenuItem>
