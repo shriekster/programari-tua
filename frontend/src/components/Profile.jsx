@@ -8,10 +8,20 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
+
 // eslint-disable-next-line react/prop-types
-export default function Profile({ open, handleClose, setLoading, profileInfo }) {
+export default function Profile({ open, handleClose, setLoading, profileInfo, accessToken }) {
 
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [helperText, setHelperText] = useState(' ');
+    const [phoneError, setPhoneError] = useState(false);
+
+    const handlePhoneChange = (event) => {
+
+        setPhoneNumber(event.target.value);
+
+    };
 
     // TODO: phone number is internal state, but its initial value is the profileInfo.phoneNumber prop
     // TODO: validate phone number before saving (Romanian mobile number)
@@ -23,31 +33,42 @@ export default function Profile({ open, handleClose, setLoading, profileInfo }) 
     useEffect(() => {
 
         // eslint-disable-next-line react/prop-types
-        setPhoneNumber(profileInfo?.phoneNumber);
+        if (profileInfo?.phoneNumber) {
+
+            // eslint-disable-next-line react/prop-types
+            setPhoneNumber(profileInfo?.phoneNumber);
+
+        }
 
     }, [profileInfo])
 
     return (
         <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Profilul tău</DialogTitle>
-            <DialogContent>
-            <DialogContentText>
-                Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
-            </DialogContentText>
-            <TextField
-                autoFocus
-                margin='dense'
-                id='name'
-                label='Număr de telefon'
-                type='tel'
-                fullWidth
-                variant='standard'
-            />
-            </DialogContent>
-            <DialogActions>
-            <Button onClick={handleClose} color='secondary'>Renunță</Button>
-            <Button onClick={handleSave}>Salvează</Button>
-            </DialogActions>
+            <form>
+                <DialogContent>
+                    <DialogContentText>
+                        Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin='dense'
+                        id='name'
+                        label='Număr de telefon'
+                        type='tel'
+                        fullWidth
+                        variant='standard'
+                        value={phoneNumber}
+                        helperText={helperText}
+                        error={phoneError}
+                        onChange={handlePhoneChange}
+                        />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color='secondary'>Renunță</Button>
+                    <Button onClick={handleSave}>Salvează</Button>
+                </DialogActions>
+            </form>
         </Dialog>
     );
 

@@ -215,7 +215,8 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
           handleClose={handleCloseProfile}
           profileInfo={profileInfo}
           loading={loading}
-          setLoading={setLoading}/>
+          setLoading={setLoading}
+          accessToken={accessToken}/>
     </Box>
   );
 

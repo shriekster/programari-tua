@@ -8,6 +8,8 @@ html,
 body {
   max-width: 100dvw;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0 !important;
 }
 
 /* Experimenting with autofill styling */
