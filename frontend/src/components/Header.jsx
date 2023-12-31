@@ -16,7 +16,6 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import TuaIcon from './TuaIcon';
 import Profile from './Profile';
@@ -68,8 +67,6 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
       switch (status) {
 
         case 200: {
-
-          //setAccessToken('');
          
           setLocation('/admin/login', {
             replace: true
