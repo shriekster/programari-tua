@@ -9,6 +9,7 @@ const statements = {};
 
 let getSecret = null;
 let getCredentials = null;
+let getProfile = null;
 
 try {
 
@@ -36,6 +37,11 @@ try {
         SELECT username, password AS passwordHash, type
         FROM users
         WHERE username = ?`);
+
+    statements['get_profile'] = db.prepare(`
+        SELECT phone_number AS phoneNumber
+        FROM users
+        WHERE id = ?`);
 
 
 } catch (err) {
@@ -82,11 +88,30 @@ if (!stmtError) {
 
     };
 
+    getProfile = (userId) => {
+
+        let error, profile = null;
+
+        try {
+
+            profile = statements['get_profile'].get(userId);
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return profile ?? null;
+
+    };
+
 }
 
 export {
 
     getSecret,
-    getCredentials
+    getCredentials,
+    getProfile
 
 };

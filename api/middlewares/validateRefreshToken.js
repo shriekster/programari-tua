@@ -1,47 +1,4 @@
-import { default as jwt } from 'jsonwebtoken';
-import { getSecret } from '../lib/db.js';
-
-const validateToken = (type, token) => {
-
-  const secret = getSecret(type);
-
-  if (secret) {
-
-    let claims = null, tokenError = null;
-
-    try {
-
-      claims = jwt.verify(token, secret, {
-        algorithms: ['HS512']
-      });
-
-    } catch (err) {
-
-      tokenError = err; console.log(err)
-
-    }
-
-    if (!tokenError) {
-
-      return 'ok';
-
-    } else {
-
-      if ('TokenExpiredError' === tokenError?.name) {
-
-        return 'expired';
-
-      }
-
-      return 'invalid';
-
-    }
-
-  }
-
-  return 'invalid';
-
-};
+import checkToken from '../lib/checkToken.js';
 
 export const validateRefreshToken = (req, res, next) => {
 
@@ -49,7 +6,7 @@ export const validateRefreshToken = (req, res, next) => {
 
   if (refresh_token) {
 
-    const tokenStatus = validateToken('refresh', refresh_token);
+    const tokenStatus = checkToken('refresh', refresh_token);
 
     // if the refresh token is valid...
     if ('ok' === tokenStatus) {

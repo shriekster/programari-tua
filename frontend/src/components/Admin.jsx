@@ -34,6 +34,9 @@ export default function Admin({ accessToken, setAccessToken }) {
 
   const [loading, setLoading] = useState(false);
   const [profileInfo, setProfileInfo] = useState({});
+  const [dates, setDates] = useState(null);
+  const [timeRanges, setTimeRanges] = useState(null);
+  const [appointments, setAppointments] = useState(null);
 
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
@@ -110,9 +113,9 @@ export default function Admin({ accessToken, setAccessToken }) {
     // TODO: fetch data after mounting the component
     // after every data fetch which returns a 401 status code, try to refresh the access token
     // if the refresh attempt fails, display the login component
-    const fetchInitialData = async () => {
-
-      let status = 401;
+    const fetchCalendarData = async () => {
+      
+      let status = 401, data = null;
 
       setLoading(true);
     
@@ -120,15 +123,17 @@ export default function Admin({ accessToken, setAccessToken }) {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
       };
 
       try {
 
-        const response = await fetch('/api/dates', requestOptions);
+        const response = await fetch('/api/dates/all/timeranges/all', requestOptions);
         status = response.status;
 
         const json = await response.json();
+        data = json?.data;
 
         console.log(json)
 
@@ -142,15 +147,73 @@ export default function Admin({ accessToken, setAccessToken }) {
 
       }
 
-      return status;
+      return data;
 
     };
 
-    fetchInitialData();
+    const fetchProfileInfo = async () => {
+      
+      let status = 401, data = null;
 
-  }, []);
+      setLoading(true);
+    
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      };
+
+      try {
+
+        const response = await fetch('/api/profiles/1', requestOptions);
+        status = response.status;
+
+        const json = await response.json();
+        data = json?.data;
+
+        console.log(json)
+
+      } catch (err) {
+
+        console.log(err)
+
+      } finally {
+
+        setLoading(false);
+
+        if (200 === status && data && data?.profile) {
+
+          setProfileInfo(data.profile);
+
+        }
+
+      }
+
+      return data;
+
+    };
+
+    const fetchInParallel = async () => {
+
+      const tasks = [new Promise(fetchCalendarData), new Promise(fetchProfileInfo)];
+
+      const results = await Promise.all(tasks);
+      console.log({results})
+
+    };
+
+    if (accessToken) {
+
+      fetchInParallel();
+
+    }
+
+  }, [accessToken]);
 
   return (
+    <>
     <Header accessToken={accessToken}
       setAccessToken={setAccessToken}
       loading={loading}
@@ -158,9 +221,15 @@ export default function Admin({ accessToken, setAccessToken }) {
       hasMenu
       profileInfo={profileInfo}
       setProfileInfo={setProfileInfo}
-    >
-      TEST
-    </Header>
+      />
+      <DateCalendar 
+        views={['day']}
+        showDaysOutsideCurrentMonth
+        displayWeekNumber
+        disabled={loading}
+        loading={loading}
+        renderLoading={() => <DayCalendarSkeleton />}/>
+    </>
   );
 
 }
