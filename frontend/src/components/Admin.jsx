@@ -111,7 +111,7 @@ export default function Admin() {
 
       setLoading(true);
 
-      let requests, responses, json, data, errors;
+      let  data, errors;
 
       const endpoints = [
         '/api/admin/profiles/1',
@@ -130,26 +130,37 @@ export default function Admin() {
 
       try {
 
-        requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
-        responses = await Promise.all(requests);
-        errors = responses.filter((response) => !response.ok);
+        const requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
+        const responses = await Promise.all(requests);
+        const errors = responses.filter((response) => !response.ok);
 
         if (errors.length > 0) {
           throw errors.map((response) => Error(response.statusText));
         }
 
-        json = responses.map((response) => response.json());
+        const json = responses.map((response) => response.json());
         data = await Promise.all(json);
 
         //console.log(data);
 
       } catch (err) {
 
-        // TODO
+        errors = err;
 
       } finally {
 
         setLoading(false);
+
+        if (!errors || 0 === errors?.length) {
+
+          setProfileInfo(data[0].data.profile);
+          for (let i = 0, n = data.length; i < n; ++i) {
+
+            //
+
+          }
+
+        }
 
       }
 

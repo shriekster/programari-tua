@@ -26,6 +26,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
     
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [_loading, _setLoading] = useState(false);
 
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
@@ -112,7 +113,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
   // eslint-disable-next-line no-unused-vars
   const handleCloseProfile = (event, reason) => {
 
-    if (loading) {
+    if (loading || _loading) {
 
         return;
 
@@ -214,8 +215,8 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
         <Profile open={showProfile}
           handleClose={handleCloseProfile}
           profileInfo={profileInfo}
-          loading={loading}
-          setLoading={setLoading}
+          loading={_loading}
+          setLoading={_setLoading}
           accessToken={accessToken}/>
     </Box>
   );
