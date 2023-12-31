@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useLocation } from 'wouter';
 
@@ -23,7 +23,7 @@ import Profile from './Profile';
 
 
 // eslint-disable-next-line react/prop-types
-export default function Header({ accessToken, setAccessToken, loading, setLoading, hasMenu, profileInfo }) {
+export default function Header({ accessToken, loading, setLoading, hasMenu, profileInfo }) {
     
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showProfile, setShowProfile] = useState(false);

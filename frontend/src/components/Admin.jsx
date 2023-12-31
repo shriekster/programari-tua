@@ -170,7 +170,6 @@ export default function Admin() {
         position: 'relative'
       }}>
       <Header accessToken={accessToken}
-        setAccessToken={setAccessToken}
         loading={loading}
         setLoading={setLoading}
         hasMenu
