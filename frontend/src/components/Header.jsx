@@ -258,7 +258,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
                                 backgroundColor: 'rgb(18, 18, 18)',
                                 backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
                                 transform: 'translateY(-50%) rotate(45deg)',
-                                zIndex: 0,
+                                zIndex: 6,
                               },
                             },
                           }
@@ -282,24 +282,8 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
         <Profile open={showProfile}
           handleClose={handleCloseProfile}
           profileInfo={profileInfo}
+          loading={loading}
           setLoading={setLoading}/>
-        {
-          loading && (
-          <CircularProgress
-            size={48}
-            color='primary'
-            thickness={8}
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              marginTop: '-24px',
-              marginLeft: '-24px',
-            }}
-            disableShrink
-          />
-          )
-        }
     </Box>
   );
 

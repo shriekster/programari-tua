@@ -213,15 +213,19 @@ export default function Admin({ accessToken, setAccessToken }) {
   }, [accessToken]);
 
   return (
-    <>
-    <Header accessToken={accessToken}
-      setAccessToken={setAccessToken}
-      loading={loading}
-      setLoading={setLoading}
-      hasMenu
-      profileInfo={profileInfo}
-      setProfileInfo={setProfileInfo}
-      />
+    <Box sx={{
+        margin: 0,
+        padding: 0,
+        position: 'relative'
+      }}>
+      <Header accessToken={accessToken}
+        setAccessToken={setAccessToken}
+        loading={loading}
+        setLoading={setLoading}
+        hasMenu
+        profileInfo={profileInfo}
+        setProfileInfo={setProfileInfo}
+        />
       <DateCalendar 
         views={['day']}
         showDaysOutsideCurrentMonth
@@ -229,7 +233,24 @@ export default function Admin({ accessToken, setAccessToken }) {
         disabled={loading}
         loading={loading}
         renderLoading={() => <DayCalendarSkeleton />}/>
-    </>
+        {
+          loading && (
+          <CircularProgress
+            size={48}
+            color='primary'
+            thickness={8}
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              marginTop: '-24px',
+              marginLeft: '-24px',
+            }}
+            disableShrink
+          />
+          )
+        }
+    </Box>
   );
 
 }
