@@ -29,9 +29,10 @@ import TuaIcon from './TuaIcon';
 import Header from './Header';
 
 // eslint-disable-next-line react/prop-types
-export default function Admin({ accessToken, setAccessToken }) {
+export default function Admin() {
 
-  const [loading, setLoading] = useState(false);
+  const [accessToken, setAccessToken] = useState('');
+  const [loading, setLoading] = useState(true);
   const [profileInfo, setProfileInfo] = useState({});
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
@@ -43,8 +44,8 @@ export default function Admin({ accessToken, setAccessToken }) {
   //const tryRefreshToken = useRefreshToken();
 
   useEffect(() => {
-    console.log('authorization', {accessToken: !!accessToken, setAccessToken})
-    const checkAuthorization = async () => {
+    
+    const tryGetAccessToken = async () => {
 
       let accessToken = '',
       error = null;
@@ -80,14 +81,14 @@ export default function Admin({ accessToken, setAccessToken }) {
 
       } finally {
 
-        //setLoading(false);
-
         if (!error) {
 
           setAccessToken(accessToken);
 
         } else {
 
+          // TODO: display an error snackbar if there's an error
+          setLoading(false);
           setLocation('/admin/login', {
             replace: true
           });
@@ -98,17 +99,14 @@ export default function Admin({ accessToken, setAccessToken }) {
 
     };
 
-    // skip the request if the user is already logged in
-    if (!accessToken) {
-      
-      checkAuthorization();
+    tryGetAccessToken();
 
-    }
-
-  }, [accessToken, setLocation, setAccessToken]);
+  }, [setLocation]);
 
   useEffect(() => {
-    console.log('fetch', {accessToken})
+    // TODO: fetch data after mounting the component
+    // after every data fetch which returns a 401 status code, try to refresh the access token
+    // if the refresh attempt fails, display the login component
     const fetchInitialData = async () => {
 
       setLoading(true);
@@ -157,91 +155,6 @@ export default function Admin({ accessToken, setAccessToken }) {
 
     };
 
-    // TODO: fetch data after mounting the component
-    // after every data fetch which returns a 401 status code, try to refresh the access token
-    // if the refresh attempt fails, display the login component
-    const fetchCalendarData = async () => {
-      
-      let status = 401, data = null;
-
-      setLoading(true);
-    
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      };
-
-      try {
-
-        const response = await fetch('/api/dates/all/timeranges/all', requestOptions);
-        status = response.status;
-
-        const json = await response.json();
-        data = json?.data;
-
-        console.log(json)
-
-      } catch (err) {
-
-        console.log(err)
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-      return Promise.resolve(data);
-
-    };
-
-    const fetchProfileInfo = async () => {
-      
-      let status = 401, data = null;
-
-      setLoading(true);
-    
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      };
-
-      try {
-
-        const response = await fetch('/api/profiles/1', requestOptions);
-        status = response.status;
-
-        const json = await response.json();
-        data = json?.data;
-
-        console.log(json)
-
-      } catch (err) {
-
-        console.log(err)
-
-      } finally {
-
-        setLoading(false);
-
-        if (200 === status && data && data?.profile) {
-
-          setProfileInfo(data.profile);
-
-        }
-
-      }
-
-      return Promise.resolve(data);
-
-    };
-
     if (accessToken) {
       
       fetchInitialData();
@@ -249,8 +162,6 @@ export default function Admin({ accessToken, setAccessToken }) {
     }
 
   }, [accessToken]);
-
-  useEffect(() => { console.log({loading}) }, [loading])
 
   return (
     <Box sx={{

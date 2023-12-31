@@ -40,6 +40,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`
       },
     };
 
@@ -66,10 +67,10 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
       switch (status) {
 
-
         case 200: {
 
-          setAccessToken('');
+          //setAccessToken('');
+         
           setLocation('/admin/login', {
             replace: true
           });
@@ -111,7 +112,6 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
   };
 
-  
   // eslint-disable-next-line no-unused-vars
   const handleCloseProfile = (event, reason) => {
 
@@ -124,71 +124,6 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
     setShowProfile(false);
 
   };
-
-  useEffect(() => {
-
-    const checkAuthorization = async () => {
-
-      let accessToken = '',
-      error = null;
-
-      setLoading(true);
-    
-      const requestOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'refresh_token'
-        }),
-      };
-
-      try {
-
-        const response = await fetch('/api/authorizations', requestOptions);
-
-        if (!response.ok) {
-
-          throw new Error('Invalid authorization!');
-
-        }
-
-        const json = await response.json();
-        accessToken = json?.data?.accessToken;
-
-      } catch (err) {
-
-        error = err;
-
-      } finally {
-
-        setLoading(false);
-
-        if (!error) {
-
-          setAccessToken(accessToken);
-
-        } else {
-
-          setLocation('/admin/login', {
-            replace: true
-          });
-
-        }
-
-      }
-
-    };
-
-    // skip the request if the user is already logged in
-    if (!accessToken) {
-      
-      checkAuthorization();
-
-    }
-
-  }, [accessToken, setLocation, setAccessToken, setLoading]);
 
   return (
     <Box sx={{
@@ -224,11 +159,13 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
                     Boolean(hasMenu) && (
                       <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
                         <Tooltip title='Setări'>
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
-                            size='large'
-                            disabled={loading}>
-                            <MenuIcon fontSize='large' />
-                        </IconButton>
+                          <div>
+                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                                size='large'
+                                disabled={loading}>
+                                <MenuIcon fontSize='large' />
+                            </IconButton>
+                          </div>
                         </Tooltip>
                         <Menu
                         id='menu'
