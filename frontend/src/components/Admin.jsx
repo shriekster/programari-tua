@@ -23,6 +23,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
 //
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -199,8 +200,31 @@ export default function Admin() {
         <Box sx={{
           width: '320px',
           margin: '0 auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          height: '40px',
         }}>
-          <AddCircleIcon />
+          <Button startIcon={<FileDownloadIcon />} 
+            size='medium'
+            variant='contained'
+            sx={{ width: '120px' }}
+            >
+            Descarcă
+          </Button>
+          <Button startIcon={<AddCircleIcon />} 
+            size='medium'
+            variant='contained'
+            sx={{ width: '120px' }}
+            >
+            Adaugă
+          </Button>
+        </Box>
+        <Box sx={{// TODO: determine the optimal height; 100dvh - 430px fits the screen without overflow
+          height: 'calc(100dvh - 430px)',
+          border: '1px solid red'
+        }}>
+          TEST
         </Box>
         {
           loading && (

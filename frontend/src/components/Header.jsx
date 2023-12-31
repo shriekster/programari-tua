@@ -127,16 +127,19 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
     <Box sx={{
       margin: 0,
       padding: 0,
-      position: 'relative'
+      position: 'relative',
+      height: '56px'
     }}>
-        <AppBar position='static' elevation={2}>
-          <Container maxWidth={false}>
+        <AppBar position='static' elevation={2} sx={{ height: '56px' }}>
+          <Container maxWidth={false} sx={{ height: '56px' }}>
               <Toolbar disableGutters sx={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       position: 'relative',
-                  }}>
+                      height: '56px !important'
+                  }}
+                  variant='dense'>
                   <TuaIcon sx={{ position: 'absolute', left: 0 }} />
                   <Typography
                       variant='h5'
