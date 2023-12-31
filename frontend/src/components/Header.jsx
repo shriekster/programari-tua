@@ -64,8 +64,6 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
     } finally {
 
-      //setLoading(false);
-
       switch (status) {
 
 

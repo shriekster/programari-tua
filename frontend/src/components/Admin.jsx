@@ -28,7 +28,6 @@ import TuaIcon from './TuaIcon';
 
 import Header from './Header';
 
-
 // eslint-disable-next-line react/prop-types
 export default function Admin({ accessToken, setAccessToken }) {
 
@@ -44,7 +43,7 @@ export default function Admin({ accessToken, setAccessToken }) {
   //const tryRefreshToken = useRefreshToken();
 
   useEffect(() => {
-
+    console.log('authorization', {accessToken: !!accessToken, setAccessToken})
     const checkAuthorization = async () => {
 
       let accessToken = '',
@@ -81,7 +80,7 @@ export default function Admin({ accessToken, setAccessToken }) {
 
       } finally {
 
-        setLoading(false);
+        //setLoading(false);
 
         if (!error) {
 
@@ -109,6 +108,54 @@ export default function Admin({ accessToken, setAccessToken }) {
   }, [accessToken, setLocation, setAccessToken]);
 
   useEffect(() => {
+    console.log('fetch', {accessToken})
+    const fetchInitialData = async () => {
+
+      setLoading(true);
+
+      let requests, responses, json, data, errors;
+
+      const endpoints = [
+        '/api/admin/profiles/1',
+        '/api/admin/dates/all',
+        '/api/admin/timeranges/all',
+        '/api/admin/appointments/all'
+      ];
+
+      const requestOptions = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+      };
+
+      try {
+
+        requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
+        responses = await Promise.all(requests);
+        errors = responses.filter((response) => !response.ok);
+
+        if (errors.length > 0) {
+          throw errors.map((response) => Error(response.statusText));
+        }
+
+        json = responses.map((response) => response.json());
+        data = await Promise.all(json);
+
+        //console.log(data);
+
+      } catch (err) {
+
+        // TODO
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
 
     // TODO: fetch data after mounting the component
     // after every data fetch which returns a 401 status code, try to refresh the access token
@@ -147,7 +194,7 @@ export default function Admin({ accessToken, setAccessToken }) {
 
       }
 
-      return data;
+      return Promise.resolve(data);
 
     };
 
@@ -191,26 +238,19 @@ export default function Admin({ accessToken, setAccessToken }) {
 
       }
 
-      return data;
-
-    };
-
-    const fetchInParallel = async () => {
-
-      const tasks = [new Promise(fetchCalendarData), new Promise(fetchProfileInfo)];
-
-      const results = await Promise.all(tasks);
-      console.log({results})
+      return Promise.resolve(data);
 
     };
 
     if (accessToken) {
-
-      fetchInParallel();
+      
+      fetchInitialData();
 
     }
 
   }, [accessToken]);
+
+  useEffect(() => { console.log({loading}) }, [loading])
 
   return (
     <Box sx={{
