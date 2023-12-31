@@ -8,7 +8,7 @@ import { getSecret, getCredentials } from '../../lib/db.js';
 
 const router = Router();
 
-
+// POST /api/sessions
 router.post('/', validateCredentials, async function (req, res) {
 
   let error = null,

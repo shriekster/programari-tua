@@ -21,6 +21,8 @@ import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
+//
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -153,7 +155,7 @@ export default function Admin() {
 
         if (!errors || 0 === errors?.length) {
 
-          setProfileInfo(data[0].data.profile);
+          setProfileInfo(data[0].data.profile); // temporary
           for (let i = 0, n = data.length; i < n; ++i) {
 
             //
@@ -194,6 +196,12 @@ export default function Admin() {
         disabled={loading}
         loading={loading}
         renderLoading={() => <DayCalendarSkeleton />}/>
+        <Box sx={{
+          width: '320px',
+          margin: '0 auto',
+        }}>
+          <AddCircleIcon />
+        </Box>
         {
           loading && (
           <CircularProgress
