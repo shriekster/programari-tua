@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import useRefreshToken from '../useRefreshToken';
+//import useRefreshToken from '../useRefreshToken';
 
 import { useLocation } from 'wouter';
 
@@ -26,80 +26,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 import TuaIcon from './TuaIcon';
 
-import Layout from './Layout';
+import Header from './Header';
 
 
+// eslint-disable-next-line react/prop-types
 export default function Admin({ accessToken, setAccessToken }) {
 
   const [loading, setLoading] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
   const [profileInfo, setProfileInfo] = useState({});
 
+  // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
   //const tryRefreshToken = useRefreshToken();
-
-  const handleLogout = async () => {
-
-    let status = 401,
-    error = null;
-
-    const requestOptions = {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
-    setMenuAnchor(null);
-    setLoading(true);
-
-    try {
-
-      const response = await fetch('/api/authorizations/current', requestOptions);
-      status = response.status;
-
-      if (!response.ok) {
-
-        throw new Error('Something happened')
-
-      }
-
-    } catch (err) {
-
-      // eslint-disable-next-line no-unused-vars
-      error = err;
-
-    } finally {
-
-      //setLoading(false);
-
-      switch (status) {
-
-
-        case 200: {
-
-          setAccessToken('');
-          setLocation('/admin/login', {
-            replace: true
-          });
-          break;
-
-        }
-
-        default: {
-
-          //setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-          //setError(true);
-          break;
-
-        }
-
-      }
-
-    }
-
-  };
 
   useEffect(() => {
 
@@ -211,25 +150,8 @@ export default function Admin({ accessToken, setAccessToken }) {
 
   }, []);
 
-  const handleOpenUserMenu = (event) => {
-    setMenuAnchor(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-
-    setMenuAnchor(null);
-
-  };
-
-  const handleGoToProfile = () => {
-
-    setMenuAnchor(null);
-    setLocation('/admin/profile');
-
-  };
-
   return (
-    <Layout accessToken={accessToken}
+    <Header accessToken={accessToken}
       setAccessToken={setAccessToken}
       loading={loading}
       setLoading={setLoading}
@@ -238,7 +160,7 @@ export default function Admin({ accessToken, setAccessToken }) {
       setProfileInfo={setProfileInfo}
     >
       TEST
-    </Layout>
+    </Header>
   );
 
 }
