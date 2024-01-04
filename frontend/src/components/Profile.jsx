@@ -12,7 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Profile({ open, handleClose, loading, setLoading, profileInfo, accessToken, refreshThenRetry }) {
+export default function Profile({ open, handleClose, loading, setLoading, profileInfo, setProfileInfo, accessToken, refreshThenRetry }) {
 
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
@@ -20,7 +20,7 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
     const saveRemotely = async (phoneNumber) => {
 
-        let error = null, status = 400;
+        let error = null, data = null, status = 400;
 
         try {
 
@@ -44,6 +44,9 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
               throw new Error('Something happened')
     
             }
+
+            const json = await response.json();
+            data = json?.data;
     
         } catch (err) {
 
@@ -52,7 +55,10 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
         }
 
-        return status;
+        return {
+            status,
+            data
+        };
 
     };
 
@@ -90,7 +96,7 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
             setLoading(true);
 
-            const status = await saveRemotely(phoneNumber);
+            const { status, data } = await saveRemotely(phoneNumber);
 
             console.log({status})
 
@@ -100,21 +106,27 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
                 case 200: {
 
-                // nothing to do
-                break;
+                    if (data) {
+
+                        setProfileInfo(data);
+
+                    }
+
+                    handleClose();
+                    break;
 
                 }
 
                 case 401: {
 
-                break;
+                    break;
 
                 }
 
                 default: {
 
-                // TODO: display an error message
-                break;
+                    // TODO: display an error message
+                    break;
 
                 }
 

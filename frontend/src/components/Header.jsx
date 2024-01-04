@@ -22,7 +22,7 @@ import Profile from './Profile';
 
 
 // eslint-disable-next-line react/prop-types
-export default function Header({ accessToken, loading, setLoading, hasMenu, profileInfo, refreshThenRetry }) {
+export default function Header({ accessToken, loading, setLoading, hasMenu, profileInfo, setProfileInfo, refreshThenRetry }) {
     
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -219,6 +219,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
       <Profile open={showProfile}
         handleClose={handleCloseProfile}
         profileInfo={profileInfo}
+        setProfileInfo={setProfileInfo}
         loading={_loading} // not 'global' loading state
         setLoading={_setLoading}
         accessToken={accessToken}
