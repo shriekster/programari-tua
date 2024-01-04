@@ -18,9 +18,41 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
     const [helperText, setHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
 
-    const saveRemotely = async (accessToken) => {
+    const saveRemotely = async (phoneNumber) => {
 
+        let error = null, status = 400;
 
+        try {
+
+            const requestOptions = {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    phoneNumber,
+                }),
+            };
+
+            const response = await fetch('/api/admin/profiles/1', requestOptions);
+    
+            status = response.status;
+    
+            if (!response.ok) {
+    
+              throw new Error('Something happened')
+    
+            }
+    
+        } catch (err) {
+
+            // eslint-disable-next-line no-unused-vars
+            error = err;
+
+        }
+
+        return status;
 
     };
 
@@ -54,74 +86,40 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
         event.preventDefault();
 
-        let error = null, data = null;
-
         if (phoneNumber && !phoneError) {
 
             setLoading(true);
 
-            try {
+            const status = await saveRemotely(phoneNumber);
 
-                const requestOptions = {
-                    method: 'PATCH',
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        phoneNumber,
-                    }),
-                };
+            console.log({status})
 
-                const response = await fetch('/api/profiles/1', requestOptions);
-                const json = await response.json();
-        
-                status = response.status;
-        
-                if (!response.ok) {
-        
-                  throw new Error('Something happened')
-        
+            setLoading(false);
+
+            switch (status) {
+
+                case 200: {
+
+                // nothing to do
+                break;
+
                 }
-        
-              } catch (err) {
-        
-                // eslint-disable-next-line no-unused-vars
-                error = err;
-        
-              } finally {
-        
-                setLoading(false);
-        
-                switch (status) {
-        
-                  case 200: {
-        
-                    setLocation('/admin', {
-                      replace: true
-                    });
-                    break;
-        
-                  }
-        
-                  case 401: {
-        
-                    setErrorMessage('Ai greșit utilizatorul sau parola!');
-                    setError(true);
-                    break;
-        
-                  }
-        
-                  default: {
-        
-                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-                    setError(true);
-                    break;
-        
-                  }
-        
+
+                case 401: {
+
+                break;
+
                 }
-        
-              }
+
+                default: {
+
+                // TODO: display an error message
+                break;
+
+                }
+
+            }
+
 
         }
 

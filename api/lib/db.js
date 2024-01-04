@@ -10,6 +10,7 @@ const statements = {};
 let getSecret = null;
 let getCredentials = null;
 let getProfile = null;
+let updateProfile = null;
 
 try {
 
@@ -42,6 +43,11 @@ try {
         SELECT phone_number AS phoneNumber
         FROM users
         WHERE id = ?`);
+
+    statements['update_profile'] = db.prepare(`
+        UPDATE users
+        SET phone_number = ?
+        WHERE id = 1`);
 
 
 } catch (err) {
@@ -106,12 +112,43 @@ if (!stmtError) {
 
     };
 
+    updateProfile = (phoneNumber) => {
+
+        let error, updateInfo, profile = null;
+
+        try {
+
+            updateInfo = statements['update_profile'].run('' + phoneNumber);
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error) {
+
+                profile = {
+
+                    phoneNumber,
+
+                };
+
+            }
+
+        }
+
+        return profile ?? null;
+
+    };
+
 }
 
 export {
 
     getSecret,
     getCredentials,
-    getProfile
+    getProfile,
+    updateProfile
 
 };

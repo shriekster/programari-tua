@@ -78,6 +78,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
 
         default: {
 
+          // TODO: display an error message?
           //setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
           //setError(true);
           break;
@@ -130,98 +131,98 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
       position: 'relative',
       height: '56px'
     }}>
-        <AppBar position='static' elevation={2} sx={{ height: '56px' }}>
-          <Container maxWidth={false} sx={{ height: '56px' }}>
-              <Toolbar disableGutters sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      position: 'relative',
-                      height: '56px !important'
-                  }}
-                  variant='dense'>
-                  <TuaIcon sx={{ position: 'absolute', left: 0 }} />
-                  <Typography
-                      variant='h5'
-                      noWrap
-                      sx={{
-                      mr: 2,
-                      display: 'flex',
-                      fontFamily: 'monospace',
-                      fontWeight: 700,
-                      letterSpacing: '.3rem',
-                      color: 'inherit',
-                      textDecoration: 'none',
-                      }}
-                  >
-                      TUA
-                  </Typography>
-                  {
-                    Boolean(hasMenu) && (
-                      <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
-                        <Tooltip title='Setări'>
-                          <div>
-                            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
-                                size='large'
-                                disabled={loading}>
-                                <MenuIcon fontSize='large' />
-                            </IconButton>
-                          </div>
-                        </Tooltip>
-                        <Menu
-                        id='menu'
-                        keepMounted
-                        anchorEl={menuAnchor}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                        open={Boolean(menuAnchor)}
-                        onClose={handleCloseUserMenu}
-                        slotProps={{
-                          paper: {
-                          elevation: 6,
-                          sx: {
-                              overflow: 'visible',
-                              filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                              mt: .5,
-                              '&::before': {
-                                content: '""',
-                                display: 'block',
-                                position: 'absolute',
-                                top: 0,
-                                right: 12,
-                                width: 10,
-                                height: 10,
-                                backgroundColor: 'rgb(18, 18, 18)',
-                                backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
-                                transform: 'translateY(-50%) rotate(45deg)',
-                                zIndex: 6,
-                              },
+      <AppBar position='static' elevation={2} sx={{ height: '56px' }}>
+        <Container maxWidth={false} sx={{ height: '56px' }}>
+            <Toolbar disableGutters sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    height: '56px !important'
+                }}
+                variant='dense'>
+                <TuaIcon sx={{ position: 'absolute', left: 0 }} />
+                <Typography
+                    variant='h5'
+                    noWrap
+                    sx={{
+                    mr: 2,
+                    display: 'flex',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    letterSpacing: '.3rem',
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    }}
+                >
+                    TUA
+                </Typography>
+                {
+                  Boolean(hasMenu) && (
+                    <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
+                      <Tooltip title='Setări'>
+                        <div>
+                          <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                              size='large'
+                              disabled={loading}>
+                              <MenuIcon fontSize='large' />
+                          </IconButton>
+                        </div>
+                      </Tooltip>
+                      <Menu
+                      id='menu'
+                      keepMounted
+                      anchorEl={menuAnchor}
+                      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                      open={Boolean(menuAnchor)}
+                      onClose={handleCloseUserMenu}
+                      slotProps={{
+                        paper: {
+                        elevation: 6,
+                        sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: .5,
+                            '&::before': {
+                              content: '""',
+                              display: 'block',
+                              position: 'absolute',
+                              top: 0,
+                              right: 12,
+                              width: 10,
+                              height: 10,
+                              backgroundColor: 'rgb(18, 18, 18)',
+                              backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
+                              transform: 'translateY(-50%) rotate(45deg)',
+                              zIndex: 6,
                             },
-                          }
-                        }}
-                        >
-                        <MenuItem onClick={handleOpenProfile}>
-                          <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
-                          <ListItemText>Profil</ListItemText>
-                        </MenuItem>
-                        <MenuItem onClick={handleLogout}>
-                          <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
-                          <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
-                        </MenuItem>
-                        </Menu>
-                      </Box>
-                    )
-                  }
-              </Toolbar>
-          </Container>
-        </AppBar>
-        <Profile open={showProfile}
-          handleClose={handleCloseProfile}
-          profileInfo={profileInfo}
-          loading={_loading} // not 'global' loading state
-          setLoading={_setLoading}
-          accessToken={accessToken}
-          refreshThenRetry={refreshThenRetry}/>
+                          },
+                        }
+                      }}
+                      >
+                      <MenuItem onClick={handleOpenProfile}>
+                        <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+                        <ListItemText>Profil</ListItemText>
+                      </MenuItem>
+                      <MenuItem onClick={handleLogout}>
+                        <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
+                        <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
+                      </MenuItem>
+                      </Menu>
+                    </Box>
+                  )
+                }
+            </Toolbar>
+        </Container>
+      </AppBar>
+      <Profile open={showProfile}
+        handleClose={handleCloseProfile}
+        profileInfo={profileInfo}
+        loading={_loading} // not 'global' loading state
+        setLoading={_setLoading}
+        accessToken={accessToken}
+        refreshThenRetry={refreshThenRetry}/>
     </Box>
   );
 

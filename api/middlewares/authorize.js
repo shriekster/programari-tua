@@ -16,19 +16,12 @@ export default function authorize(req, res, next) {
 
     }
 
-    return res.status(401)
-    .json({
-      data: {
-        message: 'Unauthorized'
-      }
-    });
-
   }
   
-  return res.status(400)
+  return res.status(401)
   .json({
     data: {
-      message: 'Bad Request'
+      message: 'Unauthorized'
     }
   });
 
