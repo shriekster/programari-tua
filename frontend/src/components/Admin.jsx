@@ -254,6 +254,7 @@ export default function Admin() {
             size='medium'
             variant='contained'
             sx={{ width: '120px' }}
+            disabled={loading}
             >
             Descarcă
           </Button>
@@ -261,6 +262,7 @@ export default function Admin() {
             size='medium'
             variant='contained'
             sx={{ width: '120px' }}
+            disabled={loading}
             >
             Adaugă
           </Button>
