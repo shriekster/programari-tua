@@ -98,8 +98,6 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
             const { status, data } = await saveRemotely(phoneNumber);
 
-            console.log({status})
-
             setLoading(false);
 
             switch (status) {
@@ -119,6 +117,8 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
                 case 401: {
 
+                    // TODO: try to refresh the access token, then retry the action (i.e., save the phone number on the server)
+                    // OR try to find a better solution (DRY)
                     break;
 
                 }
