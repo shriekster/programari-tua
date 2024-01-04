@@ -24,6 +24,13 @@ router.get('/:profileId', function(req, res) {
     },
   });
 
-})
+});
+
+
+router.patch('/:profileId', function(req, res) {
+
+
+
+});
 
 export default router;

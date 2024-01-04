@@ -12,11 +12,17 @@ import CircularProgress from '@mui/material/CircularProgress';
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Profile({ open, handleClose, loading, setLoading, profileInfo, accessToken }) {
+export default function Profile({ open, handleClose, loading, setLoading, profileInfo, accessToken, refreshThenRetry }) {
 
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
+
+    const saveRemotely = async (accessToken) => {
+
+
+
+    };
 
     const handlePhoneChange = (event) => {
 
@@ -48,9 +54,74 @@ export default function Profile({ open, handleClose, loading, setLoading, profil
 
         event.preventDefault();
 
-        if (!phoneError && phoneNumber) {
+        let error = null, data = null;
 
-            setLoading(true)
+        if (phoneNumber && !phoneError) {
+
+            setLoading(true);
+
+            try {
+
+                const requestOptions = {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNumber,
+                    }),
+                };
+
+                const response = await fetch('/api/profiles/1', requestOptions);
+                const json = await response.json();
+        
+                status = response.status;
+        
+                if (!response.ok) {
+        
+                  throw new Error('Something happened')
+        
+                }
+        
+              } catch (err) {
+        
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+        
+              } finally {
+        
+                setLoading(false);
+        
+                switch (status) {
+        
+                  case 200: {
+        
+                    setLocation('/admin', {
+                      replace: true
+                    });
+                    break;
+        
+                  }
+        
+                  case 401: {
+        
+                    setErrorMessage('Ai greșit utilizatorul sau parola!');
+                    setError(true);
+                    break;
+        
+                  }
+        
+                  default: {
+        
+                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setError(true);
+                    break;
+        
+                  }
+        
+                }
+        
+              }
 
         }
 

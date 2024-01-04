@@ -44,7 +44,51 @@ export default function Admin() {
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
-  //const tryRefreshToken = useRefreshToken();
+  const refreshThenRetry = async (callback) => {
+
+    let error = null, _accessToken = null;
+  
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+          api: true
+      }),
+    };
+  
+    try {
+  
+      const response = await fetch('/api/authorizations', requestOptions);
+  
+      if (!response.ok) {
+  
+        throw new Error('Something happened');
+  
+      }
+  
+      const json = await response.json();
+  
+      _accessToken = json?.data?.accessToken;
+  
+    } catch (err) {
+  
+      error = err;
+      console.log(err);
+  
+    } finally {
+  
+      if (!error && _accessToken) {
+  
+        setAccessToken(_accessToken);
+        callback();
+  
+      }
+  
+    }
+  
+  };
 
   useEffect(() => {
     
@@ -189,6 +233,7 @@ export default function Admin() {
         hasMenu
         profileInfo={profileInfo}
         setProfileInfo={setProfileInfo}
+        refreshThenRetry={refreshThenRetry}
         />
       <DateCalendar 
         views={['day']}
