@@ -32,9 +32,13 @@ router.patch('/:profileId', validatePhoneNumber, function(req, res) {
   
   if (req.params && '1' === req.params.profileId + '') {
 
+    const { phoneNumber } = req.body;
+
+    const newProfile = updateProfile(phoneNumber);
+
     return res.json({
       data: {
-        test: 'test',
+        profile: newProfile,
       },
     });
 

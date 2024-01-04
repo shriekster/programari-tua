@@ -2,7 +2,6 @@ import validator from 'validator';
 
 export const validatePhoneNumber = (req, res, next) => {
 
-  console.log(req.body)
   const { phoneNumber } = req.body;
 
   if (phoneNumber) {
