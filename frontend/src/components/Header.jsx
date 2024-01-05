@@ -18,7 +18,7 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import TuaIcon from './TuaIcon';
-import Profile from './Profile';
+import Profile from './_Profile';
 
 
 // eslint-disable-next-line react/prop-types
@@ -106,8 +106,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
   const handleOpenProfile = () => {
 
     setMenuAnchor(null);
-    // TODO: open the admin profile dialog
-    setShowProfile(true);
+    setLocation('/admin/profile');
 
   };
 
@@ -119,7 +118,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
         return;
 
     }
-    // TODO: close the admin profile dialog
+
     setShowProfile(false);
 
   };

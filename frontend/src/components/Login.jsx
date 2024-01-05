@@ -29,7 +29,7 @@ const loginTheme = createTheme({
 });
 
 // eslint-disable-next-line react/prop-types
-export default function Login() {
+export default function Login({ setAccessToken }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -94,8 +94,8 @@ export default function Login() {
     event.preventDefault();
 
     let status = 401, 
-    error = null;
-    //accessToken = '';
+    error = null,
+    accessToken = '';
 
     if (!username.value) {
 
@@ -136,9 +136,10 @@ export default function Login() {
       try {
 
         const response = await fetch('/api/sessions', requestOptions);
-        //const json = await response.json();
-
         status = response.status;
+
+        const json = await response.json();
+        accessToken = json?.data?.accessToken;
 
         if (!response.ok) {
 
@@ -159,6 +160,7 @@ export default function Login() {
 
           case 200: {
 
+            setAccessToken(accessToken)
             setLocation('/admin', {
               replace: true
             });

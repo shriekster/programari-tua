@@ -24,6 +24,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 //
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import MapIcon from '@mui/icons-material/Map';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -41,6 +42,9 @@ export default function Admin() {
   const [timeRanges, setTimeRanges] = useState(null);
   const [appointments, setAppointments] = useState(null);
 
+  const [disableAdd, setAddDisabled] = useState(false);
+  const [disableDownload, setDownloadDisabled] = useState(false);
+
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
@@ -54,7 +58,7 @@ export default function Admin() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-          api: true
+        type: 'refresh_token'
       }),
     };
   
@@ -134,7 +138,7 @@ export default function Admin() {
 
         } else {
 
-          // TODO: display an error snackbar if there's an error
+          // 'redirect' to login page if the access token cannot be retrieved
           setLoading(false);
           setLocation('/admin/login', {
             replace: true
@@ -151,9 +155,7 @@ export default function Admin() {
   }, [setLocation]);
 
   useEffect(() => {
-    // TODO: fetch data after mounting the component
-    // after every data fetch which returns a 401 status code, try to refresh the access token
-    // if the refresh attempt fails, display the login component
+
     const fetchInitialData = async () => {
 
       setLoading(true);
@@ -241,55 +243,26 @@ export default function Admin() {
         displayWeekNumber
         disabled={loading}
         loading={loading}
-        renderLoading={() => <DayCalendarSkeleton />}/>
+        renderLoading={() => <DayCalendarSkeleton />}
+        />
         <Box sx={{
           width: '320px',
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-evenly',
+          justifyContent: 'space-between',
           height: '40px',
         }}>
-          <Button startIcon={<FileDownloadIcon />} 
-            size='medium'
-            variant='contained'
-            sx={{ width: '120px' }}
-            disabled={loading}
-            >
-            Descarcă
-          </Button>
-          <Button startIcon={<AddCircleIcon />} 
-            size='medium'
-            variant='contained'
-            sx={{ width: '120px' }}
-            disabled={loading}
-            >
-            Adaugă
-          </Button>
+          <IconButton color='primary'
+            disabled={disableAdd}>
+            <AddCircleIcon fontSize='large'/>
+          </IconButton>
+          <IconButton color='success'
+            disabled={disableDownload}>
+            <FileDownloadIcon fontSize='large'/>
+          </IconButton>
         </Box>
-        <Box sx={{// TODO: determine the optimal height; 100dvh - 430px fits the screen without overflow
-          height: 'calc(100dvh - 430px)',
-          border: '1px solid red'
-        }}>
-          TEST
-        </Box>
-        {
-          loading && (
-          <CircularProgress
-            size={48}
-            color='primary'
-            thickness={8}
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              marginTop: '-24px',
-              marginLeft: '-24px',
-            }}
-            disableShrink
-          />
-          )
-        }
+
     </Box>
   );
 
