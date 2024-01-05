@@ -160,7 +160,7 @@ export default function Login({ setAccessToken }) {
 
           case 200: {
 
-            setAccessToken(accessToken)
+            setAccessToken(accessToken);
             setLocation('/admin', {
               replace: true
             });

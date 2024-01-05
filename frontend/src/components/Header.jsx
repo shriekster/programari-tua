@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useLocation } from 'wouter';
 
@@ -123,6 +123,17 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
 
   };
 
+  switch(location) {
+
+    case '/admin/login': {
+      return null;
+    }
+
+    case '/admin':
+    case '/admin/profile':
+
+  }
+
   return (
     <Box sx={{
       margin: 0,
@@ -130,7 +141,7 @@ export default function Header({ accessToken, loading, setLoading, hasMenu, prof
       position: 'relative',
       height: '56px'
     }}>
-      <AppBar position='static' elevation={2} sx={{ height: '56px' }}>
+      <AppBar position='static' elevation={1} sx={{ height: '56px' }}>
         <Container maxWidth={false} sx={{ height: '56px' }}>
             <Toolbar disableGutters sx={{
                     display: 'flex',

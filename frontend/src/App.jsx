@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { Route, Switch } from 'wouter';
 
@@ -23,18 +23,28 @@ function App() {
 
   const [accessToken, setAccessToken] = useState('');
 
+  const refreshThenRetry = useCallback(async (callback) => {
+
+    // TODO: refresh the access token and then retry the action provided in the callback function
+    setAccessToken('');
+
+  }, [setAccessToken]);
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
+      <Header accessToken={accessToken}
+        setAccessToken={setAccessToken}/>
       <Switch>
         <Route path='/admin/login'>
           <Login setAccessToken={setAccessToken}/>
         </Route>
         <Route path='/admin'>
           <Admin accessToken={accessToken}
-            setAccessToken={setAccessToken}/>
+            refreshThenRetry={refreshThenRetry}/>
         </Route>
         <Route path='/admin/profile'>
-          <Profile accessToken={accessToken}/>
+          <Profile accessToken={accessToken}
+            refreshThenRetry={refreshThenRetry}/>
         </Route>
         <Route path='/appointments/:pageId' component={Appointments} />
         <Route path='/' component={Home} />
