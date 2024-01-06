@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 import { Route, Switch } from 'wouter';
 
@@ -22,29 +22,80 @@ import NotFound from './components/NotFound';
 function App() {
 
   const [accessToken, setAccessToken] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const refreshThenRetry = useCallback(async (callback) => {
 
     // TODO: refresh the access token and then retry the action provided in the callback function
-    setAccessToken('');
+    let error = null, _accessToken = null;
+  
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'refresh_token'
+      }),
+    };
+  
+    try {
+  
+      const response = await fetch('/api/authorizations', requestOptions);
+  
+      if (!response.ok) {
+  
+        throw new Error('Something happened');
+  
+      }
+  
+      const json = await response.json();
+  
+      _accessToken = json?.data?.accessToken;
+  
+    } catch (err) {
+  
+      error = err;
+      console.log(err);
+  
+    } finally {
+  
+      if (!error && _accessToken) {
+  
+        setAccessToken(_accessToken);
+        callback();
+  
+      }
+  
+    }
 
   }, [setAccessToken]);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
       <Header accessToken={accessToken}
-        setAccessToken={setAccessToken}/>
+        setAccessToken={setAccessToken}
+        loading={loading}
+        setLoading={setLoading}
+        refreshThenRetry={refreshThenRetry}/>
       <Switch>
         <Route path='/admin/login'>
-          <Login setAccessToken={setAccessToken}/>
+          <Login setAccessToken={setAccessToken}
+            loading={loading}
+            setLoading={setLoading}/>
         </Route>
         <Route path='/admin'>
           <Admin accessToken={accessToken}
+            loading={loading}
+            setLoading={setLoading}
             refreshThenRetry={refreshThenRetry}/>
         </Route>
         <Route path='/admin/profile'>
           <Profile accessToken={accessToken}
-            refreshThenRetry={refreshThenRetry}/>
+            loading={loading}
+            setLoading={setLoading}
+            refreshThenRetry={refreshThenRetry}
+            />
         </Route>
         <Route path='/appointments/:pageId' component={Appointments} />
         <Route path='/' component={Home} />

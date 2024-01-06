@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
-export default function Profile(props) {
+// eslint-disable-next-line react/prop-types
+export default function Profile({accessToken, loading, setLoading, refreshThenRetry}) {
 
-    const [loading, setLoading] = useState(true);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
@@ -149,9 +150,6 @@ export default function Profile(props) {
                 onChange={handlePhoneChange}
                 disabled={loading}
             />
-            <Button onClick={handleClose} color='secondary' disabled={loading}>
-                Renunță
-            </Button>
             <Button type='submit' onClick={handleSave} disabled={loading}>
                 Salvează
             </Button>

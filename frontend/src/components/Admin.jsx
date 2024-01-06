@@ -3,9 +3,7 @@ import { useState, useEffect } from 'react';
 
 import { useLocation } from 'wouter';
 
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
@@ -18,9 +16,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import LogoutIcon from '@mui/icons-material/Logout';
 //
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -28,15 +23,9 @@ import MapIcon from '@mui/icons-material/Map';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
-import TuaIcon from './TuaIcon';
-
-import Header from './Header';
-
 // eslint-disable-next-line react/prop-types
-export default function Admin() {
+export default function Admin({ accessToken, loading, setLoading, refreshThenRetry }) {
 
-  const [accessToken, setAccessToken] = useState('');
-  const [loading, setLoading] = useState(true);
   const [profileInfo, setProfileInfo] = useState({});
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
@@ -48,119 +37,15 @@ export default function Admin() {
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
-  const refreshThenRetry = async (callback) => {
-
-    let error = null, _accessToken = null;
-  
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type: 'refresh_token'
-      }),
-    };
-  
-    try {
-  
-      const response = await fetch('/api/authorizations', requestOptions);
-  
-      if (!response.ok) {
-  
-        throw new Error('Something happened');
-  
-      }
-  
-      const json = await response.json();
-  
-      _accessToken = json?.data?.accessToken;
-  
-    } catch (err) {
-  
-      error = err;
-      console.log(err);
-  
-    } finally {
-  
-      if (!error && _accessToken) {
-  
-        setAccessToken(_accessToken);
-        callback();
-  
-      }
-  
-    }
-  
-  };
-
-  useEffect(() => {
-    
-    const tryGetAccessToken = async () => {
-
-      let accessToken = '',
-      error = null;
-
-      setLoading(true);
-    
-      const requestOptions = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'refresh_token'
-        }),
-      };
-
-      try {
-
-        const response = await fetch('/api/authorizations', requestOptions);
-
-        if (!response.ok) {
-
-          throw new Error('Invalid authorization!');
-
-        }
-
-        const json = await response.json();
-        accessToken = json?.data?.accessToken;
-
-      } catch (err) {
-
-        error = err;
-
-      } finally {
-
-        if (!error) {
-
-          setAccessToken(accessToken);
-
-        } else {
-
-          // 'redirect' to login page if the access token cannot be retrieved
-          setLoading(false);
-          setLocation('/admin/login', {
-            replace: true
-          });
-
-        }
-
-      }
-
-    };
-
-    tryGetAccessToken();
-
-  }, [setLocation]);
-
   useEffect(() => {
 
+    // TODO: make sure this effect runs when it's supposed to run!
+    // TODO: refresh the access token if it's expired or missing (i.e. the /admin page was directly accessed)
     const fetchInitialData = async () => {
 
       setLoading(true);
 
-      let  data, errors;
+      let data, errors;
 
       const endpoints = [
         '/api/admin/profiles/1',
@@ -202,7 +87,7 @@ export default function Admin() {
 
         if (!errors || 0 === errors?.length) {
 
-          setProfileInfo(data[0].data.profile); // temporary
+          //setProfileInfo(data[0].data.profile); // temporary
           for (let i = 0, n = data.length; i < n; ++i) {
 
             //
@@ -215,13 +100,9 @@ export default function Admin() {
 
     };
 
-    if (accessToken) {
-      
-      fetchInitialData();
+    fetchInitialData();
 
-    }
-
-  }, [accessToken]);
+  }, [accessToken, setLoading]);
 
   return (
     <Box sx={{
@@ -229,14 +110,6 @@ export default function Admin() {
         padding: 0,
         position: 'relative'
       }}>
-      <Header accessToken={accessToken}
-        loading={loading}
-        setLoading={setLoading}
-        hasMenu
-        profileInfo={profileInfo}
-        setProfileInfo={setProfileInfo}
-        refreshThenRetry={refreshThenRetry}
-        />
       <DateCalendar 
         views={['day']}
         showDaysOutsideCurrentMonth

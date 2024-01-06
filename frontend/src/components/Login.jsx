@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import { useLocation } from 'wouter';
 
@@ -29,7 +29,7 @@ const loginTheme = createTheme({
 });
 
 // eslint-disable-next-line react/prop-types
-export default function Login({ setAccessToken }) {
+export default function Login({ setAccessToken, loading, setLoading }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -42,12 +42,19 @@ export default function Login({ setAccessToken }) {
     error: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  
   const [showError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
+
+  // make sure that the component is not initially loading
+  useEffect(() => {
+
+    setLoading(false)
+
+  }, [setLoading]);
 
   const handleUsernameChange = (event) => {
 
