@@ -86,27 +86,26 @@ export default function Admin({ accessToken, setAccessToken, loading, setLoading
         errors = err;
 
       } finally {
-
+        
         if (!errors || 0 === errors?.length) {
 
+          setLoading(false);
+
+          //setProfileInfo(data[0].data.profile); // temporary
+          for (let i = 0, n = data.length; i < n; ++i) {
+
+            //
+
+          }
+
+        } else {
+
           if (!isAuthorized) {
-            console.log('NOT AUTHORIZED')
+            
             const newAccesToken = await refreshAccessToken();
             console.log({newAccesToken})
             setAccessToken(newAccesToken);
-            fetchInitialData();
             
-
-          } else {
-
-            setLoading(false);
-
-            //setProfileInfo(data[0].data.profile); // temporary
-            for (let i = 0, n = data.length; i < n; ++i) {
-
-              //
-
-            }
 
           }
 

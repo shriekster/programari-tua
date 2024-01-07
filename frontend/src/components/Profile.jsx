@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -169,7 +171,6 @@ export default function Profile({accessToken, setAccessToken, loading, setLoadin
     
                         const newAccessToken = await refreshAccessToken();
                         setAccessToken(newAccessToken);
-                        await fetchProfileData();
     
                     }
     
@@ -185,29 +186,31 @@ export default function Profile({accessToken, setAccessToken, loading, setLoadin
 
     return (
         <form onSubmit={handleSave} style={{
-            position: 'relative'
+            position: 'relative',
+            padding: '16px',
         }}>
-
-            <>
-                Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
-            </>
-            <TextField
-                autoFocus
-                margin='dense'
-                id='name'
-                label='Număr de telefon'
-                type='tel'
-                fullWidth
-                variant='standard'
-                value={phoneNumber}
-                helperText={helperText}
-                error={phoneError}
-                onChange={handlePhoneChange}
-                disabled={loading}
-            />
-            <Button type='submit' onClick={handleSave} disabled={loading}>
-                Salvează
-            </Button>
+            <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+                <Typography sx={{ textAlign: 'center'}}>
+                    Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
+                </Typography>
+                <TextField
+                    autoFocus
+                    margin='dense'
+                    id='name'
+                    label='Număr de telefon'
+                    type='tel'
+                    fullWidth
+                    variant='standard'
+                    value={phoneNumber}
+                    helperText={helperText}
+                    error={phoneError}
+                    onChange={handlePhoneChange}
+                    disabled={loading}
+                />
+                <Button type='submit' onClick={handleSave} disabled={loading} sx={{ margin: '0 auto' }} variant='contained'>
+                    Salvează
+                </Button>
+            </Box>
             {
                 loading && (
                 <CircularProgress
