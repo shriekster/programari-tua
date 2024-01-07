@@ -20,6 +20,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 import TuaIcon from './TuaIcon';
 
+const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,}$/;
+
 // eslint-disable-next-line react/prop-types
 export default function Header({ accessToken, setAccessToken, loading, setLoading, refreshThenRetry }) {
 
@@ -35,7 +37,9 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
   // this effect modifies the rendered UI, depending on location
   useEffect(() => {
 
-    if (location.includes('/appointments/')) {
+    const isAppointmentPage = isAppointmentPageRegex.test(location);
+
+    if (isAppointmentPage) {
 
       setMenu(false);
       setRender(true);
@@ -44,15 +48,17 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
       switch(location) {
 
-        case '/admin': {
-
+        case '/admin':
+        case '/admin/': {
+          console.log('ADMIN PAGE')
           setMenu(true);
           setRender(true);
           setDashboard(true);
           break;
 
         }
-        case '/admin/profile': {
+        case '/admin/profile':
+        case '/admin/profile/': {
     
           setMenu(true);
           setRender(true);
@@ -62,6 +68,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
         }
     
         case '/admin/login':
+        case '/admin/login/':
         default: {
           
           setMenu(false);
@@ -197,13 +204,13 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
                   variant='h5'
                   noWrap
                   sx={{
-                  mr: 2,
-                  display: 'flex',
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  letterSpacing: '.3rem',
-                  color: 'inherit',
-                  textDecoration: 'none',
+                    mr: 2,
+                    display: 'flex',
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    letterSpacing: '.3rem',
+                    color: 'inherit',
+                    textDecoration: 'none',
                   }}
               >
                   TUA

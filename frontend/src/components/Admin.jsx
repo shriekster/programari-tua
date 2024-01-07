@@ -69,7 +69,9 @@ export default function Admin({ accessToken, loading, setLoading, refreshThenRet
         const errors = responses.filter((response) => !response.ok);
 
         if (errors.length > 0) {
+
           throw errors.map((response) => Error(response.statusText));
+          
         }
 
         const json = responses.map((response) => response.json());
