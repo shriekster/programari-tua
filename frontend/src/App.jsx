@@ -76,8 +76,7 @@ function App() {
       <Header accessToken={accessToken}
         setAccessToken={setAccessToken}
         loading={loading}
-        setLoading={setLoading}
-        refreshThenRetry={refreshThenRetry}/>
+        setLoading={setLoading}/>
       <Switch>
         <Route path='/admin/login'>
           <Login setAccessToken={setAccessToken}

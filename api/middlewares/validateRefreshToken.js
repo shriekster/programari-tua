@@ -15,24 +15,10 @@ export const validateRefreshToken = (req, res, next) => {
 
     }
 
-    // the cookie holding the refresh token should expire
-    return res.status(401)
-    .cookie('refresh_token', '', {
-      maxAge: 0,
-      path: '/api/authorizations',
-      sameSite: 'Strict',
-      httpOnly: true,
-    })
-    .json({
-      data: {
-        message: 'Unauthorized'
-      }
-    });
-
   }
 
   // the cookie holding the refresh token should expire
-  return res.status(400)
+  return res.status(401)
   .cookie('refresh_token', '', {
     maxAge: 0,
     path: '/api/authorizations',
@@ -41,7 +27,7 @@ export const validateRefreshToken = (req, res, next) => {
   })
   .json({
     data: {
-      message: 'Bad Request'
+      message: 'Unauthorized'
     }
   });
 

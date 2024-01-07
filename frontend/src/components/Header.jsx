@@ -23,7 +23,7 @@ import TuaIcon from './TuaIcon';
 const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Header({ accessToken, setAccessToken, loading, setLoading, refreshThenRetry }) {
+export default function Header({ accessToken, setAccessToken, loading, setLoading }) {
 
   const [canRender, setRender] = useState(false);
   const [hasMenu, setMenu] = useState(false);
@@ -86,8 +86,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
   const handleLogout = async () => {
 
-    let status = 401,
-    error = null;
+    let error = null;
 
     const requestOptions = {
       method: 'DELETE',
@@ -102,14 +101,8 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
     try {
 
+      // eslint-disable-next-line no-unused-vars
       const response = await fetch('/api/authorizations/current', requestOptions);
-      status = response.status;
-
-      if (!response.ok) {
-
-        throw new Error('Something happened')
-
-      }
 
     } catch (err) {
 
@@ -118,28 +111,12 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
     } finally {
 
-      switch (status) {
-
-        case 200: {
-  
-          setAccessToken('');
-          setLocation('/admin/login', {
-            replace: true
-          });
-          break;
-
-        }
-
-        default: {
-
-          // TODO: display an error message?
-          //setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-          //setError(true);
-          break;
-
-        }
-
-      }
+      // for the moment, ignore any error, but take into account the fact that the
+      // refresh cookie token might not expire!
+      setAccessToken('');
+      setLocation('/admin/login', {
+        replace: true
+      });
 
     }
 
@@ -191,96 +168,96 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
   return (
     <AppBar position='static' elevation={1} sx={{ height: '56px' }}>
       <Container maxWidth={false} sx={{ height: '56px' }}>
-          <Toolbar disableGutters sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  height: '56px !important'
+        <Toolbar disableGutters sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+            height: '56px !important'
+          }}
+          variant='dense'>
+          <TuaIcon sx={{ position: 'absolute', left: 0 }} />
+          <Typography
+              variant='h5'
+              noWrap
+              sx={{
+                mr: 2,
+                display: 'flex',
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.3rem',
+                color: 'inherit',
+                textDecoration: 'none',
               }}
-              variant='dense'>
-              <TuaIcon sx={{ position: 'absolute', left: 0 }} />
-              <Typography
-                  variant='h5'
-                  noWrap
-                  sx={{
-                    mr: 2,
-                    display: 'flex',
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    letterSpacing: '.3rem',
-                    color: 'inherit',
-                    textDecoration: 'none',
+          >
+              TUA
+          </Typography>
+          {
+            Boolean(hasMenu) && (
+              <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
+                <Tooltip title='Setări'>
+                  <div>
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                        size='large'
+                        disabled={loading}>
+                        <MenuIcon fontSize='large' />
+                    </IconButton>
+                  </div>
+                </Tooltip>
+                <Menu
+                  id='menu'
+                  keepMounted
+                  anchorEl={menuAnchor}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  open={Boolean(menuAnchor)}
+                  onClose={handleCloseUserMenu}
+                  slotProps={{
+                    paper: {
+                    elevation: 6,
+                    sx: {
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                        mt: .5,
+                        '&::before': {
+                          content: '""',
+                          display: 'block',
+                          position: 'absolute',
+                          top: 0,
+                          right: 12,
+                          width: 10,
+                          height: 10,
+                          backgroundColor: 'rgb(18, 18, 18)',
+                          backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
+                          transform: 'translateY(-50%) rotate(45deg)',
+                          zIndex: 6,
+                        },
+                      },
+                    }
                   }}
-              >
-                  TUA
-              </Typography>
-              {
-                Boolean(hasMenu) && (
-                  <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
-                    <Tooltip title='Setări'>
-                      <div>
-                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
-                            size='large'
-                            disabled={loading}>
-                            <MenuIcon fontSize='large' />
-                        </IconButton>
-                      </div>
-                    </Tooltip>
-                    <Menu
-                      id='menu'
-                      keepMounted
-                      anchorEl={menuAnchor}
-                      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                      open={Boolean(menuAnchor)}
-                      onClose={handleCloseUserMenu}
-                      slotProps={{
-                        paper: {
-                        elevation: 6,
-                        sx: {
-                            overflow: 'visible',
-                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                            mt: .5,
-                            '&::before': {
-                              content: '""',
-                              display: 'block',
-                              position: 'absolute',
-                              top: 0,
-                              right: 12,
-                              width: 10,
-                              height: 10,
-                              backgroundColor: 'rgb(18, 18, 18)',
-                              backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
-                              transform: 'translateY(-50%) rotate(45deg)',
-                              zIndex: 6,
-                            },
-                          },
-                        }
-                      }}
-                    >
-                      {
-                        isDashboard ? (
-                          <MenuItem onClick={handleOpenProfile}>
-                            <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
-                            <ListItemText>Profil</ListItemText>
-                          </MenuItem>
-                        ) : (
-                          <MenuItem onClick={handleOpenDashboard}>
-                            <ListItemIcon><DashboardIcon/></ListItemIcon>
-                            <ListItemText>Panou de control</ListItemText>
-                          </MenuItem>
-                        )
-                      }
-                        <MenuItem onClick={handleLogout}>
-                          <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
-                          <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
-                        </MenuItem>
-                    </Menu>
-                  </Box>
-                )
-              }
-          </Toolbar>
+                >
+                  {
+                    isDashboard ? (
+                      <MenuItem onClick={handleOpenProfile}>
+                        <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+                        <ListItemText>Profil</ListItemText>
+                      </MenuItem>
+                    ) : (
+                      <MenuItem onClick={handleOpenDashboard}>
+                        <ListItemIcon><DashboardIcon/></ListItemIcon>
+                        <ListItemText>Panou de control</ListItemText>
+                      </MenuItem>
+                    )
+                  }
+                    <MenuItem onClick={handleLogout}>
+                      <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
+                      <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
+                    </MenuItem>
+                </Menu>
+              </Box>
+            )
+          }
+        </Toolbar>
       </Container>
     </AppBar>
   );
