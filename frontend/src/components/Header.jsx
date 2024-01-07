@@ -32,6 +32,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
   // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
+  // this effect modifies the rendered UI, depending on location
   useEffect(() => {
 
     if (location.includes('/appointments/')) {
