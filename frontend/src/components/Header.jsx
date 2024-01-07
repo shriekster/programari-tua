@@ -50,7 +50,7 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
 
         case '/admin':
         case '/admin/': {
-          console.log('ADMIN PAGE')
+
           setMenu(true);
           setRender(true);
           setDashboard(true);

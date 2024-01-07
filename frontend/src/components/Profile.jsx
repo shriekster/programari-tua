@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -7,7 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Profile({accessToken, loading, setLoading, refreshThenRetry}) {
+export default function Profile({accessToken, setAccessToken, loading, setLoading, refreshAccessToken}) {
 
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
@@ -80,9 +80,11 @@ export default function Profile({accessToken, loading, setLoading, refreshThenRe
 
     };
 
-    const handleSave = async (event) => {
+    const updatePhoneNumber = async () => {
 
-        event.preventDefault();
+    };
+
+    const handleSave = async () => {
 
         if (phoneNumber && !phoneError) {
 
@@ -96,13 +98,6 @@ export default function Profile({accessToken, loading, setLoading, refreshThenRe
 
                 case 200: {
 
-                    if (data) {
-
-                        setProfileInfo(data);
-
-                    }
-
-                    handleClose();
                     break;
 
                 }
@@ -128,6 +123,65 @@ export default function Profile({accessToken, loading, setLoading, refreshThenRe
         }
 
     };
+
+    useEffect(() => {
+
+        const fetchProfileData = async () => {
+
+            let error = null,
+            status = 401,
+            data = null;
+    
+            setLoading(true);
+    
+            const requestOptions = {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${accessToken}`
+                },
+              };
+          
+              try {
+          
+                // eslint-disable-next-line no-unused-vars
+                const response = await fetch('/api/admin/profiles/1', requestOptions);
+                status = response.status;
+    
+                const json = await response.json();
+                data = json?.data;
+          
+              } catch (err) {
+          
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+          
+              } finally {
+    
+                if (!error) {
+    
+                    if (200 === status) {
+    
+                        setLoading(false);
+                        setPhoneNumber(data?.profile?.phoneNumber);
+    
+                    } else {
+    
+                        const newAccessToken = await refreshAccessToken();
+                        setAccessToken(newAccessToken);
+                        await fetchProfileData();
+    
+                    }
+    
+                }
+    
+              }
+    
+        };
+
+        fetchProfileData();
+
+    }, [accessToken, setAccessToken, refreshAccessToken, setLoading]);
 
     return (
         <form onSubmit={handleSave} style={{
@@ -172,6 +226,6 @@ export default function Profile({accessToken, loading, setLoading, refreshThenRe
                 )
             }
         </form>
-    )
+    );
 
 }

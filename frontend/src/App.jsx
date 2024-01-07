@@ -24,7 +24,7 @@ function App() {
   const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const refreshThenRetry = useCallback(async (callback) => {
+  const refreshAccessToken = useCallback(async() => {
 
     // TODO: refresh the access token and then retry the action provided in the callback function
     let error = null, _accessToken = null;
@@ -37,6 +37,7 @@ function App() {
       body: JSON.stringify({
         type: 'refresh_token'
       }),
+      credentials: 'same-origin'
     };
   
     try {
@@ -55,21 +56,15 @@ function App() {
   
     } catch (err) {
   
+      // eslint-disable-next-line no-unused-vars
       error = err;
       console.log(err);
   
-    } finally {
-  
-      if (!error && _accessToken) {
-  
-        setAccessToken(_accessToken);
-        callback();
-  
-      }
-  
-    }
+    } 
 
-  }, [setAccessToken]);
+    return _accessToken;
+
+  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
@@ -85,15 +80,17 @@ function App() {
         </Route>
         <Route path='/admin'>
           <Admin accessToken={accessToken}
+            setAccessToken={setAccessToken}
             loading={loading}
             setLoading={setLoading}
-            refreshThenRetry={refreshThenRetry}/>
+            refreshAccessToken={refreshAccessToken}/>
         </Route>
         <Route path='/admin/profile'>
           <Profile accessToken={accessToken}
+            setAccessToken={setAccessToken}
             loading={loading}
             setLoading={setLoading}
-            refreshThenRetry={refreshThenRetry}
+            refreshAccessToken={refreshAccessToken}
             />
         </Route>
         <Route path='/appointments/:pageId' component={Appointments} />

@@ -24,7 +24,7 @@ import MapIcon from '@mui/icons-material/Map';
 import CircularProgress from '@mui/material/CircularProgress';
 
 // eslint-disable-next-line react/prop-types
-export default function Admin({ accessToken, loading, setLoading, refreshThenRetry }) {
+export default function Admin({ accessToken, setAccessToken, loading, setLoading, refreshAccessToken }) {
 
   const [profileInfo, setProfileInfo] = useState({});
   const [dates, setDates] = useState(null);
@@ -45,10 +45,9 @@ export default function Admin({ accessToken, loading, setLoading, refreshThenRet
 
       setLoading(true);
 
-      let data, errors;
+      let data, errors, isAuthorized = true;
 
       const endpoints = [
-        '/api/admin/profiles/1',
         '/api/admin/dates/all',
         '/api/admin/timeranges/all',
         '/api/admin/appointments/all'
@@ -66,12 +65,15 @@ export default function Admin({ accessToken, loading, setLoading, refreshThenRet
 
         const requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
         const responses = await Promise.all(requests);
+        const statuses = responses.map(response => response.status);
         const errors = responses.filter((response) => !response.ok);
+
+        isAuthorized = statuses.every(status => 401 !== status);
 
         if (errors.length > 0) {
 
           throw errors.map((response) => Error(response.statusText));
-          
+
         }
 
         const json = responses.map((response) => response.json());
@@ -85,14 +87,26 @@ export default function Admin({ accessToken, loading, setLoading, refreshThenRet
 
       } finally {
 
-        setLoading(false);
-
         if (!errors || 0 === errors?.length) {
 
-          //setProfileInfo(data[0].data.profile); // temporary
-          for (let i = 0, n = data.length; i < n; ++i) {
+          if (!isAuthorized) {
+            console.log('NOT AUTHORIZED')
+            const newAccesToken = await refreshAccessToken();
+            console.log({newAccesToken})
+            setAccessToken(newAccesToken);
+            fetchInitialData();
+            
 
-            //
+          } else {
+
+            setLoading(false);
+
+            //setProfileInfo(data[0].data.profile); // temporary
+            for (let i = 0, n = data.length; i < n; ++i) {
+
+              //
+
+            }
 
           }
 
@@ -104,7 +118,7 @@ export default function Admin({ accessToken, loading, setLoading, refreshThenRet
 
     fetchInitialData();
 
-  }, [accessToken, setLoading]);
+  }, [accessToken, refreshAccessToken, setAccessToken, setLoading]);
 
   return (
     <Box sx={{
