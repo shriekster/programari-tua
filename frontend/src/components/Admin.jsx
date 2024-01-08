@@ -15,7 +15,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import MapIcon from '@mui/icons-material/Map';
+import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { navigate } from 'wouter/use-location';
@@ -23,7 +23,7 @@ import { navigate } from 'wouter/use-location';
 import refreshAccessToken from '../refreshAccessToken.js';
 
 // eslint-disable-next-line react/prop-types
-export default function Admin({ loading, setLoading }) {
+export default function Admin({ loading, setLoading }) { // TODO: display CircularProgress when loading
 
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
@@ -37,7 +37,7 @@ export default function Admin({ loading, setLoading }) {
     // TODO: make sure this effect runs when it's supposed to run!
     // TODO: refresh the access token if it's expired or missing
     const fetchInitialData = async () => {
-
+      
       setLoading(true);
 
       let data, errors, notAuthorized = false;
@@ -127,6 +127,11 @@ export default function Admin({ loading, setLoading }) {
           justifyContent: 'space-between',
           height: '40px',
         }}>
+          <IconButton color='secondary'
+            //disabled={disableAdd}
+            >
+            <PlaceIcon fontSize='large'/>
+          </IconButton>
           <IconButton color='primary'
             disabled={disableAdd}>
             <AddCircleIcon fontSize='large'/>
