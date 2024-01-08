@@ -19,6 +19,12 @@ export const validateRefreshToken = (req, res, next) => {
 
   // the cookie holding the refresh token should expire
   return res.status(401)
+  .cookie('access_token', '', {
+    maxAge: 0,
+    path: '/api/admin',
+    sameSite: 'Strict',
+    httpOnly: true,
+  })
   .cookie('refresh_token', '', {
     maxAge: 0,
     path: '/api/authorizations',
