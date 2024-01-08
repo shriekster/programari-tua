@@ -91,29 +91,9 @@ export default function Admin({ loading, setLoading }) {
 
           }
 
-        } else {
-
-          if (notAuthorized) {
+        } else if (notAuthorized) {
             
-            const status = await refreshAccessToken();
-
-            if (401 === status) {
-
-              navigate('/admin/login', {
-                replace: true
-              });  
-
-            } 
-
-            else 
-
-            if (200 === status) {
-
-              await fetchInitialData();
-
-            }
-
-          }
+          await refreshAccessToken(fetchInitialData);
 
         }
 

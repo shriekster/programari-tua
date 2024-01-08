@@ -31,7 +31,6 @@ export default function Header({ loading, setLoading }) {
 
   const [menuAnchor, setMenuAnchor] = useState(null);
 
-  // eslint-disable-next-line no-unused-vars
   const [location, setLocation] = useLocation();
 
   // this effect modifies the rendered UI, depending on location
@@ -100,8 +99,8 @@ export default function Header({ loading, setLoading }) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`
       },
+      credentials: 'same-origin'
     };
 
     setMenuAnchor(null);
@@ -109,8 +108,7 @@ export default function Header({ loading, setLoading }) {
 
     try {
 
-      // eslint-disable-next-line no-unused-vars
-      const response = await fetch('/api/authorizations/current', requestOptions);
+      await fetch('/api/authorizations/current', requestOptions);
 
     } catch (err) {
 
@@ -120,8 +118,7 @@ export default function Header({ loading, setLoading }) {
     } finally {
 
       // for the moment, ignore any error, but take into account the fact that the
-      // refresh cookie token might not expire!
-      setAccessToken('');
+      // access or refresh token might not expire!
       setLocation('/admin/login', {
         replace: true
       });

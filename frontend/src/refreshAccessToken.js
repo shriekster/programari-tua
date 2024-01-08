@@ -1,9 +1,10 @@
+import { navigate } from 'wouter/use-location';
 
-export default async function refreshAccessToken() {
+export default async function refreshAccessToken(callback) {
 
   // TODO: refresh the access token and then retry the action provided in the callback function
-  let error = null, 
-    status = 401;
+  let error = null;//, 
+    //status = 401;
 
   const requestOptions = {
     method: 'POST',
@@ -19,7 +20,7 @@ export default async function refreshAccessToken() {
   try {
 
     const response = await fetch('/api/authorizations', requestOptions);
-    status = response.status;
+    //status = response.status;
 
     if (!response.ok) {
 
@@ -33,8 +34,20 @@ export default async function refreshAccessToken() {
     error = err;
     console.log(err);
 
-  }
+  } finally {
 
-  return status;
+    if (!error) {
+
+      callback();
+
+    } else {
+
+      navigate('/admin/login', {
+        replace: true
+      });
+
+    }
+
+  }
 
 }

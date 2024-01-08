@@ -1,10 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
+
+import { navigate } from 'wouter/use-location';
 
 import refreshAccessToken from '../refreshAccessToken.js';
 
@@ -142,49 +144,58 @@ export default function Profile({loading, setLoading}) {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`
                 },
-              };
+                credentials: 'same-origin'
+            };
           
-              try {
-          
-                // eslint-disable-next-line no-unused-vars
-                const response = await fetch('/api/admin/profiles/1', requestOptions);
-                status = response.status;
-    
-                const json = await response.json();
-                data = json?.data;
-          
-              } catch (err) {
-          
+            try {
+        
+            // eslint-disable-next-line no-unused-vars
+            const response = await fetch('/api/admin/profiles/1', requestOptions);
+            status = response.status;
+
+            const json = await response.json();
+            data = json?.data;
+        
+            } catch (err) {
+        
                 // eslint-disable-next-line no-unused-vars
                 error = err;
-          
-              } finally {
-    
-                if (!error) {
-    
-                    if (200 === status) {
-    
+        
+            } finally {
+
+            if (!error) {
+
+                switch (status) {
+
+                    case 200: {
+
                         setLoading(false);
                         setPhoneNumber(data?.profile?.phoneNumber);
-    
-                    } else {
-    
-                        const newAccessToken = await refreshAccessToken();
-                        setAccessToken(newAccessToken);
-    
+                        break;
+
                     }
-    
+
+                    case 401: {
+
+                        await refreshAccessToken(fetchProfileData);
+                        break;
+
+                    }
+
+                    default: break; // TODO: display error message?
+
                 }
-    
-              }
+
+            }
+
+            }
     
         };
 
         fetchProfileData();
 
-    }, [accessToken, setAccessToken, refreshAccessToken, setLoading]);
+    }, [setLoading]);
 
     return (
         <form onSubmit={handleSave} style={{
