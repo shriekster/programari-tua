@@ -23,7 +23,7 @@ import { navigate } from 'wouter/use-location';
 import refreshAccessToken from '../refreshAccessToken.js';
 
 // eslint-disable-next-line react/prop-types
-export default function Admin({ loading, setLoading }) { // TODO: display CircularProgress when loading
+export default function Admin({ loading, setLoading }) { // TODO: display CircularProgress when loading!
 
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
