@@ -23,8 +23,10 @@ import MapIcon from '@mui/icons-material/Map';
 
 import CircularProgress from '@mui/material/CircularProgress';
 
+import refreshAccessToken from '../refreshAccessToken.js';
+
 // eslint-disable-next-line react/prop-types
-export default function Admin({ accessToken, setAccessToken, loading, setLoading, refreshAccessToken }) {
+export default function Admin({ loading, setLoading }) {
 
   const [profileInfo, setProfileInfo] = useState({});
   const [dates, setDates] = useState(null);
@@ -57,7 +59,6 @@ export default function Admin({ accessToken, setAccessToken, loading, setLoading
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
         },
       };
 
@@ -126,7 +127,7 @@ export default function Admin({ accessToken, setAccessToken, loading, setLoading
 
     fetchInitialData();
 
-  }, [accessToken, refreshAccessToken, setAccessToken, setLoading, setLocation]);
+  }, [setLoading, setLocation]);
 
   return (
     <Box sx={{

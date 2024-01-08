@@ -2,19 +2,13 @@ import checkToken from '../lib/checkToken.js';
 
 export default function authorize(req, res, next) {
 
-  const authorizationHeader = req.headers['authorization'];
+  const accessToken = req.cookies?.access_token;
 
-  if (authorizationHeader) {
+  const tokenStatus = checkToken('access', accessToken);
 
-    const accessToken = authorizationHeader.substring(7); // get the substring after 'Bearer ';
+  if ('ok' === tokenStatus) {
 
-    const tokenStatus = checkToken('access', accessToken);
-
-    if ('ok' === tokenStatus) {
-
-      return next(); // if the access token is valid, pass control to the next middleware
-
-    }
+    return next(); // if the access token is valid, pass control to the next middleware
 
   }
   
