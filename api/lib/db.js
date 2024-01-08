@@ -48,7 +48,7 @@ try {
     statements['update_profile'] = db.prepare(`
         UPDATE users
         SET phone_number = ?
-        WHERE id = 1`);
+        WHERE id = ?`);
 
 
 } catch (err) {
@@ -115,13 +115,16 @@ if (!stmtError) {
 
     };
 
-    updateProfile = (phoneNumber) => {
+    updateProfile = (profileId, phoneNumber) => {
 
         let error, updateInfo, profile = null;
 
         try {
 
-            updateInfo = statements['update_profile'].run('' + phoneNumber);
+            updateInfo = statements['update_profile'].run(
+                '' + phoneNumber,
+                Number(profileId)
+            );
 
         } catch (err) {
 

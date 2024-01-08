@@ -34,11 +34,11 @@ router.get('/current', function(req, res) {
 
 router.patch('/:profileId', validatePhoneNumber, function(req, res) {
   
-  if (req.params && '1' === req.params.profileId + '') {
+  if (req.params && !isNaN(req.params.profileId)) {
 
     const { phoneNumber } = req.body;
 
-    const newProfile = updateProfile(phoneNumber);
+    const newProfile = updateProfile(req.params.profileId, phoneNumber);
 
     return res.json({
       data: {

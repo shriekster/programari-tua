@@ -55,7 +55,7 @@ router.post('/', validateRefreshToken, function (req, res) {
 
   } catch (err) {
 
-    error = err; console.log(err)
+    error = err;
 
   }
 
