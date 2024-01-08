@@ -79,6 +79,12 @@ router.delete('/current', validateRefreshToken, function(req, res) {
 
   // the cookie holding the refresh token should expire
   return res.status(200)
+  .cookie('access_token', '', {
+    maxAge: 0,
+    path: '/api/admin',
+    sameSite: 'Strict',
+    httpOnly: true,
+  })
   .cookie('refresh_token', '', {
     maxAge: 0,
     path: '/api/authorizations',
@@ -87,7 +93,7 @@ router.delete('/current', validateRefreshToken, function(req, res) {
   })
   .json({
     data: {
-      message: 'See you next time!'
+      message: 'OK'
     }
   });
 

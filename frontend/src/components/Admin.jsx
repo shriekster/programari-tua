@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 //import useRefreshToken from '../useRefreshToken';
 
 import { useLocation } from 'wouter';
+import { navigate } from 'wouter/use-location';
 
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -103,19 +104,10 @@ export default function Admin({ loading, setLoading }) {
 
           if (!isAuthorized) {
             
-            const newAccesToken = await refreshAccessToken();
-            
-            if (newAccesToken) {
-
-              setAccessToken(newAccesToken);
-
-            } else {
-
-              setLocation('/admin/login', {
-                replace: true
-              });
-
-            }         
+            await refreshAccessToken();
+            navigate('/admin/login', {
+              replace: true
+            });   
 
           }
 
@@ -127,7 +119,7 @@ export default function Admin({ loading, setLoading }) {
 
     fetchInitialData();
 
-  }, [setLoading, setLocation]);
+  }, [setLoading]);
 
   return (
     <Box sx={{
