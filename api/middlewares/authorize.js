@@ -2,7 +2,7 @@ import { checkToken } from '../lib/token.js';
 
 export default function authorize(req, res, next) {
 
-  const accessToken = req.cookies?.access_token;
+  const accessToken = req.cookies?.['access_token'];
 
   const tokenStatus = checkToken('access', accessToken);
 

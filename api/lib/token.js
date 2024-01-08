@@ -47,11 +47,11 @@ const checkToken = (type, token) => {
 
 };
 
-const getProfileName = (token) => {
+const getProfileName = (type, token) => {
 
   if (token) {
 
-    const secret = getSecret('access');
+    const secret = getSecret(type);
 
     if (secret) {
 

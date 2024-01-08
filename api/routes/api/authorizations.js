@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
+import { getProfileName } from '../../lib/token.js';
 import { getSecret } from '../../lib/db.js';
 
 import { validateRefreshToken } from '../../middlewares/validateRefreshToken.js';
@@ -16,15 +17,26 @@ router.post('/', validateRefreshToken, function (req, res) {
   refreshTokenCookieMaxAge = 0,
   error = null;
 
+  const { refresh_token } = req.cookies;
+
+  const profileName = getProfileName('refresh', refresh_token);
+
   const accessSecret = getSecret('access');
   const refreshSecret = getSecret('refresh');
 
   try {
 
+    if (!profileName) {
+
+      throw new Error('Error getting aud claim from refresh token!');
+
+    }
+
     const jwtId = nanoid();
 
     newAccessToken = jwt.sign({
       iss: 'AST',
+      aud: `${profileName}`,
       jti: jwtId,
     },
     accessSecret, {
@@ -34,6 +46,7 @@ router.post('/', validateRefreshToken, function (req, res) {
 
     newRefreshToken = jwt.sign({
       iss: 'AST',
+      aud: `${profileName}`,
     },
     refreshSecret, {
       algorithm: 'HS512',

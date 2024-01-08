@@ -46,6 +46,7 @@ router.post('/', validateCredentials, async function (req, res) {
 
         refreshToken = jwt.sign({
           iss: 'AST',
+          aud: `${username}`
         }, 
         refreshSecret, {
           algorithm: 'HS512',
