@@ -29,7 +29,7 @@ const loginTheme = createTheme({
 });
 
 // eslint-disable-next-line react/prop-types
-export default function Login({ setAccessToken, loading, setLoading }) {
+export default function Login({ loading, setLoading }) {
   
   const [username, setUsername] = useState({
       value: '',
@@ -101,8 +101,7 @@ export default function Login({ setAccessToken, loading, setLoading }) {
     event.preventDefault();
 
     let status = 401, 
-    error = null,
-    accessToken = '';
+    error = null;
 
     if (!username.value) {
 
@@ -145,9 +144,6 @@ export default function Login({ setAccessToken, loading, setLoading }) {
         const response = await fetch('/api/sessions', requestOptions);
         status = response.status;
 
-        const json = await response.json();
-        accessToken = json?.data?.accessToken;
-
         if (!response.ok) {
 
           throw new Error('Something happened')
@@ -167,7 +163,6 @@ export default function Login({ setAccessToken, loading, setLoading }) {
 
           case 200: {
 
-            setAccessToken(accessToken);
             setLocation('/admin', {
               replace: true
             });
