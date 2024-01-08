@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import { Route, Switch } from 'wouter';
 
@@ -21,77 +21,28 @@ import NotFound from './components/NotFound';
 */
 function App() {
 
-  const [accessToken, setAccessToken] = useState('');
   const [loading, setLoading] = useState(true);
-
-  const refreshAccessToken = useCallback(async() => {
-
-    // TODO: refresh the access token and then retry the action provided in the callback function
-    let error = null, _accessToken = null;
-  
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        type: 'refresh_token'
-      }),
-      credentials: 'same-origin'
-    };
-  
-    try {
-  
-      const response = await fetch('/api/authorizations', requestOptions);
-  
-      if (!response.ok) {
-  
-        throw new Error('Something happened');
-  
-      }
-  
-      const json = await response.json();
-  
-      _accessToken = json?.data?.accessToken;
-  
-    } catch (err) {
-  
-      // eslint-disable-next-line no-unused-vars
-      error = err;
-      console.log(err);
-  
-    } 
-
-    return _accessToken;
-
-  }, []);
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
-      <Header accessToken={accessToken}
-        setAccessToken={setAccessToken}
+      <Header
         loading={loading}
         setLoading={setLoading}/>
       <Switch>
         <Route path='/admin/login'>
-          <Login setAccessToken={setAccessToken}
+          <Login
             loading={loading}
             setLoading={setLoading}/>
         </Route>
         <Route path='/admin'>
-          <Admin accessToken={accessToken}
-            setAccessToken={setAccessToken}
+          <Admin
             loading={loading}
-            setLoading={setLoading}
-            refreshAccessToken={refreshAccessToken}/>
+            setLoading={setLoading}/>
         </Route>
         <Route path='/admin/profile'>
-          <Profile accessToken={accessToken}
-            setAccessToken={setAccessToken}
+          <Profile
             loading={loading}
-            setLoading={setLoading}
-            refreshAccessToken={refreshAccessToken}
-            />
+            setLoading={setLoading}/>
         </Route>
         <Route path='/appointments/:pageId' component={Appointments} />
         <Route path='/' component={Home} />

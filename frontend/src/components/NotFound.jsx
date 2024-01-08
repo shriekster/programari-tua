@@ -1,17 +1,15 @@
-import { useLocation } from 'wouter';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 
-export default function NotFound() {
+import { navigate } from 'wouter/use-location';
 
-  // eslint-disable-next-line no-unused-vars
-  const [location, setLocation] = useLocation();
+export default function NotFound() {
 
   const handleButtonClick = () => {
 
-    setLocation('/', {
+    navigate('/', {
       replace: true
     });
 

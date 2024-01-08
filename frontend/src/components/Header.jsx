@@ -23,7 +23,7 @@ import TuaIcon from './TuaIcon';
 const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Header({ accessToken, setAccessToken, loading, setLoading }) {
+export default function Header({ loading, setLoading }) {
 
   const [canRender, setRender] = useState(false);
   const [hasMenu, setMenu] = useState(false);
@@ -47,6 +47,14 @@ export default function Header({ accessToken, setAccessToken, loading, setLoadin
     } else {
 
       switch(location) {
+
+        case '/': {
+
+          setMenu(false);
+          setRender(true);
+          break;
+
+        }
 
         case '/admin':
         case '/admin/': {

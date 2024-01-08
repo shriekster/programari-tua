@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import refreshAccessToken from '../refreshAccessToken.js';
+
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Profile({accessToken, setAccessToken, loading, setLoading, refreshAccessToken}) {
+export default function Profile({loading, setLoading}) {
 
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
@@ -25,11 +27,11 @@ export default function Profile({accessToken, setAccessToken, loading, setLoadin
                 method: 'PATCH',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
                     phoneNumber,
                 }),
+                credentials: 'same-origin'
             };
 
             const response = await fetch('/api/admin/profiles/1', requestOptions);

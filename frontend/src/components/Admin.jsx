@@ -1,8 +1,4 @@
 import { useState, useEffect } from 'react';
-//import useRefreshToken from '../useRefreshToken';
-
-import { useLocation } from 'wouter';
-import { navigate } from 'wouter/use-location';
 
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -17,19 +13,18 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-//
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import MapIcon from '@mui/icons-material/Map';
-
 import CircularProgress from '@mui/material/CircularProgress';
+
+import { navigate } from 'wouter/use-location';
 
 import refreshAccessToken from '../refreshAccessToken.js';
 
 // eslint-disable-next-line react/prop-types
 export default function Admin({ loading, setLoading }) {
 
-  const [profileInfo, setProfileInfo] = useState({});
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
   const [appointments, setAppointments] = useState(null);
@@ -37,18 +32,15 @@ export default function Admin({ loading, setLoading }) {
   const [disableAdd, setAddDisabled] = useState(false);
   const [disableDownload, setDownloadDisabled] = useState(false);
 
-  // eslint-disable-next-line no-unused-vars
-  const [location, setLocation] = useLocation();
-
   useEffect(() => {
 
     // TODO: make sure this effect runs when it's supposed to run!
-    // TODO: refresh the access token if it's expired or missing (i.e. the /admin page was directly accessed)
+    // TODO: refresh the access token if it's expired or missing
     const fetchInitialData = async () => {
 
       setLoading(true);
 
-      let data, errors, isAuthorized = true;
+      let data, errors, notAuthorized = false;
 
       const endpoints = [
         '/api/admin/dates/all',
@@ -67,10 +59,9 @@ export default function Admin({ loading, setLoading }) {
 
         const requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
         const responses = await Promise.all(requests);
-        const statuses = responses.map(response => response.status);
         const errors = responses.filter((response) => !response.ok);
 
-        isAuthorized = statuses.every(status => 401 !== status);
+        notAuthorized = responses.every(response => 401 === response.status);
 
         if (errors.length > 0) {
 
@@ -102,12 +93,25 @@ export default function Admin({ loading, setLoading }) {
 
         } else {
 
-          if (!isAuthorized) {
+          if (notAuthorized) {
             
-            await refreshAccessToken();
-            navigate('/admin/login', {
-              replace: true
-            });   
+            const status = await refreshAccessToken();
+
+            if (401 === status) {
+
+              navigate('/admin/login', {
+                replace: true
+              });  
+
+            } 
+
+            else 
+
+            if (200 === status) {
+
+              await fetchInitialData();
+
+            }
 
           }
 

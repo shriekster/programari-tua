@@ -2,7 +2,8 @@
 export default async function refreshAccessToken() {
 
   // TODO: refresh the access token and then retry the action provided in the callback function
-  let error = null;
+  let error = null, 
+    status = 401;
 
   const requestOptions = {
     method: 'POST',
@@ -18,6 +19,7 @@ export default async function refreshAccessToken() {
   try {
 
     const response = await fetch('/api/authorizations', requestOptions);
+    status = response.status;
 
     if (!response.ok) {
 
@@ -32,5 +34,7 @@ export default async function refreshAccessToken() {
     console.log(err);
 
   }
+
+  return status;
 
 }
