@@ -13,7 +13,8 @@ router.post('/', validateCredentials, async function (req, res) {
 
   let error = null,
   accessToken = '', refreshToken = '',
-  credentials;
+  credentials,
+  data = null;
 
   const { username, password } = req.body;
   
@@ -35,6 +36,7 @@ router.post('/', validateCredentials, async function (req, res) {
 
         accessToken = jwt.sign({
           iss: 'AST',
+          aud: `${username}`,
           jti: jwtId
         }, 
         accessSecret, {

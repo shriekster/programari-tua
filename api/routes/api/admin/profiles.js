@@ -1,14 +1,18 @@
 import { Router } from 'express';
+import { getProfileName } from '../../../lib/token.js';
 import { getProfile, updateProfile } from '../../../lib/db.js';
 import { validatePhoneNumber } from '../../../middlewares/validatePhoneNumber.js';
 
 const router = Router();
 
-router.get('/:profileId', function(req, res) {
-  
-  if (req.params && '1' === req.params.profileId + '') {
+router.get('/current', function(req, res) {
 
-    const profile = getProfile(1);
+  const accessToken = req.cookies['access_token'];
+  const profileName = getProfileName(accessToken);
+
+  if (profileName) {
+
+    const profile = getProfile(profileName);
 
     return res.json({
       data: {

@@ -1,4 +1,4 @@
-import checkToken from '../lib/checkToken.js';
+import { checkToken } from '../lib/token.js';
 
 export default function authorize(req, res, next) {
 

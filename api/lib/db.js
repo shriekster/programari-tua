@@ -9,6 +9,7 @@ const statements = {};
 
 let getSecret = null;
 let getCredentials = null;
+let getProfileId = null;
 let getProfile = null;
 let updateProfile = null;
 
@@ -35,14 +36,14 @@ try {
         WHERE scope = ?`);
 
     statements['get_credentials'] = db.prepare(`
-        SELECT username, password AS passwordHash, type
+        SELECT id, username, password AS passwordHash, type
         FROM users
         WHERE username = ?`);
 
     statements['get_profile'] = db.prepare(`
-        SELECT phone_number AS phoneNumber
+        SELECT id, phone_number AS phoneNumber
         FROM users
-        WHERE id = ?`);
+        WHERE username = ?`);
 
     statements['update_profile'] = db.prepare(`
         UPDATE users
@@ -101,6 +102,8 @@ if (!stmtError) {
         try {
 
             profile = statements['get_profile'].get(userId);
+            profile.url = `/api/admin/profiles/${profile.id}`;
+            delete profile.id;
 
         } catch (err) {
 

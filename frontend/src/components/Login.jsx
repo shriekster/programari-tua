@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 
-import { useLocation } from 'wouter';
-
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
 import TextField from '@mui/material/TextField';
@@ -15,6 +13,8 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+
+import { navigate } from 'wouter/use-location';
 
 import tuaImage from '../assets/tua.webp';
 
@@ -45,9 +45,6 @@ export default function Login({ loading, setLoading }) {
   
   const [showError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
-  // eslint-disable-next-line no-unused-vars
-  const [location, setLocation] = useLocation();
 
   // make sure that the component is not initially loading
   useEffect(() => {
@@ -157,7 +154,7 @@ export default function Login({ loading, setLoading }) {
 
           case 200: {
 
-            setLocation('/admin', {
+            navigate('/admin', {
               replace: true
             });
             break;

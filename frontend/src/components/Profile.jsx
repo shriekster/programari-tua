@@ -15,53 +15,10 @@ const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|
 // eslint-disable-next-line react/prop-types
 export default function Profile({loading, setLoading}) {
 
+    const [profileUrl, setProfileUrl] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
-
-    const saveRemotely = async (phoneNumber) => {
-
-        let error = null, data = null, status = 400;
-
-        try {
-
-            const requestOptions = {
-                method: 'PATCH',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    phoneNumber,
-                }),
-                credentials: 'same-origin'
-            };
-
-            const response = await fetch('/api/admin/profiles/1', requestOptions);
-    
-            status = response.status;
-    
-            if (!response.ok) {
-    
-              throw new Error('Something happened')
-    
-            }
-
-            const json = await response.json();
-            data = json?.data;
-    
-        } catch (err) {
-
-            // eslint-disable-next-line no-unused-vars
-            error = err;
-
-        }
-
-        return {
-            status,
-            data
-        };
-
-    };
 
     const handlePhoneChange = (event) => {
 
@@ -86,32 +43,61 @@ export default function Profile({loading, setLoading}) {
 
     };
 
-    const updatePhoneNumber = async () => {
+    const handleSave = async (event) => {
 
-    };
-
-    const handleSave = async () => {
+        event.preventDefault();
 
         if (phoneNumber && !phoneError) {
 
             setLoading(true);
 
-            const { status, data } = await saveRemotely(phoneNumber);
+            let error = null, data = null, status = 401;
 
-            setLoading(false);
+            try {
+    
+                const requestOptions = {
+                    method: 'PATCH',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        phoneNumber,
+                    }),
+                    credentials: 'same-origin'
+                };
+    
+                const response = await fetch(profileUrl, requestOptions);
+        
+                status = response.status;
+        
+                if (!response.ok) {
+        
+                  throw new Error('Something happened')
+        
+                }
+    
+                const json = await response.json();
+                data = json?.data;
+        
+            } catch (err) {
+    
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+    
+            }
 
             switch (status) {
 
                 case 200: {
 
+                    setLoading(false);
                     break;
 
                 }
 
                 case 401: {
 
-                    // TODO: try to refresh the access token, then retry the action (i.e., save the phone number on the server)
-                    // OR try to find a better solution (DRY)
+                    await refreshAccessToken(handleSave)
                     break;
 
                 }
@@ -132,7 +118,7 @@ export default function Profile({loading, setLoading}) {
 
     useEffect(() => {
 
-        const fetchProfileData = async () => {
+        const fetchProfile = async () => {
 
             let error = null,
             status = 401,
@@ -151,7 +137,7 @@ export default function Profile({loading, setLoading}) {
             try {
         
             // eslint-disable-next-line no-unused-vars
-            const response = await fetch('/api/admin/profiles/1', requestOptions);
+            const response = await fetch('/api/admin/profiles/current', requestOptions);
             status = response.status;
 
             const json = await response.json();
@@ -171,6 +157,7 @@ export default function Profile({loading, setLoading}) {
                     case 200: {
 
                         setLoading(false);
+                        setProfileUrl(data?.profile?.url);
                         setPhoneNumber(data?.profile?.phoneNumber);
                         break;
 
@@ -178,7 +165,7 @@ export default function Profile({loading, setLoading}) {
 
                     case 401: {
 
-                        await refreshAccessToken(fetchProfileData);
+                        await refreshAccessToken(fetchProfile);
                         break;
 
                     }
@@ -193,7 +180,7 @@ export default function Profile({loading, setLoading}) {
     
         };
 
-        fetchProfileData();
+        fetchProfile();
 
     }, [setLoading]);
 
