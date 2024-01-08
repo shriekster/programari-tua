@@ -12,7 +12,8 @@ router.post('/', validateRefreshToken, function (req, res) {
 
   let newAccessToken = '', newRefreshToken = '',
   status = 500,
-  maxAge = 0,
+  accessTokenCookieMaxAge = 0,
+  refreshTokenCookieMaxAge = 0,
   error = null;
 
   const accessSecret = getSecret('access');
@@ -48,7 +49,8 @@ router.post('/', validateRefreshToken, function (req, res) {
   if (!error) {
 
     status = 200;
-    maxAge = 1000 * 60 * 60 * 24 * 7; // the refresh token cookie should expire after 7 days, *expressed in milliseconds*;
+    accessTokenCookieMaxAge = 1000 * 60 * 30; // the access token cookie should expire after 30 minutes, *expressed in milliseconds*
+    refreshTokenCookieMaxAge = 1000 * 60 * 60 * 24 * 7; // the refresh token cookie should expire after 7 days, *expressed in milliseconds*
 
   } else {
 
@@ -58,17 +60,21 @@ router.post('/', validateRefreshToken, function (req, res) {
 
   }
 
-  res.cookie('refresh_token', newRefreshToken, {
-    maxAge: maxAge,
+  return res.cookie('access_token', newAccessToken, {
+    maxAge: accessTokenCookieMaxAge,
+    path: '/api/admin',
+    sameSite: 'Strict',
+    httpOnly: true,
+  })
+  .cookie('refresh_token', newRefreshToken, {
+    maxAge: refreshTokenCookieMaxAge,
     path: '/api/authorizations',
     sameSite: 'Strict',
     httpOnly: true,
-  });
-
-  return res.status(status)
+  })
   .json({
     data: {
-      accessToken: newAccessToken
+      message: 'OK'
     }
   });
 
