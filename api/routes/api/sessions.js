@@ -77,9 +77,16 @@ router.post('/', validateCredentials, async function (req, res) {
 
       }
 
+      res.cookie('refresh_token', refreshToken, {
+        maxAge: 1000 * 60 * 30, // the access token cookie should expire after 30 minutes, *expressed in milliseconds*
+        path: '/api/authorizations',
+        sameSite: 'Strict',
+        httpOnly: true,
+      });
+
       return res.json({
         data: {
-          accessToken
+          message: 'OK'
         }
       });
 

@@ -103,9 +103,18 @@ export default function Admin({ accessToken, setAccessToken, loading, setLoading
           if (!isAuthorized) {
             
             const newAccesToken = await refreshAccessToken();
-            console.log({newAccesToken})
-            setAccessToken(newAccesToken);
             
+            if (newAccesToken) {
+
+              setAccessToken(newAccesToken);
+
+            } else {
+
+              setLocation('/admin/login', {
+                replace: true
+              });
+
+            }         
 
           }
 
@@ -117,7 +126,7 @@ export default function Admin({ accessToken, setAccessToken, loading, setLoading
 
     fetchInitialData();
 
-  }, [accessToken, refreshAccessToken, setAccessToken, setLoading]);
+  }, [accessToken, refreshAccessToken, setAccessToken, setLoading, setLocation]);
 
   return (
     <Box sx={{
