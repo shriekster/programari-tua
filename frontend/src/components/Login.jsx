@@ -144,12 +144,6 @@ export default function Login({ loading, setLoading }) {
         const response = await fetch('/api/sessions', requestOptions);
         status = response.status;
 
-        if (!response.ok) {
-
-          throw new Error('Something happened')
-
-        }
-
       } catch (err) {
 
         // eslint-disable-next-line no-unused-vars
