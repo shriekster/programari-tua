@@ -6,8 +6,6 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { navigate } from 'wouter/use-location';
-
 import refreshAccessToken from '../refreshAccessToken.js';
 
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
@@ -51,7 +49,7 @@ export default function Profile({loading, setLoading}) {
 
             setLoading(true);
 
-            let error = null, data = null, status = 401;
+            let error = null, status = 401;
 
             try {
     
@@ -75,9 +73,6 @@ export default function Profile({loading, setLoading}) {
                   throw new Error('Something happened')
         
                 }
-    
-                const json = await response.json();
-                data = json?.data;
         
             } catch (err) {
     
@@ -104,7 +99,7 @@ export default function Profile({loading, setLoading}) {
 
                 default: {
 
-                    // TODO: display an error message
+                    // TODO: display an error message?
                     break;
 
                 }
@@ -157,8 +152,19 @@ export default function Profile({loading, setLoading}) {
                     case 200: {
 
                         setLoading(false);
-                        setProfileUrl(data?.profile?.url);
-                        setPhoneNumber(data?.profile?.phoneNumber);
+                        
+                        if (data?.profile?.url) {
+
+                            setProfileUrl(data.profile.url);
+
+                        }
+
+                        if (data?.profile?.phoneNumber) {
+
+                            setPhoneNumber(data.profile.phoneNumber);
+
+                        }
+
                         break;
 
                     }
@@ -186,10 +192,15 @@ export default function Profile({loading, setLoading}) {
 
     return (
         <form onSubmit={handleSave} style={{
+            width: '100dvw',
+            height: 'calc(100dvh - 56px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             position: 'relative',
-            padding: '16px',
+            padding: '0 16px',
         }}>
-            <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', }}>
                 <Typography sx={{ textAlign: 'center'}}>
                     Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
                 </Typography>
