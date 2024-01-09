@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { Route, Switch } from 'wouter';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -21,29 +19,13 @@ import NotFound from './components/NotFound';
 */
 function App() {
 
-  const [loading, setLoading] = useState(true);
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
-      <Header
-        loading={loading}
-        setLoading={setLoading}/>
+      <Header />
       <Switch>
-        <Route path='/admin/login'>
-          <Login
-            loading={loading}
-            setLoading={setLoading}/>
-        </Route>
-        <Route path='/admin'>
-          <Admin
-            loading={loading}
-            setLoading={setLoading}/>
-        </Route>
-        <Route path='/admin/profile'>
-          <Profile
-            loading={loading}
-            setLoading={setLoading}/>
-        </Route>
+        <Route path='/admin/login' component={Login} />
+        <Route path='/admin' component={Admin} />
+        <Route path='/admin/profile' component={Profile} />
         <Route path='/appointments/:pageId' component={Appointments} />
         <Route path='/' component={Home} />
         <Route path='/:anything*' component={NotFound} />

@@ -18,18 +18,22 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
 
+import { useGlobalStore } from '../useGlobalStore.js';
+
 import TuaIcon from './TuaIcon';
 
 const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Header({ loading, setLoading }) {
+export default function Header() {
 
   const [canRender, setRender] = useState(false);
   const [hasMenu, setMenu] = useState(false);
   const [isDashboard, setDashboard] = useState(false);
 
   const [menuAnchor, setMenuAnchor] = useState(null);
+
+  const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
 
   const [location, setLocation] = useLocation();
 

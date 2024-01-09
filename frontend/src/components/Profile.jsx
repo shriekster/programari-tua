@@ -6,17 +6,21 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { useGlobalStore } from '../useGlobalStore.js';
+
 import refreshAccessToken from '../refreshAccessToken.js';
 
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
 
 // eslint-disable-next-line react/prop-types
-export default function Profile({loading, setLoading}) {
+export default function Profile() {
 
     const [profileUrl, setProfileUrl] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [helperText, setHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
+
+    const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
 
     const handlePhoneChange = (event) => {
 
@@ -201,7 +205,7 @@ export default function Profile({loading, setLoading}) {
             padding: '0 16px',
         }}>
             <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', }}>
-                <Typography sx={{ textAlign: 'center'}}>
+                <Typography>
                     Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
                 </Typography>
                 <TextField
@@ -218,9 +222,11 @@ export default function Profile({loading, setLoading}) {
                     onChange={handlePhoneChange}
                     disabled={loading}
                 />
-                <Button type='submit' onClick={handleSave} disabled={loading} sx={{ margin: '0 auto' }} variant='contained'>
-                    Salvează
-                </Button>
+                <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <Button type='submit' onClick={handleSave} disabled={loading} variant='contained'>
+                        Salvează
+                    </Button>
+                </Box>
             </Box>
             {
                 loading && (

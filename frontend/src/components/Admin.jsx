@@ -18,12 +18,12 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
 
-import { navigate } from 'wouter/use-location';
+import { useGlobalStore } from '../useGlobalStore.js';
 
 import refreshAccessToken from '../refreshAccessToken.js';
 
 // eslint-disable-next-line react/prop-types
-export default function Admin({ loading, setLoading }) { // TODO: display CircularProgress when loading!
+export default function Admin() { // TODO: display CircularProgress when loading!
 
   const [dates, setDates] = useState(null);
   const [timeRanges, setTimeRanges] = useState(null);
@@ -31,6 +31,8 @@ export default function Admin({ loading, setLoading }) { // TODO: display Circul
 
   const [disableAdd, setAddDisabled] = useState(false);
   const [disableDownload, setDownloadDisabled] = useState(false);
+
+  const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
 
   useEffect(() => {
 
