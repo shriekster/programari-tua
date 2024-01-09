@@ -22,7 +22,7 @@ import { useGlobalStore } from '../useGlobalStore.js';
 
 import TuaIcon from './TuaIcon';
 
-const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,}$/;
+const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,64}$/;
 
 // eslint-disable-next-line react/prop-types
 export default function Header() {
