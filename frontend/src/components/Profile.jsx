@@ -12,16 +12,32 @@ import { useGlobalStore } from '../useGlobalStore.js';
 import refreshAccessToken from '../refreshAccessToken.js';
 
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
+const isEmptyStringRegex = /^$/;
+
+const {
+    setLoading,
+    setProfileDownloaded,
+    setProfileUrl,
+    setFullName,
+    setPhoneNumber,
+  } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
 export default function Profile() {
 
-    const [profileUrl, setProfileUrl] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [helperText, setHelperText] = useState(' ');
+    const [phoneHelperText, setPhoneHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
 
-    const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
+    const loading = useGlobalStore((state) => state.loading);
+    const profileUrl = useGlobalStore((state) => state.profileUrl);
+    const fullName = useGlobalStore((state) => state.fullName);
+    const phoneNumber = useGlobalStore((state) => state.phoneNumber);
+
+    const handleNameChange = (event) => {
+
+        setFullName(event.target.value);
+
+    };
 
     const handlePhoneChange = (event) => {
 
@@ -34,12 +50,12 @@ export default function Profile() {
         if (isValidPhoneNumber) {
 
             setPhoneError(false);
-            setHelperText(' ');
+            setPhoneHelperText(' ');
 
         } else {
 
             setPhoneError(true);
-            setHelperText('Număr invalid!')
+            setPhoneHelperText('Număr invalid!')
 
         }
 
@@ -50,7 +66,12 @@ export default function Profile() {
 
         event.preventDefault();
 
-        if (phoneNumber && !phoneError) {
+        const canUpdateProfile = 
+            !isEmptyStringRegex.test(fullName)      &&
+            !isEmptyStringRegex.test(phoneNumber)   && 
+            !phoneError;
+
+        if (canUpdateProfile) {
 
             setLoading(true);
 
@@ -59,11 +80,12 @@ export default function Profile() {
             try {
     
                 const requestOptions = {
-                    method: 'PATCH',
+                    method: 'PUT',
                     headers: {
                       'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
+                        fullName,
                         phoneNumber,
                     }),
                     credentials: 'same-origin'
@@ -118,6 +140,8 @@ export default function Profile() {
 
     useEffect(() => {
 
+        const profileDownloaded = useGlobalStore.getState().profileDownloaded;
+
         const fetchProfile = async () => {
 
             let error = null,
@@ -157,15 +181,18 @@ export default function Profile() {
                     case 200: {
 
                         setLoading(false);
-                        
-                        if (data?.profile?.url) {
 
+                        const profileDataExists = 
+                            data?.profile &&
+                            data?.profile?.url &&
+                            data?.profile?.fullName &&
+                            data?.profile?.phoneNumber;
+
+                        if (profileDataExists) {
+
+                            setProfileDownloaded(true);
                             setProfileUrl(data.profile.url);
-
-                        }
-
-                        if (data?.profile?.phoneNumber) {
-
+                            setFullName(data.profile.fullName);
                             setPhoneNumber(data.profile.phoneNumber);
 
                         }
@@ -191,9 +218,15 @@ export default function Profile() {
     
         };
 
-        fetchProfile();
+        if (!profileDownloaded) {
+            // if the profile has not already been downloaded (the /admin/profile page was accessed directly),
+            // fetch it
 
-    }, [setLoading]);
+            fetchProfile();
+
+        }
+
+    }, []);
 
     return (
         <form onSubmit={handleSave} style={{
@@ -207,18 +240,32 @@ export default function Profile() {
         }}>
             <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', }}>
                 <Typography>
-                    Utilizatorii te pot contacta prin intermediul numărului tău de telefon.
+                    Datele tale de contact
                 </Typography>
                 <TextField
-                    autoFocus
                     margin='dense'
-                    id='name'
+                    id='fullName'
+                    name='fullName'
+                    label='Nume și prenume'
+                    type='text'
+                    fullWidth
+                    variant='standard'
+                    value={fullName}
+                    helperText={isEmptyStringRegex.test(fullName) ? 'Adaugă numele și prenumele' : ' '}
+                    error={isEmptyStringRegex.test(fullName)}
+                    onChange={handleNameChange}
+                    disabled={loading}
+                />
+                <TextField
+                    margin='dense'
+                    id='phoneNumber'
+                    name='phoneNumber'
                     label='Număr de telefon'
                     type='tel'
                     fullWidth
                     variant='standard'
                     value={phoneNumber}
-                    helperText={helperText}
+                    helperText={phoneHelperText}
                     error={phoneError}
                     onChange={handlePhoneChange}
                     disabled={loading}

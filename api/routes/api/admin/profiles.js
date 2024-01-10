@@ -36,9 +36,9 @@ router.put('/:profileId', validateAdminProfile, function(req, res) {
   
   if (req.params && !isNaN(req.params.profileId)) {
 
-    const { firstName, lastName, phoneNumber } = req.body;
+    const { fullName, phoneNumber } = req.body;
 
-    const newProfile = updateProfile(req.params.profileId, firstName, lastName, phoneNumber);
+    const newProfile = updateProfile(req.params.profileId, fullName, phoneNumber);
 
     return res.json({
       data: {

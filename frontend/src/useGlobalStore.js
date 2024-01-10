@@ -13,10 +13,8 @@ export const useGlobalStore = create((set) => ({
   setProfileDownloaded: (newProfileDownloadedState) => set({ profileDownloaded: newProfileDownloadedState }),
   profileUrl: '',
   setProfileUrl: (newProfileUrl) => set({ profileUrl: newProfileUrl }),
-  firstName: '',
-  setFirstName: (newFirstName) => set({ firstName: newFirstName}),
-  lastName: '',
-  setLastName: (newLastName) => set({ lastName: newLastName }),
+  fullName: '',
+  setFullName: (newFullName) => set({ fullName: newFullName}),
   phoneNumber: '',
   setPhoneNumber: (newPhoneNumber) => set({ phoneNumber: newPhoneNumber }),
 
