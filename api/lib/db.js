@@ -41,13 +41,20 @@ try {
         WHERE username = ?`);
 
     statements['get_profile'] = db.prepare(`
-        SELECT id, phone_number AS phoneNumber
+        SELECT 
+            id,
+            first_name AS firstName,
+            last_name AS lastName,
+            phone_number AS phoneNumber
         FROM users
         WHERE username = ?`);
 
     statements['update_profile'] = db.prepare(`
         UPDATE users
-        SET phone_number = ?
+        SET 
+            first_name = ?,
+            last_name = ?,
+            phone_number = ?
         WHERE id = ?`);
 
 
@@ -115,13 +122,15 @@ if (!stmtError) {
 
     };
 
-    updateProfile = (profileId, phoneNumber) => {
+    updateProfile = (profileId, firstName, lastName, phoneNumber) => {
 
         let error, updateInfo, profile = null;
 
         try {
 
             updateInfo = statements['update_profile'].run(
+                '' + firstName,
+                '' + lastName,
                 '' + phoneNumber,
                 Number(profileId)
             );

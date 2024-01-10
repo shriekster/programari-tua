@@ -31,6 +31,8 @@ const {
   setLoading,
   setProfileDownloaded,
   setProfileUrl,
+  setFirstName,
+  setLastName,
   setPhoneNumber,
   setRegistryDownloaded,
   setLocations,

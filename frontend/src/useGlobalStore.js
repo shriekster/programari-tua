@@ -13,9 +13,13 @@ export const useGlobalStore = create((set) => ({
   setProfileDownloaded: (newProfileDownloadedState) => set({ profileDownloaded: newProfileDownloadedState }),
   profileUrl: '',
   setProfileUrl: (newProfileUrl) => set({ profileUrl: newProfileUrl }),
+  firstName: '',
+  setFirstName: (newFirstName) => set({ firstName: newFirstName}),
+  lastName: '',
+  setLastName: (newLastName) => set({ lastName: newLastName }),
   phoneNumber: '',
   setPhoneNumber: (newPhoneNumber) => set({ phoneNumber: newPhoneNumber }),
-  
+
   // calendar, location and appointments state
   registryDownloaded: false,
   setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),

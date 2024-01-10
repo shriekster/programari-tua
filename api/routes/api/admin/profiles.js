@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getProfileName } from '../../../lib/token.js';
 import { getProfile, updateProfile } from '../../../lib/db.js';
-import { validatePhoneNumber } from '../../../middlewares/validatePhoneNumber.js';
+import { validateAdminProfile } from '../../../middlewares/validateAdminProfile.js';
 
 const router = Router();
 
@@ -32,13 +32,13 @@ router.get('/current', function(req, res) {
 });
 
 
-router.patch('/:profileId', validatePhoneNumber, function(req, res) {
+router.put('/:profileId', validateAdminProfile, function(req, res) {
   
   if (req.params && !isNaN(req.params.profileId)) {
 
-    const { phoneNumber } = req.body;
+    const { firstName, lastName, phoneNumber } = req.body;
 
-    const newProfile = updateProfile(req.params.profileId, phoneNumber);
+    const newProfile = updateProfile(req.params.profileId, firstName, lastName, phoneNumber);
 
     return res.json({
       data: {
