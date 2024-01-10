@@ -1,4 +1,4 @@
-import { lazy } from 'react';
+import { Suspense, lazy } from 'react';
 
 import { Route, Switch } from 'wouter';
 
@@ -8,11 +8,16 @@ import 'dayjs/locale/ro';
 
 import Header from './components/Header';
 import Loading from './components/Loading';
-import Home from './components/Home';
-import Appointments from './components/Appointments';
-import Login from './components/Login';
-import Admin from './components/Admin';
-import Profile from './components/Profile';
+//import Home from './components/Home';
+//import Appointments from './components/Appointments';
+//import Login from './components/Login';
+//import Admin from './components/Admin';
+const Home = lazy(() => import('./components/Home'));
+const Appointments = lazy(() => import('./components/Appointments'));
+const Login = lazy(() => import('./components/Login'));
+const Admin = lazy(() => import('./components/Admin'));
+const Profile = lazy(() => import('./components/Profile'));
+//import Profile from './components/Profile';
 import NotFound from './components/NotFound';
 
 /* 
@@ -20,19 +25,21 @@ import NotFound from './components/NotFound';
   This can be used to achieve "default" route behaviour within Switch. 
   Note: the order matters! 
 */
-function App() { // TODO: lazily load components
+function App() {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
       <Header />
-      <Switch>
-        <Route path='/admin/login' component={Login} />
-        <Route path='/admin' component={Admin} />
-        <Route path='/admin/profile' component={Profile} />
-        <Route path='/appointments/:pageId' component={Appointments} />
-        <Route path='/' component={Home} />
-        <Route path='/:anything*' component={NotFound} />
-      </Switch>
+      <Suspense fallback={<Loading />}>
+        <Switch>
+          <Route path='/admin/login' component={Login} />
+          <Route path='/admin' component={Admin} />
+          <Route path='/admin/profile' component={Profile} />
+          <Route path='/appointments/:pageId' component={Appointments} />
+          <Route path='/' component={Home} />
+          <Route path='/:anything*' component={NotFound} />
+        </Switch>
+      </Suspense>
     </LocalizationProvider>
   )
 }
