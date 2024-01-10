@@ -218,9 +218,9 @@ export default function Profile() {
     
         };
 
+        // if the profile has not already been downloaded (the /admin/profile page was accessed directly),
+        // fetch it
         if (!profileDownloaded) {
-            // if the profile has not already been downloaded (the /admin/profile page was accessed directly),
-            // fetch it
 
             fetchProfile();
 
