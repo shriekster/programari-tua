@@ -23,32 +23,43 @@ import { useGlobalStore } from '../useGlobalStore.js';
 
 import refreshAccessToken from '../refreshAccessToken.js';
 
+// get the functions from the global store as non-reactive, fresh state,
+// because this proves the linter that the functions are not changing between renders
+// why? because it's annoying to specify functions as effect depedencies and I could not think of
+// a better solution, at least for now
+const {
+  setLoading,
+  setProfileDownloaded,
+  setProfileUrl,
+  setPhoneNumber,
+  setRegistryDownloaded,
+  setLocations,
+  setDates,
+  setTimeRanges,
+  setAppointments,
+  setPersonnelCategories,
+} = useGlobalStore.getState();
+
 // eslint-disable-next-line react/prop-types
-export default function Admin() { // TODO: display CircularProgress when loading!
+export default function Admin() {
 
-  const [dates, setDates] = useState(null);
-  const [timeRanges, setTimeRanges] = useState(null);
-  const [appointments, setAppointments] = useState(null);
-
-  const [disableAdd, setAddDisabled] = useState(false);
-  const [disableDownload, setDownloadDisabled] = useState(false);
-
-  const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
+  const loading = useGlobalStore((state) => state.loading);
 
   useEffect(() => {
 
     // TODO: make sure this effect runs when it's supposed to run!
     // TODO: refresh the access token if it's expired or missing
     const fetchInitialData = async () => {
-      
+      console.log({setLoading})
       setLoading(true);
 
       let data, errors, notAuthorized = false;
 
       const endpoints = [
-        '/api/admin/dates/all',
-        '/api/admin/timeranges/all',
-        '/api/admin/appointments/all'
+        '/api/admin/profiles/current',
+        '/api/admin/dates',
+        '/api/admin/timeranges',
+        '/api/admin/appointments'
       ];
 
       const requestOptions = {
@@ -106,7 +117,7 @@ export default function Admin() { // TODO: display CircularProgress when loading
 
     fetchInitialData();
 
-  }, [setLoading]);
+  }, []);
 
   return (
     <Box sx={{
@@ -131,20 +142,36 @@ export default function Admin() { // TODO: display CircularProgress when loading
           height: '40px',
         }}>
           <IconButton color='secondary'
-            //disabled={disableAdd}
+            disabled={loading}
             >
             <PlaceIcon fontSize='large'/>
           </IconButton>
           <IconButton color='primary'
-            disabled={disableAdd}>
+            disabled={loading}>
             <AddCircleIcon fontSize='large'/>
           </IconButton>
           <IconButton color='success'
-            disabled={disableDownload}>
+            disabled={loading}>
             <FileDownloadIcon fontSize='large'/>
           </IconButton>
         </Box>
-
+        {
+          loading && (
+              <CircularProgress
+                  size={48}
+                  color='primary'
+                  thickness={8}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-24px',
+                    marginLeft: '-24px',
+                  }}
+                  disableShrink
+              />
+            )
+          }
     </Box>
   );
 

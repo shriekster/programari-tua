@@ -7,12 +7,18 @@ export const useGlobalStore = create((set) => ({
   // the first 2 state properties/methods are just examples
   loading: false,
   setLoading: (newLoadingState) => set({ loading: newLoadingState }),
+
   // profile state
+  profileDownloaded: false,
+  setProfileDownloaded: (newProfileDownloadedState) => set({ profileDownloaded: newProfileDownloadedState }),
   profileUrl: '',
   setProfileUrl: (newProfileUrl) => set({ profileUrl: newProfileUrl }),
   phoneNumber: '',
   setPhoneNumber: (newPhoneNumber) => set({ phoneNumber: newPhoneNumber }),
+  
   // calendar, location and appointments state
+  registryDownloaded: false,
+  setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),
   locations: null,
   setLocations: (newLocations) => set({ locations: newLocations }),
   dates: null,
