@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import { Route, Switch } from 'wouter';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -5,6 +7,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/ro';
 
 import Header from './components/Header';
+import Loading from './components/Loading';
 import Home from './components/Home';
 import Appointments from './components/Appointments';
 import Login from './components/Login';
@@ -17,7 +20,7 @@ import NotFound from './components/NotFound';
   This can be used to achieve "default" route behaviour within Switch. 
   Note: the order matters! 
 */
-function App() {
+function App() { // TODO: lazily load components
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
