@@ -1,6 +1,6 @@
 import validator from 'validator';
 
-export const validateProfile = (req, res, next) => {
+export const validateAdminProfile = (req, res, next) => {
 
   if (req?.body) {
 
