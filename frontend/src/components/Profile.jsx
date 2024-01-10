@@ -251,8 +251,8 @@ export default function Profile() {
                     fullWidth
                     variant='standard'
                     value={fullName}
-                    helperText={isEmptyStringRegex.test(fullName) ? 'Adaugă numele și prenumele' : ' '}
-                    error={isEmptyStringRegex.test(fullName)}
+                    helperText={!loading && isEmptyStringRegex.test(fullName) ? 'Adaugă numele și prenumele' : ' '}
+                    error={!loading && isEmptyStringRegex.test(fullName)}
                     onChange={handleNameChange}
                     disabled={loading}
                 />
@@ -266,7 +266,7 @@ export default function Profile() {
                     variant='standard'
                     value={phoneNumber}
                     helperText={phoneHelperText}
-                    error={phoneError}
+                    error={!loading && phoneError}
                     onChange={handlePhoneChange}
                     disabled={loading}
                 />

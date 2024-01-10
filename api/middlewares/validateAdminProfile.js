@@ -4,10 +4,10 @@ export const validateAdminProfile = (req, res, next) => {
 
   if (req?.body) {
 
-    const fullName = req.body?.firstName?.toString()?.trim()?.normalize('NFC') ?? '';
+    const fullName = req.body?.fullName?.toString()?.trim()?.normalize('NFC') ?? '';
     const phoneNumber = req.body?.phoneNumber?.toString()?.trim()?.normalize('NFC') ?? '';
 
-    const isValidName = validator.isLength('' + username, { min: 5, max: 256 });
+    const isValidName = validator.isLength('' + fullName, { min: 5, max: 256 });
     const isValidMobilePhone = validator.isMobilePhone(phoneNumber, 'ro-RO');
 
     if (isValidName && isValidMobilePhone) {
