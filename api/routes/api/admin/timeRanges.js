@@ -2,6 +2,16 @@ import { Router } from 'express';
 
 const router = Router();
 
+router.get('/', function(req, res) {
+
+  res.json({
+    data: {
+      hello: 'world'
+    }
+  })
+
+});
+
 router.get('/:timeRangeId', function(req, res) {
 
   res.json({
@@ -10,6 +20,6 @@ router.get('/:timeRangeId', function(req, res) {
     }
   })
 
-})
+});
 
 export default router;

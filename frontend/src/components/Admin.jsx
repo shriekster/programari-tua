@@ -50,7 +50,7 @@ export default function Admin() {
     // TODO: make sure this effect runs when it's supposed to run!
     // TODO: refresh the access token if it's expired or missing
     const fetchInitialData = async () => {
-      console.log({setLoading})
+      
       setLoading(true);
 
       let data, errors, notAuthorized = false;
