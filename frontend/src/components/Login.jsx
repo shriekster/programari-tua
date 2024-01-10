@@ -16,6 +16,8 @@ import Alert from '@mui/material/Alert';
 
 import { navigate } from 'wouter/use-location';
 
+import { useGlobalStore } from '../useGlobalStore.js';
+
 import tuaImage from '../assets/tua.webp';
 
 
@@ -29,7 +31,7 @@ const loginTheme = createTheme({
 });
 
 // eslint-disable-next-line react/prop-types
-export default function Login({ loading, setLoading }) {
+export default function Login() {
   
   const [username, setUsername] = useState({
       value: '',
@@ -45,6 +47,8 @@ export default function Login({ loading, setLoading }) {
   
   const [showError, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
 
   // make sure that the component is not initially loading
   useEffect(() => {
