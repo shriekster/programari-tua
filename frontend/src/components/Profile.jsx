@@ -5,7 +5,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
+import PersonPinIcon from '@mui/icons-material/PersonPin';
+import PhoneIcon from '@mui/icons-material/Phone';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
@@ -25,6 +28,8 @@ const {
 // eslint-disable-next-line react/prop-types
 export default function Profile() {
 
+    const [nameHelperText, setNameHelperText] = useState(' ');
+    const [nameError, setNameError] = useState(false);
     const [phoneHelperText, setPhoneHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
 
@@ -35,7 +40,23 @@ export default function Profile() {
 
     const handleNameChange = (event) => {
 
+        const nextFullName = event.target.value;
+
         setFullName(event.target.value);
+
+        const isValidName = !isEmptyStringRegex.test(nextFullName);
+        
+        if (isValidName) {
+
+            setNameError(false);
+            setNameHelperText(' ');
+
+        } else {
+
+            setNameError(true);
+            setNameHelperText('Completează numele și prenumele!');
+
+        }
 
     };
 
@@ -55,7 +76,7 @@ export default function Profile() {
         } else {
 
             setPhoneError(true);
-            setPhoneHelperText('Număr invalid!')
+            setPhoneHelperText('Număr invalid!');
 
         }
 
@@ -230,15 +251,24 @@ export default function Profile() {
 
     return (
         <form onSubmit={handleSave} style={{
-            width: '100dvw',
-            height: 'calc(100dvh - 56px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            //width: '100%',
+            //height: 'calc(100dvh - 56px)',
+            //display: 'flex',
+            //alignItems: 'center',
+            //justifyContent: 'center',
             position: 'relative',
-            padding: '0 16px',
+            padding: '64px 8px 8px 8px',
+            margin: '8px',
+            overflowY: 'scroll',
+            border: '1px solid rgba(255, 255, 255, 0.25)',
+            borderRadius: '4px',
         }}>
-            <Box sx={{ maxWidth: '400px', margin: '0 auto', display: 'flex', flexDirection: 'column', }}>
+            <Box sx={{ 
+                    maxWidth: '400px', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    margin: '0 auto',
+                }}>
                 <Typography>
                     Datele tale de contact
                 </Typography>
@@ -251,10 +281,16 @@ export default function Profile() {
                     fullWidth
                     variant='standard'
                     value={fullName}
-                    helperText={!loading && isEmptyStringRegex.test(fullName) ? 'Adaugă numele și prenumele' : ' '}
-                    error={!loading && isEmptyStringRegex.test(fullName)}
+                    helperText={nameHelperText}
+                    error={nameError}
                     onChange={handleNameChange}
                     disabled={loading}
+                    InputProps={{
+                        startAdornment: <InputAdornment position='start'><PersonPinIcon color={nameError ? 'error' : 'primary'} /></InputAdornment>
+                    }}
+                    inputProps={{
+                        maxLength: 256
+                    }}
                 />
                 <TextField
                     margin='dense'
@@ -269,6 +305,12 @@ export default function Profile() {
                     error={!loading && phoneError}
                     onChange={handlePhoneChange}
                     disabled={loading}
+                    InputProps={{
+                        startAdornment: <InputAdornment position='start'><PhoneIcon color={phoneError ? 'error' : 'primary'} /></InputAdornment>
+                    }}
+                    inputProps={{
+                        maxLength: 10
+                    }}
                 />
                 <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                     <Button type='submit' onClick={handleSave} disabled={loading} variant='contained'>
