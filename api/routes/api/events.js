@@ -111,7 +111,7 @@ router.get('/', function(req, res) {
 
   }
 
-  if (!error && nextSubscriptionId) {
+  if (!error && newSubscriptionId) {
 
     const targetSubscriptions = subscriptions.get(channel);
 
@@ -119,7 +119,7 @@ router.get('/', function(req, res) {
 
     const headers = [
       ...sseHeaders,
-      ['X-Subscription-Id', `${nextSubscriptionId}`]
+      ['X-Subscription-Id', newSubscriptionId]
     ];
 
     for (const [header, value] of headers) {
@@ -127,6 +127,8 @@ router.get('/', function(req, res) {
       res.setHeader(header, value);
 
     }
+
+    res.write((`event: hello_world\ndata: ${JSON.stringify({hello: 'world!'})}\n\n`));
 
   }
 

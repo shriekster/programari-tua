@@ -19,6 +19,8 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import { fetchEventSource } from '@microsoft/fetch-event-source';
+
 import { useGlobalStore } from '../useGlobalStore.js';
 
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -50,11 +52,106 @@ export default function Admin() {
 
   // subscribe to admin events
   // AND get relevant data (profile and registry data)
+  // TODO: make sure to refresh the access token if it expires!
   useEffect(() => {
+
+    // this flag is needed because after the SSE connection is opened,
+    // the admin receives profile and registry data and the
+    // the UI should no longer be in a 'loading' state,
+    // so when the first message arrives, the state is updated accordingly
+    let initiallyWaitingForData = true;
+
+    setLoading(true);
+
+    class RetriableError extends Error { }
+    class FatalError extends Error { }
+
+    const abortController = new AbortController();
+    const eventStreamContentType = 'text/event-stream; charset=utf-8';
+    
+    fetchEventSource('/api/admin/events', {
+
+      async onopen(response) {
+
+        if (response.ok && 
+            eventStreamContentType === response.headers.get('content-type')) {
+
+          return; // everything's good
+
+        } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
+          
+          if (401 === response.status) {
+
+            // try to refresh the access token if it's expired,
+            // then retry
+            await refreshAccessToken(fetchEventSource);
+
+          } else {
+
+            // non-retriable error for every other client-side error:
+            throw new FatalError();
+
+          }
+
+        } else {
+
+            throw new RetriableError();
+
+        }
+
+      },
+
+      onmessage(msg) {
+
+        // if the server emits an error message, throw an exception
+        // so it gets handled by the onerror callback below:
+        if (msg.event === 'FatalError') {
+
+            throw new FatalError(msg.data);
+
+        }
+
+        if (initiallyWaitingForData) {
+
+          initiallyWaitingForData = false;
+          setLoading(false);
+
+        }
+
+        console.log({msg})
+
+      },
+
+      onclose() {
+
+        // if the server closes the connection unexpectedly, retry:
+        throw new RetriableError();
+
+      },
+
+      onerror(err) {
+        console.log(err, typeof err)
+        if (err instanceof FatalError) {
+
+            throw err; // rethrow to stop the operation
+
+        } else {
+            // do nothing to automatically retry. You can also
+            // return a specific retry interval here.
+        }
+
+      },
+
+      signal: abortController.signal,
+
+    });
 
     // unsubscribe from admin events
     return () => {
-      console.log('UNSUBSCRIBING')
+
+      console.log('Unsubscribing...');
+      abortController.abort();
+
     };
 
   }, []);
@@ -137,11 +234,11 @@ export default function Admin() {
 
     // if the profile or the registry have not been downloaded,
     // download them both
-    if (!profileDownloaded || !registryDownloaded) {
+    //if (!profileDownloaded || !registryDownloaded) {
 
-      fetchRegistryAndProfile();
+    //  fetchRegistryAndProfile();
 
-    }
+    //}
 
   }, []);
 
