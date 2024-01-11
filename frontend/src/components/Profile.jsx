@@ -9,6 +9,8 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 import PhoneIcon from '@mui/icons-material/Phone';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
@@ -32,6 +34,8 @@ export default function Profile() {
     const [nameError, setNameError] = useState(false);
     const [phoneHelperText, setPhoneHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
+    const [showFetchError, setFetchError] = useState(false);
+    const [fetchErrorMessage, setFetchErrorMessage] = useState('');
 
     const loading = useGlobalStore((state) => state.loading);
     const profileUrl = useGlobalStore((state) => state.profileUrl);
@@ -147,7 +151,9 @@ export default function Profile() {
 
                 default: {
 
-                    // TODO: display an error message?
+                    setLoading(false);
+                    setFetchErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setFetchError(true);
                     break;
 
                 }
@@ -155,8 +161,34 @@ export default function Profile() {
             }
 
 
+        } else {
+
+            if (isEmptyStringRegex.test(fullName)) {
+
+                setNameError(true);
+                setNameHelperText('Completează numele și prenumele!');
+
+            }
+
+            if (isEmptyStringRegex.test(phoneNumber)) {
+
+                setPhoneError(true);
+                setPhoneHelperText('Număr invalid!');
+
+            }
+
         }
 
+    };
+
+    const handleErrorClose = (event, reason) => {
+
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setFetchError(false);
+    
     };
 
     useEffect(() => {
@@ -229,7 +261,12 @@ export default function Profile() {
 
                     }
 
-                    default: break; // TODO: display error message?
+                    default: {
+
+                        setLoading(false);
+                        setFetchError(true);
+                        setFetchErrorMessage('Eroare! Reîmprospătează pagina (refresh).');
+                    }
 
                 }
 
@@ -251,11 +288,6 @@ export default function Profile() {
 
     return (
         <form onSubmit={handleSave} style={{
-            //width: '100%',
-            //height: 'calc(100dvh - 56px)',
-            //display: 'flex',
-            //alignItems: 'center',
-            //justifyContent: 'center',
             position: 'relative',
             padding: '64px 8px 8px 8px',
             margin: '8px',
@@ -335,6 +367,11 @@ export default function Profile() {
                 />
                 )
             }
+            <Snackbar open={showFetchError} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert onClose={handleErrorClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
+                {fetchErrorMessage}
+                </Alert>
+            </Snackbar>
         </form>
     );
 
