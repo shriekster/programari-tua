@@ -48,9 +48,14 @@ export default function Admin() {
 
   useEffect(() => {
 
+    const {
+      profileDownloaded,
+      registryDownloaded
+    } = useGlobalStore.getState();
+
     // TODO: make sure this effect runs when it's supposed to run!
     // TODO: refresh the access token if it's expired or missing
-    const fetchInitialData = async () => {
+    const fetchRegistryAndProfile = async () => {
       
       setLoading(true);
 
@@ -108,7 +113,7 @@ export default function Admin() {
 
         } else if (notAuthorized) {
             
-          await refreshAccessToken(fetchInitialData);
+          await refreshAccessToken(fetchRegistryAndProfile);
 
         }
 
@@ -116,7 +121,13 @@ export default function Admin() {
 
     };
 
-    fetchInitialData();
+    // if the profile or the registry have not been downloaded,
+    // download them both
+    if (!profileDownloaded || !registryDownloaded) {
+
+      fetchRegistryAndProfile();
+
+    }
 
   }, []);
 
