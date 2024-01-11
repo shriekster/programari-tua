@@ -52,7 +52,6 @@ export default function Admin() {
 
   // subscribe to admin events
   // AND get relevant data (profile and registry data)
-  // TODO: make sure to refresh the access token if it expires!
   useEffect(() => {
 
     // this flag is needed because after the SSE connection is opened,
@@ -113,6 +112,8 @@ export default function Admin() {
 
         if (initiallyWaitingForData) {
 
+          // TODO: update the profile and registry data
+
           initiallyWaitingForData = false;
           setLoading(false);
 
@@ -130,7 +131,7 @@ export default function Admin() {
       },
 
       onerror(err) {
-        console.log(err, typeof err)
+        
         if (err instanceof FatalError) {
 
             throw err; // rethrow to stop the operation
@@ -153,92 +154,6 @@ export default function Admin() {
       abortController.abort();
 
     };
-
-  }, []);
-
-  // download data
-  useEffect(() => {
-
-    const {
-      profileDownloaded,
-      registryDownloaded
-    } = useGlobalStore.getState();
-
-    // TODO: make sure this effect runs when it's supposed to run!
-    // TODO: refresh the access token if it's expired or missing
-    const fetchRegistryAndProfile = async () => {
-      
-      setLoading(true);
-
-      let data, errors, notAuthorized = false;
-
-      const endpoints = [
-        '/api/admin/profiles/current',
-        '/api/admin/dates',
-        '/api/admin/timeranges',
-        '/api/admin/appointments'
-      ];
-
-      const requestOptions = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-
-      try {
-
-        const requests = endpoints.map((endpoint) => fetch(endpoint, requestOptions));
-        const responses = await Promise.all(requests);
-        const errors = responses.filter((response) => !response.ok);
-
-        notAuthorized = responses.every(response => 401 === response.status);
-
-        if (errors.length > 0) {
-
-          throw errors.map((response) => Error(response.statusText));
-
-        }
-
-        const json = responses.map((response) => response.json());
-        data = await Promise.all(json);
-
-        //console.log(data);
-
-      } catch (err) {
-
-        errors = err;
-
-      } finally {
-        
-        if (!errors || 0 === errors?.length) {
-
-          setLoading(false);
-
-          //setProfileInfo(data[0].data.profile); // temporary
-          for (let i = 0, n = data.length; i < n; ++i) {
-
-            //
-
-          }
-
-        } else if (notAuthorized) {
-            
-          await refreshAccessToken(fetchRegistryAndProfile);
-
-        }
-
-      }
-
-    };
-
-    // if the profile or the registry have not been downloaded,
-    // download them both
-    //if (!profileDownloaded || !registryDownloaded) {
-
-    //  fetchRegistryAndProfile();
-
-    //}
 
   }, []);
 
