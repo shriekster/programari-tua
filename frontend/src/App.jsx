@@ -8,21 +8,19 @@ import 'dayjs/locale/ro';
 
 import Header from './components/Header';
 import Loading from './components/Loading';
-//import Home from './components/Home';
-//import Appointments from './components/Appointments';
-//import Login from './components/Login';
-//import Admin from './components/Admin';
+
+// most of the 'page' components are loaded lazily
 const Home = lazy(() => import('./components/Home'));
 const Appointments = lazy(() => import('./components/Appointments'));
 const Login = lazy(() => import('./components/Login'));
 const Admin = lazy(() => import('./components/Admin'));
 const Profile = lazy(() => import('./components/Profile'));
-//import Profile from './components/Profile';
+
 import NotFound from './components/NotFound';
 
 /* 
   In wouter, any Route with empty path is considered always active. 
-  This can be used to achieve "default" route behaviour within Switch. 
+  This can be used to achieve 'default' route behaviour within Switch. 
   Note: the order matters! 
 */
 function App() {
