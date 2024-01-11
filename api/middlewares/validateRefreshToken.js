@@ -1,6 +1,6 @@
 import { checkToken } from '../lib/token.js';
 
-export const validateRefreshToken = (req, res, next) => {
+export default function validateRefreshToken(req, res, next) {
 
   const { refresh_token } = req.cookies;
 

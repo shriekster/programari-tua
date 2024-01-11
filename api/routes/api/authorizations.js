@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { getProfileName } from '../../lib/token.js';
 import { getSecret } from '../../lib/db.js';
 
-import { validateRefreshToken } from '../../middlewares/validateRefreshToken.js';
+import validateRefreshToken from '../../middlewares/validateRefreshToken.js';
 
 const router = Router();
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getProfileName } from '../../../lib/token.js';
 import { getProfile, updateProfile } from '../../../lib/db.js';
-import { validateAdminProfile } from '../../../middlewares/validateAdminProfile.js';
+import validateAdminProfile from '../../../middlewares/validateAdminProfile.js';
 
 const router = Router();
 

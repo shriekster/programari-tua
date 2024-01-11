@@ -1,11 +1,11 @@
 import { default as jwt } from 'jsonwebtoken';
 import { getSecret } from './db.js';
 
-const checkToken = (type, token) => {
+const checkToken = (tokenType, token) => {
 
   if (token) {
 
-    const secret = getSecret(type);
+    const secret = getSecret(tokenType);
 
     if (secret) {
 
@@ -47,11 +47,11 @@ const checkToken = (type, token) => {
 
 };
 
-const getProfileName = (type, token) => {
+const getProfileName = (tokenType, token) => {
 
   if (token) {
 
-    const secret = getSecret(type);
+    const secret = getSecret(tokenType);
 
     if (secret) {
 

@@ -1,6 +1,6 @@
 import validator from 'validator';
 
-export const validateCredentials = (req, res, next) => {
+export default function validateCredentials(req, res, next) {
 
   if (req?.body) {
 

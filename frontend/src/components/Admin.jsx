@@ -29,6 +29,7 @@ import refreshAccessToken from '../refreshAccessToken.js';
 // a better solution, at least for now
 const {
   setLoading,
+  setSubcriptionId,
   setProfileDownloaded,
   setProfileUrl,
   setFullName,
@@ -45,7 +46,19 @@ const {
 export default function Admin() {
 
   const loading = useGlobalStore((state) => state.loading);
+  const subscriptionId = useGlobalStore((state) => state.subcriptionId);
 
+  // subscribe to admin events
+  useEffect(() => {
+
+    // unsubscribe from admin events
+    return () => {
+      console.log('UNSUBSCRIBING')
+    };
+
+  }, []);
+
+  // download data
   useEffect(() => {
 
     const {

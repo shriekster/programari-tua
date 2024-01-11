@@ -32,4 +32,8 @@ export const useGlobalStore = create((set) => ({
   personnelCategories: null,
   setPersonnelCategories: (newPersonnelCategories) => set({ personnelCategories: newPersonnelCategories }),
 
+  // SSE related state
+  subscriptionId: '',
+  setSubscriptionId: (newSubscriptionId) => set({ subscriptionId: newSubscriptionId }),
+
 }));

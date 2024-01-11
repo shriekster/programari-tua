@@ -3,8 +3,8 @@ import * as argon2 from 'argon2';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 
-import { validateCredentials } from '../../middlewares/validateCredentials.js';
 import { getSecret, getCredentials } from '../../lib/db.js';
+import validateCredentials from '../../middlewares/validateCredentials.js';
 
 const router = Router();
 
