@@ -31,7 +31,7 @@ import refreshAccessToken from '../refreshAccessToken.js';
 // a better solution, at least for now
 const {
   setLoading,
-  setSubcriptionId,
+  setSubscriptionId,
   setProfileDownloaded,
   setProfileUrl,
   setFullName,
@@ -67,14 +67,24 @@ export default function Admin() {
 
     const abortController = new AbortController();
     const eventStreamContentType = 'text/event-stream; charset=utf-8';
+
+    const subscriptionIdRegex = /^[a-zA-Z0-9]{16}$/;
     
     fetchEventSource('/api/admin/events', {
 
       async onopen(response) {
 
-        if (response.ok && 
-            eventStreamContentType === response.headers.get('content-type')) {
+        const contentTypeHeader = response.headers.get('content-type');
+        const subscriptionIdHeader = response.headers.get('x-subscription-id');
 
+        const everythingIsGood = 
+          response.ok                                   && 
+          eventStreamContentType === contentTypeHeader  &&
+          subscriptionIdRegex.test(subscriptionIdHeader);
+
+        if (everythingIsGood) {
+          
+          setSubscriptionId(subscriptionIdHeader);
           return; // everything's good
 
         } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
@@ -131,7 +141,7 @@ export default function Admin() {
       },
 
       onerror(err) {
-        
+        console.log({err})
         if (err instanceof FatalError) {
 
             throw err; // rethrow to stop the operation
@@ -139,6 +149,7 @@ export default function Admin() {
         } else {
             // do nothing to automatically retry. You can also
             // return a specific retry interval here.
+            return 3000;
         }
 
       },
