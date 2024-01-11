@@ -122,7 +122,8 @@ export default function Admin() {
 
         if (initiallyWaitingForData) {
 
-          // TODO: update the profile and registry data
+          // TODO: first update the profile and registry data
+          // TODO: then update the flag and the loading state
 
           initiallyWaitingForData = false;
           setLoading(false);
@@ -141,7 +142,7 @@ export default function Admin() {
       },
 
       onerror(err) {
-        console.log({err})
+        
         if (err instanceof FatalError) {
 
             throw err; // rethrow to stop the operation
@@ -149,7 +150,7 @@ export default function Admin() {
         } else {
             // do nothing to automatically retry. You can also
             // return a specific retry interval here.
-            return 3000;
+            return 1000;
         }
 
       },
