@@ -1,4 +1,4 @@
-// TODO: subscribe to admin events (SSE)
+
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';

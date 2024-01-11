@@ -1,4 +1,4 @@
-// TODO: subscribe to client events (SSE)
+// TODO: subscribe to client events (SSE) 
 import { useState, useEffect } from 'react';
 
 import { useGlobalStore } from '../useGlobalStore';
