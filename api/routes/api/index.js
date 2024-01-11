@@ -8,8 +8,7 @@ import adminDatesRoute from './admin/dates.js';
 import adminTimeRangesRoute from './admin/timeRanges.js';
 import adminAppointmentsRoute from './admin/appointments.js';
 
-import { router as adminEventsRoute } from './admin/events.js';
-import { router as userEventsRoute } from './events.js';
+import { router as eventsRoute } from './events.js';
 
 
 import authorize from '../../middlewares/authorize.js';
@@ -30,10 +29,10 @@ router.use('/admin/profiles', authorize, adminProfilesRoute);
 router.use('/admin/dates', authorize, adminDatesRoute);
 router.use('/admin/timeranges', authorize, adminTimeRangesRoute);
 router.use('/admin/appointments', authorize, adminAppointmentsRoute);
-router.use('/admin/events', getSubcriptionId, adminEventsRoute);
+router.use('/admin/events', authorize, getSubcriptionId, eventsRoute);
 
 // user API
-router.use('/events', getSubcriptionId, userEventsRoute);
+router.use('/events', getSubcriptionId, eventsRoute);
 
 
 //module.exports = router;

@@ -49,6 +49,7 @@ export default function Admin() {
   const subscriptionId = useGlobalStore((state) => state.subcriptionId);
 
   // subscribe to admin events
+  // AND get relevant data (profile and registry data)
   useEffect(() => {
 
     // unsubscribe from admin events

@@ -8,6 +8,7 @@ export default function authorize(req, res, next) {
 
   if ('ok' === tokenStatus) {
 
+    req.isAdmin = true;
     return next(); // if the access token is valid, pass control to the next middleware
 
   }
