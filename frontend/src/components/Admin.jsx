@@ -1,4 +1,6 @@
 
+// TODO: transform the profile page into a profile dialog
+// TODO: redesign the 3 buttons below the calendar... (some kind of menu or something else)
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
