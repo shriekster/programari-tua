@@ -292,8 +292,6 @@ export default function Profile() {
             padding: '64px 8px 8px 8px',
             margin: '8px',
             overflowY: 'scroll',
-            border: '1px solid rgba(255, 255, 255, 0.25)',
-            borderRadius: '4px',
         }}>
             <Box sx={{ 
                     maxWidth: '400px', 

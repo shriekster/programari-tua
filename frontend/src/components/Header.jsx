@@ -15,8 +15,9 @@ import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import LogoutIcon from '@mui/icons-material/Logout';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import PlaceIcon from '@mui/icons-material/Place';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
@@ -24,14 +25,54 @@ import TuaIcon from './TuaIcon';
 
 const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,64}$/;
 
+const menuItems = ['Calendar', 'Locații', 'Profil', 'Deconectare'];
+
+// eslint-disable-next-line react/prop-types
+const MenuItemContent = ({ menuItem }) => {
+
+  switch(menuItem) {
+
+    case 'Calendar': return (
+      <>
+        <ListItemIcon><CalendarMonthIcon /></ListItemIcon>
+        <ListItemText>{menuItem}</ListItemText>
+      </>
+    );
+
+    case 'Locații': return (
+      <>
+        <ListItemIcon><PlaceIcon /></ListItemIcon>
+        <ListItemText>{menuItem}</ListItemText>
+      </>
+    );
+
+    case 'Profil': return (
+      <>
+        <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
+        <ListItemText>{menuItem}</ListItemText>
+      </>
+    );
+
+    case 'Deconectare': return (
+      <>
+        <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
+        <ListItemText sx={{ color: '#F44336' }}>{menuItem}</ListItemText>
+      </>
+    );
+
+    default: return null;
+
+  }
+
+};
+
 // eslint-disable-next-line react/prop-types
 export default function Header() {
 
   const [canRender, setRender] = useState(false);
   const [hasMenu, setMenu] = useState(false);
-  const [isDashboard, setDashboard] = useState(false);
-
   const [menuAnchor, setMenuAnchor] = useState(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState('');
 
   const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
 
@@ -64,16 +105,17 @@ export default function Header() {
 
           setMenu(true);
           setRender(true);
-          setDashboard(true);
           break;
 
         }
+
+        case '/admin/locations':
+        case '/admin/locations/':
         case '/admin/profile':
         case '/admin/profile/': {
     
           setMenu(true);
           setRender(true);
-          setDashboard(false);
           break;
     
         }
@@ -84,7 +126,6 @@ export default function Header() {
           
           setMenu(false);
           setRender(false);
-          setDashboard(false);
           break;
   
         }      
@@ -95,7 +136,60 @@ export default function Header() {
 
   }, [location]);
 
-  const handleLogout = async () => {
+  const handleOpenUserMenu = (event) => {
+
+    setMenuAnchor(event.currentTarget);
+
+  };
+
+  const handleCloseUserMenu = () => {
+
+    setMenuAnchor(null);
+
+  };
+
+  const handleMenuItemClick = async (menuItemName) => {
+
+    setMenuAnchor(null);
+    setSelectedMenuItem(menuItemName);
+
+    switch(menuItemName) {
+
+      case 'Calendar': {
+
+        setLocation('/admin');
+        break;
+
+      }
+
+      case 'Locații': {
+
+        setLocation('/admin/locations');
+        break;
+
+      }
+
+      case 'Profil': {
+
+        setLocation('/admin/profile');
+        break;
+
+      }
+
+      case 'Deconectare': {
+
+        await logout();
+        break;
+
+      }
+
+      default: break;
+
+    }
+
+  };
+
+  const logout = async () => {
 
     let error = null;
 
@@ -107,7 +201,6 @@ export default function Header() {
       credentials: 'same-origin'
     };
 
-    setMenuAnchor(null);
     setLoading(true);
 
     try {
@@ -128,43 +221,6 @@ export default function Header() {
       });
 
     }
-
-  };
-
-  const handleOpenUserMenu = (event) => {
-
-    setMenuAnchor(event.currentTarget);
-
-  };
-
-  const handleCloseUserMenu = () => {
-
-    setMenuAnchor(null);
-
-  };
-
-  const handleOpenProfile = () => {
-
-    setMenuAnchor(null);    
-    const timeoutId = setTimeout(() => {
-
-      clearTimeout(timeoutId);
-      
-      setLocation('/admin/profile');
-
-    });
-
-  };
-
-  const handleOpenDashboard = () => {
-    
-    setMenuAnchor(null);
-    const timeoutId = setTimeout(() => {
-
-      clearTimeout(timeoutId);
-      setLocation('/admin');
-
-    });
 
   };
 
@@ -245,23 +301,16 @@ export default function Header() {
                     }
                   }}
                 >
-                  {
-                    isDashboard ? (
-                      <MenuItem onClick={handleOpenProfile}>
-                        <ListItemIcon><ManageAccountsIcon /></ListItemIcon>
-                        <ListItemText>Profil</ListItemText>
-                      </MenuItem>
-                    ) : (
-                      <MenuItem onClick={handleOpenDashboard}>
-                        <ListItemIcon><DashboardIcon/></ListItemIcon>
-                        <ListItemText>Panou de control</ListItemText>
-                      </MenuItem>
-                    )
-                  }
-                    <MenuItem onClick={handleLogout}>
-                      <ListItemIcon><LogoutIcon color='error'/></ListItemIcon>
-                      <ListItemText sx={{ color: '#F44336' }}>Deconectare</ListItemText>
+                {
+                  menuItems.map((menuItem) => (
+                    <MenuItem key={menuItem} 
+                      // eslint-disable-next-line no-unused-vars
+                      onClick={(_) => { handleMenuItemClick(menuItem) } }
+                      selected={menuItem === selectedMenuItem}>
+                      <MenuItemContent menuItem={menuItem} />
                     </MenuItem>
+                  ))
+                }
                 </Menu>
               </Box>
             )

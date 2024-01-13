@@ -1,6 +1,5 @@
 
-// TODO: transform the profile page into a profile dialog
-// TODO: redesign the 3 buttons below the calendar... (some kind of menu or something else)
+
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
@@ -16,10 +15,10 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
+import Divider from '@mui/material/Divider';
 
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
@@ -192,21 +191,24 @@ export default function Admin() {
           alignItems: 'center',
           justifyContent: 'space-between',
           height: '40px',
+          marginBottom: '8px',
         }}>
-          <IconButton color='secondary'
-            disabled={loading}
-            >
-            <PlaceIcon fontSize='large'/>
-          </IconButton>
-          <IconButton color='primary'
+          <Button startIcon={<FileDownloadIcon />}
+            color='success'
+            variant='outlined'
+            sx={{ width: '150px' }}
             disabled={loading}>
-            <AddCircleIcon fontSize='large'/>
-          </IconButton>
-          <IconButton color='success'
+            Descarcă
+          </Button>
+          <Button startIcon={<AddIcon />}
+            color='primary'
+            variant='contained'
+            sx={{ width: '150px' }}
             disabled={loading}>
-            <FileDownloadIcon fontSize='large'/>
-          </IconButton>
+            Adaugă
+          </Button>
         </Box>
+        <Divider variant='middle' />
         {
           loading && (
               <CircularProgress
