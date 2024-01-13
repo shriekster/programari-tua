@@ -5,8 +5,13 @@ export const useGlobalStore = create((set) => ({
   bears: 0,
   increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
   // the first 2 state properties/methods are just examples
+  // UI state: loading, error (for the snackbar)
   loading: false,
   setLoading: (newLoadingState) => set({ loading: newLoadingState }),
+  showError: false,
+  setError: (newShowErrorState) => set({ showError: newShowErrorState }),
+  errorMessage: '',
+  setErrorMessage: (newErrorMessage) => set({ errorMessage: newErrorMessage }),
 
   // locations state
   locationsDownloaded: false,
