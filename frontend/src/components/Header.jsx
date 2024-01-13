@@ -23,7 +23,7 @@ import { useGlobalStore } from '../useGlobalStore.js';
 
 import TuaIcon from './TuaIcon';
 
-const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{32,64}$/;
+const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{16}$/;
 
 const menuItems = ['Calendar', 'Locații', 'Profil', 'Deconectare'];
 
@@ -101,23 +101,16 @@ export default function Header() {
         }
 
         case '/admin':
-        case '/admin/': {
-
-          setMenu(true);
-          setRender(true);
-          break;
-
-        }
-
+        case '/admin/':
         case '/admin/locations':
         case '/admin/locations/':
         case '/admin/profile':
         case '/admin/profile/': {
-    
+
           setMenu(true);
           setRender(true);
           break;
-    
+
         }
     
         case '/admin/login':
