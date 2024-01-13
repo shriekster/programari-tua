@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 
 });
 
-router.get('/:locationId', function(req, res) {
+router.get('/:dateId', function(req, res) {
 
   res.json({
     data: {

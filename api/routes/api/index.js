@@ -3,6 +3,7 @@ import { Router } from 'express';
 import sessionRoute from './sessions.js';
 import authorizationRoute from './authorizations.js';
 
+import adminLocationsRoute from './admin/locations.js';
 import adminProfilesRoute from './admin/profiles.js';
 import adminDatesRoute from './admin/dates.js';
 import adminTimeRangesRoute from './admin/timeRanges.js';
@@ -25,6 +26,7 @@ router.use('/authorizations', authorizationRoute);
 // the rest of the API will use an authorization middleware, which will check the access token
 
 // admin API
+router.use('/admin/locations', authorize, adminLocationsRoute);
 router.use('/admin/profiles', authorize, adminProfilesRoute);
 router.use('/admin/dates', authorize, adminDatesRoute);
 router.use('/admin/timeranges', authorize, adminTimeRangesRoute);
