@@ -8,6 +8,12 @@ export const useGlobalStore = create((set) => ({
   loading: false,
   setLoading: (newLoadingState) => set({ loading: newLoadingState }),
 
+  // locations state
+  locationsDownloaded: false,
+  setLocationsDownloaded: (newLocationsDownloadedState) => set({ locationsDownloaded: newLocationsDownloadedState }),
+  locations: null,
+  setLocations: (newLocations) => set({ locations: newLocations }),
+
   // profile state
   profileDownloaded: false,
   setProfileDownloaded: (newProfileDownloadedState) => set({ profileDownloaded: newProfileDownloadedState }),
@@ -21,8 +27,6 @@ export const useGlobalStore = create((set) => ({
   // calendar, location and appointments state
   registryDownloaded: false,
   setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),
-  locations: null,
-  setLocations: (newLocations) => set({ locations: newLocations }),
   dates: null,
   setDates: (newDates) => set({ dates: newDates }),
   timeRanges: null,

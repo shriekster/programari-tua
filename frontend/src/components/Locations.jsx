@@ -1,5 +1,14 @@
-// TODO: subscribe to client events (SSE) 
+
 import { useState, useEffect } from 'react';
+
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+
+import { Map } from '@react-ol/fiber';
+import 'ol/ol.css';
 
 import { useGlobalStore } from '../useGlobalStore';
 
@@ -9,19 +18,18 @@ import { useGlobalStore } from '../useGlobalStore';
 // a better solution, at least for now
 const {
   setLoading,
-  setSubcriptionId,
-  setDates,
-  setTimeRanges,
+  setLocations,
+  setLocationsDownloaded,
 } = useGlobalStore.getState();
 
 export default function Locations() {
 
   const loading = useGlobalStore((state) => state.loading);
-  const subscriptionId = useGlobalStore((state) => state.subcriptionId);
+  const locations = useGlobalStore((state) => state.locations);
 
   return (
     <>
-    HOME
+
     </>
   )
 }
