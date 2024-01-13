@@ -19,6 +19,7 @@ const Locations = lazy(() => import('./components/Locations'));
 const Profile = lazy(() => import('./components/Profile'));
 
 import NotFound from './components/NotFound';
+import ErrorSnackbar from './components/ErrorSnackbar';
 
 /* 
   In wouter, any Route with empty path is considered always active. 
@@ -47,6 +48,7 @@ function App() {
           </Switch>
         </Suspense>
       </LocalizationProvider>
+      <ErrorSnackbar />
     </Box>
   )
 }

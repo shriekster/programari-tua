@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
@@ -11,8 +11,6 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 
 import { navigate } from 'wouter/use-location';
 
@@ -44,18 +42,10 @@ export default function Login() {
     error: false,
   });
   const [showPassword, setShowPassword] = useState(false);
-  
-  const [showError, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
-
-  // make sure that the component is not initially loading
-  useEffect(() => {
-
-    setLoading(false)
-
-  }, [setLoading]);
+  const setError = useGlobalStore((state) => state.setError);
+  const setErrorMessage = useGlobalStore((state) => state.setErrorMessage);
 
   const handleUsernameChange = (event) => {
 
@@ -87,16 +77,6 @@ export default function Login() {
 
     event.preventDefault();
     
-  };
-
-  const handleClose = (event, reason) => {
-
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setError(false);
-
   };
 
   const handleSubmit = async (event) => {
@@ -303,11 +283,6 @@ export default function Login() {
               )
           }
         </form>
-        <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
-            {errorMessage}
-          </Alert>
-        </Snackbar>
       </Box>
     </ThemeProvider>
   );

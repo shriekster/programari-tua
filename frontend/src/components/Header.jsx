@@ -209,6 +209,7 @@ export default function Header() {
 
       // for the moment, ignore any error, but take into account the fact that the
       // access or refresh token might not expire!
+      setLoading(false);
       setLocation('/admin/login', {
         replace: true
       });
