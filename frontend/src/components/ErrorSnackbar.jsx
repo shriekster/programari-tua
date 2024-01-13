@@ -4,7 +4,6 @@ import Alert from '@mui/material/Alert';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
-// eslint-disable-next-line react/prop-types
 export default function ErrorSnackbar() {
 
     const [showError, setError] = useGlobalStore((state) => [state.showError, state.setError]);
