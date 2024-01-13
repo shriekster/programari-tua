@@ -1,5 +1,6 @@
 
-
+// TODO: 'global' snackbar
+// TODO: find a solution for geocoding (location search)
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
