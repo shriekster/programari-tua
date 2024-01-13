@@ -194,124 +194,120 @@ export default function Login() {
   return (
     <ThemeProvider theme={loginTheme}>
       <Box
-          sx={{
-              margin: 0,
-              padding: '2.5%',
-              height: '100dvh',
-              display: 'flex',
-              flexDirection: 'column',
-          }}>
-          <Box>
-            <img
-              src={tuaImage}
-              alt='Logo traseul utilitar-aplicativ'
-              width={300}
-              style={{
-                margin: 'auto'
+        sx={{
+            margin: 0,
+            height: '100dvh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'column',
+        }}>
+        <img
+          src={tuaImage}
+          alt='Logo traseul utilitar-aplicativ'
+          width={300}
+        />
+        <form style={{
+            padding: 0,
+            height: '300px',
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'space-evenly',
+            position: 'relative',
+            flexShrink: 0,
+          }}
+          autoComplete='on'
+          onSubmit={handleSubmit}>
+          <TextField sx={{
+              minWidth: '300px',
+              width: '50%',
+              maxWidth: '350px',
+            }}
+            autoFocus
+            color='primary'
+            InputProps={{
+              startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
+            }}
+            inputProps={{
+              maxLength: 64
+            }}
+            name='username'
+            autoComplete='username'
+            value={username.value}
+            helperText={username.helperText}
+            error={username.error}
+            disabled={loading}
+            onChange={handleUsernameChange}/>
+          <TextField sx={{
+              minWidth: '300px',
+              width: '50%',
+              maxWidth: '350px',
+            }}
+            color='primary'
+            InputProps={{
+              startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
+              endAdornment: <InputAdornment position='end'>
+                  <IconButton
+                      aria-label='schimba vizibilitatea parolei'
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge='end'
+                      color={password.error ? 'error' : 'primary'}
+                      disabled={loading}
+                      >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                  </InputAdornment>,
+            }}
+            inputProps={{
+              maxLength: 64
+            }}
+            name='password'
+            type={showPassword ? 'text' : 'password'}
+            autoComplete='current-password'
+            value={password.value}
+            helperText={password.helperText}
+            error={password.error}
+            disabled={loading}
+            onChange={handlePasswordChange}/>
+          <Button 
+              type='submit'
+              variant='contained'
+              sx={{
+                minWidth: '300px',
+                width: '50%',
+                maxWidth: '350px',
               }}
-            />
-            <form style={{
-                margin: 'auto',
-                padding: 0,
-                height: '300px',
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                position: 'relative'
-              }}
-              autoComplete='on'
-              onSubmit={handleSubmit}>
-              <TextField sx={{
-                  minWidth: '300px',
-                  width: '50%',
-                  maxWidth: '350px',
-                }}
-                autoFocus
-                color='primary'
-                InputProps={{
-                  startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
-                }}
-                inputProps={{
-                  maxLength: 64
-                }}
-                name='username'
-                autoComplete='username'
-                value={username.value}
-                helperText={username.helperText}
-                error={username.error}
-                disabled={loading}
-                onChange={handleUsernameChange}/>
-              <TextField sx={{
-                  minWidth: '300px',
-                  width: '50%',
-                  maxWidth: '350px',
-                }}
-                color='primary'
-                InputProps={{
-                  startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
-                  endAdornment: <InputAdornment position='end'>
-                      <IconButton
-                          aria-label='schimba vizibilitatea parolei'
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge='end'
-                          color={password.error ? 'error' : 'primary'}
-                          disabled={loading}
-                          >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                      </InputAdornment>,
-                }}
-                inputProps={{
-                  maxLength: 64
-                }}
-                name='password'
-                type={showPassword ? 'text' : 'password'}
-                autoComplete='current-password'
-                value={password.value}
-                helperText={password.helperText}
-                error={password.error}
-                disabled={loading}
-                onChange={handlePasswordChange}/>
-              <Button 
-                  type='submit'
-                  variant='contained'
-                  sx={{
-                    minWidth: '300px',
-                    width: '50%',
-                    maxWidth: '350px',
-                  }}
+              color='primary'
+              size='large'
+              disabled={loading}>
+              LOGIN
+          </Button>
+          {
+              loading && (
+              <CircularProgress
+                  size={48}
                   color='primary'
-                  size='large'
-                  disabled={loading}>
-                  LOGIN
-              </Button>
-              {
-                  loading && (
-                  <CircularProgress
-                      size={48}
-                      color='primary'
-                      thickness={8}
-                      sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        marginTop: '-24px',
-                        marginLeft: '-24px',
-                      }}
-                      disableShrink
-                  />
-                  )
-              }
-            </form>
-          </Box>
-          <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
-            <Alert onClose={handleClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
-              {errorMessage}
-            </Alert>
-          </Snackbar>
+                  thickness={8}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-24px',
+                    marginLeft: '-24px',
+                  }}
+                  disableShrink
+              />
+              )
+          }
+        </form>
+        <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
+          <Alert onClose={handleClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </ThemeProvider>
   );
