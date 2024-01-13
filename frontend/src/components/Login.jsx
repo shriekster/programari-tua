@@ -198,33 +198,32 @@ export default function Login() {
               margin: 0,
               padding: '2.5%',
               height: '100dvh',
-              width: '100dvw',
               display: 'flex',
               flexDirection: 'column',
           }}>
-          <img
-          src={tuaImage}
-          alt='Logo traseul utilitar-aplicativ'
-          width={300}
-          style={{
-              margin: 'auto'
-          }}
-          />
-          <form style={{
-              margin: 'auto',
-              padding: 0,
-              height: '50dvh',
-              minHeight: '350px',
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'space-evenly',
-              position: 'relative'
-            }}
-            autoComplete='on'
-            onSubmit={handleSubmit}>
-            <TextField sx={{
+          <Box>
+            <img
+              src={tuaImage}
+              alt='Logo traseul utilitar-aplicativ'
+              width={300}
+              style={{
+                margin: 'auto'
+              }}
+            />
+            <form style={{
+                margin: 'auto',
+                padding: 0,
+                height: '300px',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'space-evenly',
+                position: 'relative'
+              }}
+              autoComplete='on'
+              onSubmit={handleSubmit}>
+              <TextField sx={{
                   minWidth: '300px',
                   width: '50%',
                   maxWidth: '350px',
@@ -244,7 +243,7 @@ export default function Login() {
                 error={username.error}
                 disabled={loading}
                 onChange={handleUsernameChange}/>
-            <TextField sx={{
+              <TextField sx={{
                   minWidth: '300px',
                   width: '50%',
                   maxWidth: '350px',
@@ -276,37 +275,38 @@ export default function Login() {
                 error={password.error}
                 disabled={loading}
                 onChange={handlePasswordChange}/>
-            <Button 
-                type='submit'
-                variant='contained'
-                sx={{
-                  minWidth: '300px',
-                  width: '50%',
-                  maxWidth: '350px',
-                }}
-                color='primary'
-                size='large'
-                disabled={loading}>
-                LOGIN
-            </Button>
-            {
-                loading && (
-                <CircularProgress
-                    size={48}
-                    color='primary'
-                    thickness={8}
-                    sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      marginTop: '-24px',
-                      marginLeft: '-24px',
-                    }}
-                    disableShrink
-                />
-                )
-            }
-          </form>
+              <Button 
+                  type='submit'
+                  variant='contained'
+                  sx={{
+                    minWidth: '300px',
+                    width: '50%',
+                    maxWidth: '350px',
+                  }}
+                  color='primary'
+                  size='large'
+                  disabled={loading}>
+                  LOGIN
+              </Button>
+              {
+                  loading && (
+                  <CircularProgress
+                      size={48}
+                      color='primary'
+                      thickness={8}
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        marginTop: '-24px',
+                        marginLeft: '-24px',
+                      }}
+                      disableShrink
+                  />
+                  )
+              }
+            </form>
+          </Box>
           <Snackbar open={showError} autoHideDuration={6000} onClose={handleClose}>
             <Alert onClose={handleClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
               {errorMessage}
@@ -314,6 +314,6 @@ export default function Login() {
           </Snackbar>
       </Box>
     </ThemeProvider>
-  )
+  );
 
 }
