@@ -8,7 +8,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import 'dayjs/locale/ro';
 
 import Header from './components/Header';
-import Loading from './components/Loading';
+import LoadingPage from './components/LoadingPage';
+import LoadingIndicator from './components/LoadingIndicator';
 
 // most of the 'page' components are loaded lazily
 const Home = lazy(() => import('./components/Home'));
@@ -33,10 +34,11 @@ function App() {
       width: '100%',
       maxWidth: '960px',
       margin: '0 auto',
+      position: 'relative',
     }}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale='ro'>
         <Header />
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<LoadingPage />}>
           <Switch>
             <Route path='/admin/login' component={Login} />
             <Route path='/admin' component={Admin} />
@@ -49,6 +51,7 @@ function App() {
         </Suspense>
       </LocalizationProvider>
       <ErrorSnackbar />
+      <LoadingIndicator />
     </Box>
   )
 }

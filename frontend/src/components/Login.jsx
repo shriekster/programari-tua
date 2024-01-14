@@ -9,7 +9,6 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
 
 import { navigate } from 'wouter/use-location';
 
@@ -254,23 +253,6 @@ export default function Login() {
             disabled={loading}>
             LOGIN
         </Button>
-        {
-            loading && (
-            <CircularProgress
-                size={48}
-                color='primary'
-                thickness={8}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-24px',
-                  marginLeft: '-24px',
-                }}
-                disableShrink
-            />
-            )
-        }
       </form>
     </Box>
   );

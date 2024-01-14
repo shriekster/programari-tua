@@ -18,7 +18,6 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 
 import { fetchEventSource } from '@microsoft/fetch-event-source';
@@ -176,7 +175,6 @@ export default function Admin() {
     <Box sx={{
         margin: 0,
         padding: 0,
-        position: 'relative'
       }}>
       <DateCalendar 
         views={['day']}
@@ -211,23 +209,6 @@ export default function Admin() {
           </Button>
         </Box>
         <Divider variant='middle' />
-        {
-          loading && (
-              <CircularProgress
-                  size={48}
-                  color='primary'
-                  thickness={8}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-24px',
-                    marginLeft: '-24px',
-                  }}
-                  disableShrink
-              />
-            )
-          }
     </Box>
   );
 

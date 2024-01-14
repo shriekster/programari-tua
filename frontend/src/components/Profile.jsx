@@ -6,7 +6,6 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
-import CircularProgress from '@mui/material/CircularProgress';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 import PhoneIcon from '@mui/icons-material/Phone';
 import Snackbar from '@mui/material/Snackbar';
@@ -288,9 +287,8 @@ export default function Profile() {
 
     return (
         <form onSubmit={handleSave} style={{
-            position: 'relative',
             padding: '64px 8px 8px 8px',
-            margin: '8px',
+            margin: '0 8px',
             overflowY: 'scroll',
         }}>
             <Box sx={{ 
@@ -348,23 +346,6 @@ export default function Profile() {
                     </Button>
                 </Box>
             </Box>
-            {
-                loading && (
-                <CircularProgress
-                    size={32}
-                    color='primary'
-                    thickness={6}
-                    sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-16px',
-                    marginLeft: '-16px',
-                    }}
-                    disableShrink
-                />
-                )
-            }
             <Snackbar open={showFetchError} autoHideDuration={6000} onClose={handleErrorClose}>
                 <Alert onClose={handleErrorClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
                 {fetchErrorMessage}

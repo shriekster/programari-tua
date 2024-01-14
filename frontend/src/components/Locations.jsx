@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
 
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -28,8 +30,18 @@ export default function Locations() {
   const locations = useGlobalStore((state) => state.locations);
 
   return (
-    <>
-
-    </>
+    <Box sx={{
+      maxWidth: '400px', 
+      padding: '64px 16px 16px 16px',
+    }}>
+      <Typography>
+        Locurile de desfășurare ale antrenamentelor
+      </Typography>
+      <List>
+      {
+        
+      }
+      </List>
+    </Box>
   )
 }
