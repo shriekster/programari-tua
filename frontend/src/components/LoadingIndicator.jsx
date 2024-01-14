@@ -9,19 +9,19 @@ export default function LoadingIndicator() {
     if (loading) {
 
         return (
-        <CircularProgress
-            size={48}
-            color='primary'
-            thickness={8}
-            sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-24px',
-                marginLeft: '-24px',
-            }}
-            disableShrink
-            />
+            <CircularProgress
+                size={48}
+                color='primary'
+                thickness={8}
+                sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-24px',
+                    marginLeft: '-24px',
+                }}
+                disableShrink
+                />
         );
 
     }
