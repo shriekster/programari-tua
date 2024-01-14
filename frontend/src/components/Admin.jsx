@@ -197,14 +197,14 @@ export default function Admin() {
         }}>
           <Button startIcon={<FileDownloadIcon />}
             color='success'
-            variant='outlined'
+            variant='text'
             sx={{ width: '150px' }}
             disabled={loading}>
             Descarcă
           </Button>
           <Button startIcon={<AddIcon />}
             color='primary'
-            variant='contained'
+            variant='outlined'
             sx={{ width: '150px' }}
             disabled={loading}>
             Adaugă

@@ -10,16 +10,19 @@ import '@fontsource/roboto/700.css';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-const darkTheme = createTheme({
+const tuaDarkTheme = createTheme({
   palette: {
-    mode: 'dark',
+    primary: {
+      main: '#7f805d'
+    },
+    mode: 'dark'
   },
 });
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ThemeProvider theme={darkTheme}>
+    <ThemeProvider theme={tuaDarkTheme}>
       <CssBaseline />
       <App />
     </ThemeProvider>

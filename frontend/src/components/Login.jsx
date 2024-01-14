@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/system/Box';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -18,15 +17,6 @@ import { useGlobalStore } from '../useGlobalStore.js';
 
 import tuaImage from '../assets/tua.webp';
 
-
-const loginTheme = createTheme({
-    palette: {
-        primary: {
-        main: '#7f805d'
-        },
-        mode: 'dark'
-    },
-});
 
 // eslint-disable-next-line react/prop-types
 export default function Login() {
@@ -172,119 +162,117 @@ export default function Login() {
   };
 
   return (
-    <ThemeProvider theme={loginTheme}>
-      <Box
-        sx={{
-            margin: 0,
-            height: '100dvh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-        }}>
-        <img
-          src={tuaImage}
-          alt='Logo traseul utilitar-aplicativ'
-          width={300}
-        />
-        <form style={{
-            padding: 0,
-            height: '300px',
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            position: 'relative',
-            flexShrink: 0,
+    <Box
+      sx={{
+          margin: 0,
+          height: '100dvh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
+      }}>
+      <img
+        src={tuaImage}
+        alt='Logo traseul utilitar-aplicativ'
+        width={300}
+      />
+      <form style={{
+          padding: 0,
+          height: '300px',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-evenly',
+          position: 'relative',
+          flexShrink: 0,
+        }}
+        autoComplete='on'
+        onSubmit={handleSubmit}>
+        <TextField sx={{
+            minWidth: '300px',
+            width: '50%',
+            maxWidth: '350px',
           }}
-          autoComplete='on'
-          onSubmit={handleSubmit}>
-          <TextField sx={{
+          autoFocus
+          color='primary'
+          InputProps={{
+            startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
+          }}
+          inputProps={{
+            maxLength: 64
+          }}
+          name='username'
+          autoComplete='username'
+          value={username.value}
+          helperText={username.helperText}
+          error={username.error}
+          disabled={loading}
+          onChange={handleUsernameChange}/>
+        <TextField sx={{
+            minWidth: '300px',
+            width: '50%',
+            maxWidth: '350px',
+          }}
+          color='primary'
+          InputProps={{
+            startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
+            endAdornment: <InputAdornment position='end'>
+                <IconButton
+                    aria-label='schimba vizibilitatea parolei'
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge='end'
+                    color={password.error ? 'error' : 'primary'}
+                    disabled={loading}
+                    >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+                </InputAdornment>,
+          }}
+          inputProps={{
+            maxLength: 64
+          }}
+          name='password'
+          type={showPassword ? 'text' : 'password'}
+          autoComplete='current-password'
+          value={password.value}
+          helperText={password.helperText}
+          error={password.error}
+          disabled={loading}
+          onChange={handlePasswordChange}/>
+        <Button 
+            type='submit'
+            variant='contained'
+            sx={{
               minWidth: '300px',
               width: '50%',
               maxWidth: '350px',
             }}
-            autoFocus
             color='primary'
-            InputProps={{
-              startAdornment: <InputAdornment position='start'><PersonIcon color={username.error ? 'error' : 'primary'} /></InputAdornment>
-            }}
-            inputProps={{
-              maxLength: 64
-            }}
-            name='username'
-            autoComplete='username'
-            value={username.value}
-            helperText={username.helperText}
-            error={username.error}
-            disabled={loading}
-            onChange={handleUsernameChange}/>
-          <TextField sx={{
-              minWidth: '300px',
-              width: '50%',
-              maxWidth: '350px',
-            }}
-            color='primary'
-            InputProps={{
-              startAdornment: <InputAdornment position='start'><KeyIcon color={password.error ? 'error' : 'primary'} /></InputAdornment>,
-              endAdornment: <InputAdornment position='end'>
-                  <IconButton
-                      aria-label='schimba vizibilitatea parolei'
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      edge='end'
-                      color={password.error ? 'error' : 'primary'}
-                      disabled={loading}
-                      >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                  </InputAdornment>,
-            }}
-            inputProps={{
-              maxLength: 64
-            }}
-            name='password'
-            type={showPassword ? 'text' : 'password'}
-            autoComplete='current-password'
-            value={password.value}
-            helperText={password.helperText}
-            error={password.error}
-            disabled={loading}
-            onChange={handlePasswordChange}/>
-          <Button 
-              type='submit'
-              variant='contained'
-              sx={{
-                minWidth: '300px',
-                width: '50%',
-                maxWidth: '350px',
-              }}
-              color='primary'
-              size='large'
-              disabled={loading}>
-              LOGIN
-          </Button>
-          {
-              loading && (
-              <CircularProgress
-                  size={48}
-                  color='primary'
-                  thickness={8}
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-24px',
-                    marginLeft: '-24px',
-                  }}
-                  disableShrink
-              />
-              )
-          }
-        </form>
-      </Box>
-    </ThemeProvider>
+            size='large'
+            disabled={loading}>
+            LOGIN
+        </Button>
+        {
+            loading && (
+            <CircularProgress
+                size={48}
+                color='primary'
+                thickness={8}
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-24px',
+                  marginLeft: '-24px',
+                }}
+                disableShrink
+            />
+            )
+        }
+      </form>
+    </Box>
   );
 
 }

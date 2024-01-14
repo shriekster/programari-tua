@@ -156,7 +156,7 @@ export default function TuaIcon(props) {
                 A 71.34 71.34 0.0 0 0 714.55 84.30"
                 />
                 </g>
-                <path fill="#3f51b5" d="
+                <path fill="#7f805d" d="
                 M 0.00 0.00
                 L 822.00 0.00
                 L 822.00 676.00

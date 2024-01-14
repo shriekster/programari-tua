@@ -10,12 +10,13 @@ export default function Loading() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: '100dvw',
+            width: '100%',
+            maxWidth: '960px',
             height: 'calc(100dvh - 56px)',
         }}>
             <CircularProgress
                   size={48}
-                  color='secondary'
+                  color='primary'
                   thickness={8}
                   disableShrink
               />
