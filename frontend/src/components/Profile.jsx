@@ -8,8 +8,6 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import PersonPinIcon from '@mui/icons-material/PersonPin';
 import PhoneIcon from '@mui/icons-material/Phone';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
@@ -24,6 +22,8 @@ const {
     setProfileUrl,
     setFullName,
     setPhoneNumber,
+    setError,
+    setErrorMessage,
   } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
@@ -33,8 +33,6 @@ export default function Profile() {
     const [nameError, setNameError] = useState(false);
     const [phoneHelperText, setPhoneHelperText] = useState(' ');
     const [phoneError, setPhoneError] = useState(false);
-    const [showFetchError, setFetchError] = useState(false);
-    const [fetchErrorMessage, setFetchErrorMessage] = useState('');
 
     const loading = useGlobalStore((state) => state.loading);
     const profileUrl = useGlobalStore((state) => state.profileUrl);
@@ -116,19 +114,14 @@ export default function Profile() {
                 };
     
                 const response = await fetch(profileUrl, requestOptions);
-        
                 status = response.status;
         
-                if (!response.ok) {
-        
-                  throw new Error('Something happened')
-        
-                }
         
             } catch (err) {
     
                 // eslint-disable-next-line no-unused-vars
                 error = err;
+                status = 400; // client-side error
     
             }
 
@@ -151,8 +144,8 @@ export default function Profile() {
                 default: {
 
                     setLoading(false);
-                    setFetchErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-                    setFetchError(true);
+                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setError(true);
                     break;
 
                 }
@@ -178,16 +171,6 @@ export default function Profile() {
 
         }
 
-    };
-
-    const handleErrorClose = (event, reason) => {
-
-        if (reason === 'clickaway') {
-          return;
-        }
-    
-        setFetchError(false);
-    
     };
 
     useEffect(() => {
@@ -223,10 +206,9 @@ export default function Profile() {
         
                 // eslint-disable-next-line no-unused-vars
                 error = err;
+                status = 400; // client-side error
         
             } finally {
-
-            if (!error) {
 
                 switch (status) {
 
@@ -263,13 +245,12 @@ export default function Profile() {
                     default: {
 
                         setLoading(false);
-                        setFetchError(true);
-                        setFetchErrorMessage('Eroare! Reîmprospătează pagina (refresh).');
+                        setErrorMessage('Eroare! Reîmprospătează pagina.');
+                        setError(true);
+                        
                     }
 
                 }
-
-            }
 
             }
     
@@ -346,11 +327,6 @@ export default function Profile() {
                     </Button>
                 </Box>
             </Box>
-            <Snackbar open={showFetchError} autoHideDuration={6000} onClose={handleErrorClose}>
-                <Alert onClose={handleErrorClose} severity='error' variant='outlined' sx={{ width: '100%' }}>
-                {fetchErrorMessage}
-                </Alert>
-            </Snackbar>
         </form>
     );
 
