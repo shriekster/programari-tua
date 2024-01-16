@@ -240,7 +240,6 @@ export default function Header() {
               variant='h5'
               noWrap
               sx={{
-                mr: 2,
                 display: 'flex',
                 fontFamily: 'monospace',
                 fontWeight: 700,

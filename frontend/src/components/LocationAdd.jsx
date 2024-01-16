@@ -1,4 +1,7 @@
-// TODO: finish
+// TODO:    implement the search box: positioned over the map,
+//          with a menu displaying the results;
+//          make sure to somehow throttle/debounce the search requests,
+//          so that the API call frequency is at most 1 request/second
 import { useState, useEffect, useRef } from 'react';
 
 
@@ -13,6 +16,7 @@ import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import IconButton  from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import Menu from '@mui/material/Menu';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -40,12 +44,15 @@ export default function LocationAdd({ open, handleClose }) {
     const [searchError, setSearchError] = useState(false);
     const [results, setResults] = useState([]);
     const [selectedResultIndex, setSelectedResultIndex] = useState(-1);
+    const [menuAnchor, setMenuAnchor] = useState(null);
 
     const [map, setMap] = useState(null);
 
     const mapElementRef = useRef();
     const mapObjectRef = useRef();
     const vectorSourceRef = useRef();
+
+    useGeographic();
 
     const handleTargetLocationChange = (event) => {
 
@@ -209,35 +216,7 @@ export default function LocationAdd({ open, handleClose }) {
 
     }, [map]);
 
-    useEffect(() => {
-        
-        if (results && 0 <= selectedResultIndex && selectedResultIndex < results.length) {
-
-            const result = results[selectedResultIndex];
-            const coordinate = [result.lon, result.lat];
-
-            console.log(coordinate)
-
-            if (mapObjectRef.current) {
-
-                // transition the view to the selected coordinate
-                const view = mapObjectRef.current.getView();
-
-                if (view) {
-
-                    view.animate({
-                        center: coordinate
-                    });
-
-                }
-    
-            }
-
-        }
-
-        
-    }, [results, selectedResultIndex]);
-
+    // add a feature on the map to the selected location from the results
     useEffect(() => {
        
         if (results && 0 <= selectedResultIndex && selectedResultIndex < results.length) {
@@ -261,77 +240,112 @@ export default function LocationAdd({ open, handleClose }) {
         
     }, [results, selectedResultIndex]);
 
-    useGeographic();
+    // animate the view: transition to the selected coordinate
+    useEffect(() => {
+        
+        if (results && 0 <= selectedResultIndex && selectedResultIndex < results.length) {
+
+            const result = results[selectedResultIndex];
+            const coordinate = [result.lon, result.lat];
+
+            console.log(coordinate)
+
+            if (mapObjectRef.current) {
+
+                const view = mapObjectRef.current.getView();
+
+                if (view) {
+
+                    view.animate({
+                        center: coordinate,
+                        zoom: 18
+                    });
+
+                }
+    
+            }
+
+        }
+
+        
+    }, [results, selectedResultIndex]);
 
     return (
 
         <Dialog
             open={open} 
             onClose={handleClose}
-            fullWidth
-            maxWidth='sm'
+            fullScreen
+            //fullWidth
+            //maxWidth='md'
             //keepMounted={false}
             >
             <DialogTitle>
-            <form style={{
-                        padding: 0,
-                        margin: '0 auto',
-                        height: '80px',
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                        marginBottom: '8px'
-                    }}
-                    autoComplete='off'
-                    onSubmit={handleSearch}
-                    >
-                    <TextField sx={{ width: '300px' }}
-                        color='primary'
-                        InputProps={{
-                            endAdornment: 
-                            <InputAdornment position='end'>
-                                <IconButton edge='end' onClick={handleSearch} disabled={loading}>
-                                    <TravelExploreIcon fontSize='large' color={searchError ? 'error' : 'primary'} />
-                                </IconButton>
-                            </InputAdornment>
-                            
-                        }}
-                        inputProps={{
-                            maxLength: 256
-                        }}
-                        name='location'
-                        autoComplete='off'
-                        value={targetLocationName}
-                        helperText={helperText}
-                        error={searchError}
-                        disabled={loading}
-                        onChange={handleTargetLocationChange}
-                    />
-                </form>
+                Adaugă o locație
             </DialogTitle>
-            <DialogContent sx={{ margin: 0, padding: 0, position: 'relative' }}>
+            <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
                 <List sx={{
                     width: '300px',
-                    height: '100px',
-                    margin: '0 auto',
-                    overflowY: 'scroll',
                 }}>
                 {
                     results.map((result, index) => (
-                        <ListItem key={result.osm_id} onClick={() => { handleResultClick(index) }}>
+                        <ListItemButton key={result.osm_id} onClick={() => { handleResultClick(index) }}
+                            selected={index === selectedResultIndex}>
                             {result?.display_name}
-                        </ListItem>
+                        </ListItemButton>
                     ))
                 }
                 </List>
                 <div id='map' style={{
                         width: '300px',
                         height: '300px',
-                        margin: '0 auto',
+                        margin: '40px auto',
+                        position: 'relative',
                     }}
                     ref={mapElementRef}>
+                    <form style={{
+                                padding: 0,
+                                margin: '0 auto',
+                                width: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                flexShrink: 0,
+                                position: 'absolute',
+                                top: '.5em',
+                                right: '.5em',
+                                zIndex: 9999,
+                                background: 'whitesmoke',
+                                borderRadius: '4px',
+                                color: 'red'
+                            }}
+                            autoComplete='off'
+                            onSubmit={handleSearch}
+                            >
+                            <TextField sx={{ width: '100%' }}
+                                autoFocus
+                                color='primary'
+                                InputProps={{
+                                    endAdornment: 
+                                    <InputAdornment position='end'>
+                                        <IconButton edge='end' onClick={handleSearch} disabled={loading}>
+                                            <TravelExploreIcon fontSize='large' color={searchError ? 'error' : 'primary'} />
+                                        </IconButton>
+                                    </InputAdornment>,
+                                    sx: { color: 'black' }
+                                }}
+                                inputProps={{
+                                    maxLength: 256,
+                                    color: 'red'
+                                }}
+                                name='location'
+                                autoComplete='off'
+                                value={targetLocationName}
+                                error={searchError}
+                                disabled={loading}
+                                onChange={handleTargetLocationChange}
+                            />
+                        </form>
                 </div>
                 {
                     loading && (
