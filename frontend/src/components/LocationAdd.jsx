@@ -1,7 +1,8 @@
 // TODO:    implement the search box: positioned over the map,
 //          with a menu displaying the results;
 //          make sure to somehow throttle/debounce the search requests,
-//          so that the API call frequency is at most 1 request/second
+//          so that the API call frequency is at most 1 request/second;
+//          also, this component should not be fullscreen
 import { useState, useEffect, useRef } from 'react';
 
 
