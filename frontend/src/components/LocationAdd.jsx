@@ -3,6 +3,7 @@
 //          make sure to somehow throttle/debounce the search requests,
 //          so that the API call frequency is at most 1 request/second;
 //          also, this component should not be fullscreen
+// TODO: use Autocomplete component
 import { useState, useEffect, useRef } from 'react';
 
 
