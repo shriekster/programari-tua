@@ -23,6 +23,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import CircularProgress from '@mui/material/CircularProgress';
 
+import Autocomplete from '@mui/material/Autocomplete';
+
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
 import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
@@ -35,34 +39,56 @@ import { Point } from 'ol/geom';
 import { useGeographic } from 'ol/proj';
 import 'ol/ol.css';
 
+const tuaLightInnerTheme = createTheme({
+    palette: {
+      mode: 'light'
+    },
+});
+
 
 // eslint-disable-next-line react/prop-types
 export default function LocationAdd({ open, handleClose }) {
 
     const [loading, setLoading] = useState(false);
     const [targetLocationName, setTargetLocationName] = useState('');
-    const [helperText, setHelperText] = useState(' ');
+    const [searchValue, setSearchValue] = useState('');
+    const [searchInputValue, setSearchInputValue] = useState('');
     const [searchError, setSearchError] = useState(false);
     const [results, setResults] = useState([]);
-    const [selectedResultIndex, setSelectedResultIndex] = useState(-1);
+    const [selectedResult, setSelectedResult] = useState(null);
     const [menuAnchor, setMenuAnchor] = useState(null);
+    const [openResultsList, setOpenResultsList] = useState(false);
 
     const [map, setMap] = useState(null);
 
     const mapElementRef = useRef();
     const mapObjectRef = useRef();
     const vectorSourceRef = useRef();
+    const searchBoxRef = useRef();
 
     useGeographic();
 
     const handleTargetLocationChange = (event) => {
 
         setTargetLocationName(event.target.value);
-        setSearchError(false);
-        setHelperText(' ');
 
         setResults([]);
-        setSelectedResultIndex(-1);
+        setSelectedResult(null);
+
+    };
+
+    const handleSearchChange = (event, newValue) => {
+
+        setSearchValue(newValue);
+
+        setResults([]);
+        setSelectedResult(null);
+
+    };
+
+    const handleSearchInputChange = (event, newInputValue) => {
+
+        setSearchInputValue(newInputValue);
 
     };
 
@@ -83,7 +109,7 @@ export default function LocationAdd({ open, handleClose }) {
                 },
             };
 
-            const searchEndpointUrlWithParameters = `https://nominatim.openstreetmap.org/search?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=1&q=${targetLocationName}`;
+            const searchEndpointUrlWithParameters = `https://nominatim.openstreetmap.org/search?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${targetLocationName}`;
             
             try {
 
@@ -108,6 +134,7 @@ export default function LocationAdd({ open, handleClose }) {
                 if (!error && data) {
 
                     setResults(data);
+                    setMenuAnchor(searchBoxRef.current);
 
                 }
 
@@ -116,19 +143,30 @@ export default function LocationAdd({ open, handleClose }) {
         } else {
 
             setSearchError(true);
-            setHelperText('Completează câmpul!');
 
         }
 
     };
 
-    const handleResultClick = (index) => {
+    const handleResultClick = (result) => {
 
-        setSelectedResultIndex(index);
+        setSelectedResult(result);
+        setTargetLocationName(result?.name);
+        setMenuAnchor(null);
 
-        if (mapElementRef.current) {
+    };
 
-            mapElementRef.current?.scrollIntoView({ behavior: 'smooth'});
+    const handleCloseMenu = () => {
+
+        setMenuAnchor(null);
+
+    };
+
+    const handleSearchBoxFocus = () => {
+
+        if (results.length) {
+
+            setMenuAnchor(searchBoxRef.current)
 
         }
 
@@ -142,7 +180,6 @@ export default function LocationAdd({ open, handleClose }) {
 
             setTargetLocationName('');
             setSearchError(false);
-            setHelperText(' ');
             setResults([]);
 
         }
@@ -220,10 +257,9 @@ export default function LocationAdd({ open, handleClose }) {
     // add a feature on the map to the selected location from the results
     useEffect(() => {
        
-        if (results && 0 <= selectedResultIndex && selectedResultIndex < results.length) {
+        if (selectedResult) {
 
-            const result = results[selectedResultIndex];
-            const coordinate = [result.lon, result.lat];
+            const coordinate = [selectedResult.lon, selectedResult.lat];
 
             if (vectorSourceRef.current) {
 
@@ -239,17 +275,14 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [results, selectedResultIndex]);
+    }, [selectedResult]);
 
     // animate the view: transition to the selected coordinate
     useEffect(() => {
         
-        if (results && 0 <= selectedResultIndex && selectedResultIndex < results.length) {
+        if (selectedResult) {
 
-            const result = results[selectedResultIndex];
-            const coordinate = [result.lon, result.lat];
-
-            console.log(coordinate)
+            const coordinate = [selectedResult.lon, selectedResult.lat];
 
             if (mapObjectRef.current) {
 
@@ -269,34 +302,21 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [results, selectedResultIndex]);
+    }, [selectedResult]);
 
     return (
 
         <Dialog
             open={open} 
             onClose={handleClose}
-            fullScreen
-            //fullWidth
-            //maxWidth='md'
+            fullWidth
+            maxWidth='sm'
             //keepMounted={false}
             >
             <DialogTitle>
                 Adaugă o locație
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
-                <List sx={{
-                    width: '300px',
-                }}>
-                {
-                    results.map((result, index) => (
-                        <ListItemButton key={result.osm_id} onClick={() => { handleResultClick(index) }}
-                            selected={index === selectedResultIndex}>
-                            {result?.display_name}
-                        </ListItemButton>
-                    ))
-                }
-                </List>
                 <div id='map' style={{
                         width: '300px',
                         height: '300px',
@@ -307,7 +327,7 @@ export default function LocationAdd({ open, handleClose }) {
                     <form style={{
                                 padding: 0,
                                 margin: '0 auto',
-                                width: '50%',
+                                width: '225px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -316,37 +336,103 @@ export default function LocationAdd({ open, handleClose }) {
                                 top: '.5em',
                                 right: '.5em',
                                 zIndex: 9999,
-                                background: 'whitesmoke',
+                                background: 'white',
                                 borderRadius: '4px',
                                 color: 'red'
                             }}
                             autoComplete='off'
                             onSubmit={handleSearch}
                             >
+                            {/*
                             <TextField sx={{ width: '100%' }}
-                                autoFocus
+                                onFocus={handleSearchBoxFocus}
                                 color='primary'
                                 InputProps={{
                                     endAdornment: 
                                     <InputAdornment position='end'>
                                         <IconButton edge='end' onClick={handleSearch} disabled={loading}>
-                                            <TravelExploreIcon fontSize='large' color={searchError ? 'error' : 'primary'} />
+                                            <TravelExploreIcon color={searchError ? 'error' : 'primary'} />
                                         </IconButton>
                                     </InputAdornment>,
                                     sx: { color: 'black' }
                                 }}
                                 inputProps={{
                                     maxLength: 256,
-                                    color: 'red'
                                 }}
+                                size='small'
                                 name='location'
                                 autoComplete='off'
                                 value={targetLocationName}
                                 error={searchError}
                                 disabled={loading}
                                 onChange={handleTargetLocationChange}
+                                ref={searchBoxRef}
+                            />
+                            */}
+                            <Autocomplete
+                                freeSolo
+                                value={searchValue}
+                                onChange={handleSearchChange}
+                                inputValue={searchInputValue}
+                                onInputChange={handleSearchInputChange}
+                                id='custom-search'
+                                options={results}
+                                sx={{ width: 300 }}
+                                disabled={loading}
+                                renderInput={(params) => (
+                                    <TextField {...params}
+                                        sx={{ width: '100%' }}
+                                        color='primary'
+                                        InputProps={{
+                                            startAdornment: 
+                                            <InputAdornment position='start'>
+                                                <TravelExploreIcon color='primary' />
+                                            </InputAdornment>,
+                                            sx: { color: 'black' }
+                                        }}
+                                        inputProps={{
+                                            maxLength: 256,
+                                        }}
+                                        size='small'
+                                        name='location'
+                                        //ref={searchBoxRef}
+                                    />
+                                )}
                             />
                         </form>
+                        {/*
+                        <ThemeProvider theme={tuaLightInnerTheme}>
+                            <Menu open={Boolean(menuAnchor)}
+                                disableScrollLock
+                                onClose={handleCloseMenu}
+                                anchorEl={searchBoxRef.current}
+                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                slotProps={{
+                                    paper: {
+                                        sx: {
+                                        maxHeight: '225px',
+                                        width: '225px',
+                                        marginTop: '2px',
+                                        },
+                                    }
+                                    }}
+                                >
+                                {
+                                    results.map((result) => (
+                                        <ListItemButton key={result.osm_id}
+                                            sx={{ width: '225px', }}
+                                            onClick={() => { handleResultClick(result) }}
+                                            >
+                                            <ListItemText primary={result?.name}
+                                                secondary={result?.display_name}
+                                                />
+                                        </ListItemButton>
+                                    ))
+                                }
+                            </Menu>
+                        </ThemeProvider>
+                        */}
                 </div>
                 {
                     loading && (
