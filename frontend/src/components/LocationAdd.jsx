@@ -1,9 +1,8 @@
-// TODO:    implement the search box: positioned over the map,
-//          with a menu displaying the results;
-//          make sure to somehow throttle/debounce the search requests,
-//          so that the API call frequency is at most 1 request/second;
-//          also, this component should not be fullscreen
-// TODO: use Autocomplete component
+// TODO: when selecting an autocomplete suggestion, do not search the location based on the input,
+// because the location (result) already exists
+// TODO: add a feature on the map and center the map to the feature's coordinate
+// when a search suggestion is selected
+// TODO: manually test this component and fix all the bugs!
 import { useState, useEffect, useRef } from 'react';
 
 
@@ -30,6 +29,8 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+import { matchSorter } from 'match-sorter';
+
 import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
@@ -51,47 +52,39 @@ const tuaLightInnerTheme = createTheme({
     },
 });
 
+const filterOptions = (options, { inputValue }) => matchSorter(options, inputValue, {
+    keys: ['display_name']
+});
 
 // eslint-disable-next-line react/prop-types
 export default function LocationAdd({ open, handleClose }) {
 
     const [loading, setLoading] = useState(false);
     const [searching, setSearching] = useState(false);
-    const [targetLocationName, setTargetLocationName] = useState('');
-    const [searchValue, setSearchValue] = useState('');
+    const [searchValue, setSearchValue] = useState(null);
     const [searchInputValue, setSearchInputValue] = useState('');
-    const [searchError, setSearchError] = useState(false);
-    const [results, setResults] = useState([]);
-    const [selectedResult, setSelectedResult] = useState(null);
-    const [menuAnchor, setMenuAnchor] = useState(null);
-    const [openResultsList, setOpenResultsList] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
+    const [selectedSearchResult, setSelectedSearchResult] = useState(null);
 
     const [map, setMap] = useState(null);
 
     const mapElementRef = useRef();
     const mapObjectRef = useRef();
     const vectorSourceRef = useRef();
-    const searchBoxRef = useRef();
 
+    const searchResultsRef = useRef();
     const timeoutRef = useRef();
+    const abortControllerRef = useRef();
 
     useGeographic();
 
-    const handleTargetLocationChange = (event) => {
-
-        setTargetLocationName(event.target.value);
-
-        setResults([]);
-        setSelectedResult(null);
-
-    };
 
     const handleSearchChange = (event, newValue) => {
 
         setSearchValue(newValue);
 
-        setResults([]);
-        setSelectedResult(null);
+        setSearchResults([]);
+        setSelectedSearchResult(null);
 
     };
 
@@ -99,69 +92,47 @@ export default function LocationAdd({ open, handleClose }) {
 
         setSearchInputValue(newInputValue);
         
-        search();
+        if (timeoutRef.current) {
 
-    };
+            clearTimeout(timeoutRef.current);
 
-    const handleSearch = async (event) => {
+        }
 
-        event.preventDefault();
+        const canSearch = 
+            Boolean(newInputValue)              &&  // the input value is truthy, i.e. not null or undefined
+            'string' === typeof newInputValue   &&  // and it's a string
+            newInputValue.length > 1;               // with at least 2 characters
 
-        if (targetLocationName !== '') {
+        if (canSearch) {
 
-            let error = null, data = null;
+            timeoutRef.current = setTimeout(() => {
 
-            setLoading(true);
-
-            const requestOptions = {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-            };
-
-            const searchEndpointUrlWithParameters = `https://nominatim.openstreetmap.org/search?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${targetLocationName}`;
-            
-            try {
-
-                const response = await fetch(searchEndpointUrlWithParameters, requestOptions);
-
-                if (!response.ok) {
-
-                    throw new Error('Something happened!');
-
-                }
-
-                data = await response.json();
-
-            } catch (err) {
-
-                error = err;
-
-            } finally {
-
-                setLoading(false);
-
-                if (!error && data) {
-
-                    setResults(data);
-                    setMenuAnchor(searchBoxRef.current);
-
-                }
-
-            }
+                clearTimeout(timeoutRef.current);
+                search(newInputValue);
+    
+            }, 300);
 
         } else {
 
-            setSearchError(true);
-
+            setSearchResults([]);
+        
         }
 
     };
 
-    const search = async () => {
+    const search = async (locationName) => {
 
-        if (searchInputValue !== '') {
+        if (abortControllerRef.current) {
+
+            abortControllerRef.current.abort();
+
+        }
+
+        abortControllerRef.current = new AbortController();
+
+        const formattedLocationName = locationName?.toString()?.trim();
+
+        if ('' !== formattedLocationName && 'string' === typeof formattedLocationName) {
 
             let error = null, data = null;
 
@@ -170,15 +141,17 @@ export default function LocationAdd({ open, handleClose }) {
             const requestOptions = {
                 method: 'GET',
                 headers: {
-                'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
+                signal: abortControllerRef.current.signal,
             };
 
-            const searchEndpointUrlWithParameters = `https://nominatim.openstreetmap.org/search?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${searchInputValue}`;
+            const baseUrl = 'https://nominatim.openstreetmap.org/search';
+            const queryString = `?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${formattedLocationName}`;
             
             try {
 
-                const response = await fetch(searchEndpointUrlWithParameters, requestOptions);
+                const response = await fetch(baseUrl + queryString, requestOptions);
 
                 if (!response.ok) {
 
@@ -198,40 +171,11 @@ export default function LocationAdd({ open, handleClose }) {
 
                 if (!error && data) {
 
-                    setResults(data);
-                    setMenuAnchor(searchBoxRef.current);
+                    setSearchResults(data);
 
                 }
 
             }
-
-        } else {
-
-            setSearchError(true);
-
-        }
-
-    };
-
-    const handleResultClick = (result) => {
-
-        setSelectedResult(result);
-        setTargetLocationName(result?.name);
-        setMenuAnchor(null);
-
-    };
-
-    const handleCloseMenu = () => {
-
-        setMenuAnchor(null);
-
-    };
-
-    const handleSearchBoxFocus = () => {
-
-        if (results.length) {
-
-            setMenuAnchor(searchBoxRef.current)
 
         }
 
@@ -241,8 +185,8 @@ export default function LocationAdd({ open, handleClose }) {
 
         setSearchInputValue('');
         setSearchValue('');
-        setResults([]);
-        setSelectedResult(null);
+        setSearchResults([]);
+        setSelectedSearchResult(null);
 
     };
 
@@ -252,9 +196,9 @@ export default function LocationAdd({ open, handleClose }) {
 
         if (open) {
 
-            setTargetLocationName('');
-            setSearchError(false);
-            setResults([]);
+            setSearchInputValue('');
+            setSearchValue(null);
+            setSearchResults([]);
 
         }
         
@@ -328,12 +272,18 @@ export default function LocationAdd({ open, handleClose }) {
 
     }, [map]);
 
-    // add a feature on the map to the selected location from the results
+    useEffect(() => {
+
+        searchResultsRef.current = searchResults;
+
+    }, [searchResults]);
+
+    // add a feature on the map to the selected location from the searchResults
     useEffect(() => {
        
-        if (selectedResult) {
+        if (selectedSearchResult) {
 
-            const coordinate = [selectedResult.lon, selectedResult.lat];
+            const coordinate = [selectedSearchResult.lon, selectedSearchResult.lat];
 
             if (vectorSourceRef.current) {
 
@@ -349,14 +299,14 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [selectedResult]);
+    }, [selectedSearchResult]);
 
     // animate the view: transition to the selected coordinate
     useEffect(() => {
         
-        if (selectedResult) {
+        if (selectedSearchResult) {
 
-            const coordinate = [selectedResult.lon, selectedResult.lat];
+            const coordinate = [selectedSearchResult.lon, selectedSearchResult.lat];
 
             if (mapObjectRef.current) {
 
@@ -376,16 +326,8 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [selectedResult]);
+    }, [selectedSearchResult]);
 
-    const customTextFieldParams = {
-        sx: { 
-            width: '100%',
-        },
-        color: 'primary',
-        size: 'small',
-        name: 'location',
-    };
 
     return (
 
@@ -394,7 +336,6 @@ export default function LocationAdd({ open, handleClose }) {
             onClose={handleClose}
             fullWidth
             maxWidth='sm'
-            //keepMounted={false}
             >
             <DialogTitle>
                 Adaugă o locație
@@ -412,25 +353,34 @@ export default function LocationAdd({ open, handleClose }) {
                     }}>
                     <Autocomplete
                         freeSolo
+                        noOptionsText='Nicio locație'
                         disableClearable={true}
                         value={searchValue}
                         onChange={handleSearchChange}
                         inputValue={searchInputValue}
                         onInputChange={handleSearchInputChange}
                         id='custom-search'
-                        options={results}
+                        options={searchResults}
                         disabled={loading}
-                        getOptionLabel={(option) => option?.display_name ?? ''}
+                        getOptionLabel={(option) => option?.name ?? ''}
+                        filterOptions={filterOptions}
                         renderOption={(props, option) => (
-                            <li {...props}>
-                                <ListItemText key={option.place_id}
-                                    primary={option?.name}
-                                    secondary={option?.display_name}/>
+                            <li {...props}
+                                key={option.place_id}
+                                >
+                                <ListItemText
+                                    primary={option.name}
+                                    secondary={option.display_name}/>
                             </li>
                         )}
                         renderInput={(params) => (
                             <TextField {...params} 
-                                {...customTextFieldParams}
+                                sx={{ 
+                                    width: '100%',
+                                }}
+                                color='primary'
+                                size='small'
+                                name='location'
                                 inputProps={{
                                     ...params.inputProps,
                                     maxLength: 256,
@@ -451,7 +401,7 @@ export default function LocationAdd({ open, handleClose }) {
                                                     {
                                                         searching ? (
                                                             <CircularProgress disableShrink
-                                                                size={16}
+                                                                size={24}
                                                                 thickness={4}
                                                                 sx={{
                                                                     animationDuration: '500ms',
