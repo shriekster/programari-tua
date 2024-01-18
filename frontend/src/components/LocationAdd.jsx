@@ -381,9 +381,6 @@ export default function LocationAdd({ open, handleClose }) {
             width: '100%',
         },
         color: 'primary',
-        inputProps: {
-            maxLength: 256,
-        },
         size: 'small',
         name: 'location',
     };
@@ -450,6 +447,7 @@ export default function LocationAdd({ open, handleClose }) {
                                 {...customTextFieldParams}
                                 inputProps={{
                                     ...params.inputProps,
+                                    maxLength: 256,
                                 }}
                                 InputProps={{
                                     ...params.InputProps,
