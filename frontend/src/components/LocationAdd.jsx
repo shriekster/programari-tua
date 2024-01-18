@@ -422,11 +422,11 @@ export default function LocationAdd({ open, handleClose }) {
                         disabled={loading}
                         getOptionLabel={(option) => option?.display_name ?? ''}
                         renderOption={(props, option) => (
-                            <ListItemButton key={option.place_id}>
-                                <ListItemText 
+                            <li {...props}>
+                                <ListItemText key={option.place_id}
                                     primary={option?.name}
                                     secondary={option?.display_name}/>
-                            </ListItemButton>
+                            </li>
                         )}
                         renderInput={(params) => (
                             <TextField {...params} 
@@ -444,6 +444,7 @@ export default function LocationAdd({ open, handleClose }) {
                                     endAdornment: '' !== searchInputValue ? (
                                             <InputAdornment position='end'>
                                                 <IconButton onClick={handleClearSearchBox}
+                                                    size='small'
                                                     aria-label='șterge'
                                                     sx={{ color: 'black' }}
                                                     >
