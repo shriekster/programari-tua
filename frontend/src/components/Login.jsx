@@ -227,7 +227,7 @@ export default function Login() {
                     >
                     {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
-                </InputAdornment>,
+              </InputAdornment>,
           }}
           inputProps={{
             maxLength: 64

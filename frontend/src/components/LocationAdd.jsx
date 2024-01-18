@@ -16,6 +16,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import IconButton  from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Menu from '@mui/material/Menu';
@@ -42,7 +43,10 @@ import 'ol/ol.css';
 
 const tuaLightInnerTheme = createTheme({
     palette: {
-      mode: 'light'
+        primary: {
+            main: '#7f805d'
+          },
+        mode: 'light',
     },
 });
 
@@ -51,6 +55,7 @@ const tuaLightInnerTheme = createTheme({
 export default function LocationAdd({ open, handleClose }) {
 
     const [loading, setLoading] = useState(false);
+    const [searching, setSearching] = useState(false);
     const [targetLocationName, setTargetLocationName] = useState('');
     const [searchValue, setSearchValue] = useState('');
     const [searchInputValue, setSearchInputValue] = useState('');
@@ -66,6 +71,8 @@ export default function LocationAdd({ open, handleClose }) {
     const mapObjectRef = useRef();
     const vectorSourceRef = useRef();
     const searchBoxRef = useRef();
+
+    const timeoutRef = useRef();
 
     useGeographic();
 
@@ -90,6 +97,7 @@ export default function LocationAdd({ open, handleClose }) {
     const handleSearchInputChange = (event, newInputValue) => {
 
         setSearchInputValue(newInputValue);
+        //search();
 
     };
 
@@ -149,6 +157,60 @@ export default function LocationAdd({ open, handleClose }) {
 
     };
 
+    const search = async () => {
+
+        if (searchInputValue !== '') {
+
+            let error = null, data = null;
+
+            setSearching(true);
+
+            const requestOptions = {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+            };
+
+            const searchEndpointUrlWithParameters = `https://nominatim.openstreetmap.org/search?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${searchInputValue}`;
+            
+            try {
+
+                const response = await fetch(searchEndpointUrlWithParameters, requestOptions);
+
+                if (!response.ok) {
+
+                    throw new Error('Something happened!');
+
+                }
+
+                data = await response.json();
+
+            } catch (err) {
+
+                error = err;
+
+            } finally {
+
+                setSearching(false);
+
+                if (!error && data) {
+
+                    setResults(data);
+                    setMenuAnchor(searchBoxRef.current);
+
+                }
+
+            }
+
+        } else {
+
+            setSearchError(true);
+
+        }
+
+    };
+
     const handleResultClick = (result) => {
 
         setSelectedResult(result);
@@ -170,6 +232,15 @@ export default function LocationAdd({ open, handleClose }) {
             setMenuAnchor(searchBoxRef.current)
 
         }
+
+    };
+
+    const handleClearSearchBox = () => {
+
+        setSearchInputValue('');
+        setSearchValue('');
+        setResults([]);
+        setSelectedResult(null);
 
     };
 
@@ -305,6 +376,48 @@ export default function LocationAdd({ open, handleClose }) {
         
     }, [selectedResult]);
 
+    const customTextFieldParams = {
+        sx: { 
+            width: '100%',
+        },
+        color: 'primary',
+        inputProps: {
+            maxLength: 256,
+        },
+        size: 'small',
+        name: 'location',
+    };
+
+    const customInputProps = {
+        startAdornment: 
+            <InputAdornment position='start'>
+                <TravelExploreIcon color='primary' />
+            </InputAdornment>,
+        endAdornment: '' !== searchInputValue ? (
+                <InputAdornment position='end'>
+                    <IconButton onClick={handleClearSearchBox}
+                        aria-label='șterge'
+                        sx={{ color: 'black' }}
+                        >
+                        {
+                            searching ? (
+                                <CircularProgress disableShrink
+                                    size={16}
+                                    thickness={4}
+                                    sx={{
+                                        animationDuration: '500ms',
+                                        color: 'black'
+                                    }} />
+                            ) : (
+                                <ClearIcon />
+                            )
+                        }
+                    </IconButton>
+                </InputAdornment>
+            ) : null,
+        //sx: { color: 'black' },
+    };
+
     return (
 
         <Dialog
@@ -318,6 +431,35 @@ export default function LocationAdd({ open, handleClose }) {
                 Adaugă o locație
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
+                <ThemeProvider theme={tuaLightInnerTheme}>
+                    <Autocomplete
+                        freeSolo
+                        disableClearable={true}
+                        value={searchValue}
+                        onChange={handleSearchChange}
+                        inputValue={searchInputValue}
+                        onInputChange={handleSearchInputChange}
+                        id='custom-search'
+                        //options={results}
+                        options={['', '1', '2', '3']}
+                        sx={{ width: 300 }}
+                        disabled={loading}
+                        //getOptionLabel={(option) => option?.display_name ?? ''}
+                        renderInput={(params) => (
+                            <TextField {...params} 
+                                {...customTextFieldParams}
+                                inputProps={{
+                                    ...params.inputProps,
+                                }}
+                                InputProps={{
+                                    ...params.InputProps,
+                                    ...customInputProps
+                                }}
+                                />
+                                
+                        )}
+                    />
+                </ThemeProvider>
                 <div id='map' style={{
                         width: '300px',
                         height: '300px',
@@ -325,115 +467,6 @@ export default function LocationAdd({ open, handleClose }) {
                         position: 'relative',
                     }}
                     ref={mapElementRef}>
-                    <form style={{
-                                padding: 0,
-                                margin: '0 auto',
-                                width: '225px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                flexShrink: 0,
-                                position: 'absolute',
-                                top: '.5em',
-                                right: '.5em',
-                                zIndex: 9999,
-                                background: 'white',
-                                borderRadius: '4px',
-                                color: 'red'
-                            }}
-                            autoComplete='off'
-                            onSubmit={handleSearch}
-                            >
-                            {/*
-                            <TextField sx={{ width: '100%' }}
-                                onFocus={handleSearchBoxFocus}
-                                color='primary'
-                                InputProps={{
-                                    endAdornment: 
-                                    <InputAdornment position='end'>
-                                        <IconButton edge='end' onClick={handleSearch} disabled={loading}>
-                                            <TravelExploreIcon color={searchError ? 'error' : 'primary'} />
-                                        </IconButton>
-                                    </InputAdornment>,
-                                    sx: { color: 'black' }
-                                }}
-                                inputProps={{
-                                    maxLength: 256,
-                                }}
-                                size='small'
-                                name='location'
-                                autoComplete='off'
-                                value={targetLocationName}
-                                error={searchError}
-                                disabled={loading}
-                                onChange={handleTargetLocationChange}
-                                ref={searchBoxRef}
-                            />
-                            */}
-                            <Autocomplete
-                                freeSolo
-                                value={searchValue}
-                                onChange={handleSearchChange}
-                                inputValue={searchInputValue}
-                                onInputChange={handleSearchInputChange}
-                                id='custom-search'
-                                options={results}
-                                sx={{ width: 300 }}
-                                disabled={loading}
-                                renderInput={(params) => (
-                                    <TextField {...params}
-                                        sx={{ width: '100%' }}
-                                        color='primary'
-                                        InputProps={{
-                                            startAdornment: 
-                                            <InputAdornment position='start'>
-                                                <TravelExploreIcon color='primary' />
-                                            </InputAdornment>,
-                                            sx: { color: 'black' }
-                                        }}
-                                        inputProps={{
-                                            maxLength: 256,
-                                        }}
-                                        size='small'
-                                        name='location'
-                                        //ref={searchBoxRef}
-                                    />
-                                )}
-                            />
-                        </form>
-                        {/*
-                        <ThemeProvider theme={tuaLightInnerTheme}>
-                            <Menu open={Boolean(menuAnchor)}
-                                disableScrollLock
-                                onClose={handleCloseMenu}
-                                anchorEl={searchBoxRef.current}
-                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                slotProps={{
-                                    paper: {
-                                        sx: {
-                                        maxHeight: '225px',
-                                        width: '225px',
-                                        marginTop: '2px',
-                                        },
-                                    }
-                                    }}
-                                >
-                                {
-                                    results.map((result) => (
-                                        <ListItemButton key={result.osm_id}
-                                            sx={{ width: '225px', }}
-                                            onClick={() => { handleResultClick(result) }}
-                                            >
-                                            <ListItemText primary={result?.name}
-                                                secondary={result?.display_name}
-                                                />
-                                        </ListItemButton>
-                                    ))
-                                }
-                            </Menu>
-                        </ThemeProvider>
-                        */}
                 </div>
                 {
                     loading && (
