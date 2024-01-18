@@ -14,6 +14,7 @@ import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import IconButton  from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -97,7 +98,8 @@ export default function LocationAdd({ open, handleClose }) {
     const handleSearchInputChange = (event, newInputValue) => {
 
         setSearchInputValue(newInputValue);
-        //search();
+        
+        search();
 
     };
 
@@ -385,36 +387,6 @@ export default function LocationAdd({ open, handleClose }) {
         name: 'location',
     };
 
-    const customInputProps = {
-        startAdornment: 
-            <InputAdornment position='start'>
-                <TravelExploreIcon color='primary' />
-            </InputAdornment>,
-        endAdornment: '' !== searchInputValue ? (
-                <InputAdornment position='end'>
-                    <IconButton onClick={handleClearSearchBox}
-                        aria-label='șterge'
-                        sx={{ color: 'black' }}
-                        >
-                        {
-                            searching ? (
-                                <CircularProgress disableShrink
-                                    size={16}
-                                    thickness={4}
-                                    sx={{
-                                        animationDuration: '500ms',
-                                        color: 'black'
-                                    }} />
-                            ) : (
-                                <ClearIcon />
-                            )
-                        }
-                    </IconButton>
-                </InputAdornment>
-            ) : null,
-        //sx: { color: 'black' },
-    };
-
     return (
 
         <Dialog
@@ -429,6 +401,15 @@ export default function LocationAdd({ open, handleClose }) {
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
                 <ThemeProvider theme={tuaLightInnerTheme}>
+                    <Box sx={{
+                        width: '225px',
+                        background: 'white',
+                        borderRadius: '4px',
+                        position: 'absolute',
+                        top: '48px',
+                        right: '8px',
+                        zIndex: 1,
+                    }}>
                     <Autocomplete
                         freeSolo
                         disableClearable={true}
@@ -437,11 +418,16 @@ export default function LocationAdd({ open, handleClose }) {
                         inputValue={searchInputValue}
                         onInputChange={handleSearchInputChange}
                         id='custom-search'
-                        //options={results}
-                        options={['', '1', '2', '3']}
-                        sx={{ width: 300 }}
+                        options={results}
                         disabled={loading}
-                        //getOptionLabel={(option) => option?.display_name ?? ''}
+                        getOptionLabel={(option) => option?.display_name ?? ''}
+                        renderOption={(props, option) => (
+                            <ListItemButton key={option.place_id}>
+                                <ListItemText 
+                                    primary={option?.name}
+                                    secondary={option?.display_name}/>
+                            </ListItemButton>
+                        )}
                         renderInput={(params) => (
                             <TextField {...params} 
                                 {...customTextFieldParams}
@@ -451,12 +437,38 @@ export default function LocationAdd({ open, handleClose }) {
                                 }}
                                 InputProps={{
                                     ...params.InputProps,
-                                    ...customInputProps
-                                }}
+                                    startAdornment: 
+                                        <InputAdornment position='start'>
+                                            <TravelExploreIcon color='primary' />
+                                        </InputAdornment>,
+                                    endAdornment: '' !== searchInputValue ? (
+                                            <InputAdornment position='end'>
+                                                <IconButton onClick={handleClearSearchBox}
+                                                    aria-label='șterge'
+                                                    sx={{ color: 'black' }}
+                                                    >
+                                                    {
+                                                        searching ? (
+                                                            <CircularProgress disableShrink
+                                                                size={16}
+                                                                thickness={4}
+                                                                sx={{
+                                                                    animationDuration: '500ms',
+                                                                    color: 'black'
+                                                                }} />
+                                                        ) : (
+                                                            <ClearIcon />
+                                                        )
+                                                    }
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    }}
                                 />
                                 
                         )}
                     />
+                    </Box>
                 </ThemeProvider>
                 <div id='map' style={{
                         width: '300px',
