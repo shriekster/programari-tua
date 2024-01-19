@@ -23,6 +23,7 @@ import Menu from '@mui/material/Menu';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import Autocomplete from '@mui/material/Autocomplete';
@@ -37,7 +38,7 @@ import TileLayer from 'ol/layer/Tile.js';
 import VectorLayer from 'ol/layer/Vector.js';
 import VectorSource from 'ol/source/Vector.js';
 import View from 'ol/View.js';
-import { Fill, Stroke, Style, Text, Circle as CircleStyle, RegularShape, Icon } from 'ol/style';
+import { Fill, Stroke, Style, Circle as CircleStyle } from 'ol/style';
 import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
 import { useGeographic } from 'ol/proj';
@@ -59,14 +60,21 @@ const filterOptions = (options, { inputValue }) => matchSorter(options, inputVal
 // eslint-disable-next-line react/prop-types
 export default function LocationAdd({ open, handleClose }) {
 
+    // eslint-disable-next-line no-unused-vars
     const [loading, setLoading] = useState(false);
     const [searching, setSearching] = useState(false);
+    const [saving, setSaving] = useState(false);
+
     const [searchValue, setSearchValue] = useState(null);
     const [searchInputValue, setSearchInputValue] = useState('');
     const [searchResults, setSearchResults] = useState([]);
-    const [selectedSearchResult, setSelectedSearchResult] = useState(null);
+
+    const [placeName, setPlaceName] = useState('');
+    const [placeAddress, setPlaceAddress] = useState('');
 
     const [map, setMap] = useState(null);
+
+    const [activeStep, setActiveStep] = useState(-1);
 
     const mapElementRef = useRef();
     const mapObjectRef = useRef();
@@ -84,33 +92,39 @@ export default function LocationAdd({ open, handleClose }) {
         setSearchValue(newValue);
 
         setSearchResults([]);
-        setSelectedSearchResult(null);
 
     };
 
     const handleSearchInputChange = (event, newInputValue) => {
 
+        // update the state
         setSearchInputValue(newInputValue);
         
+        // clear the timeout which 'schedules' the fetch request for searching
         if (timeoutRef.current) {
 
             clearTimeout(timeoutRef.current);
 
         }
 
+        const formattedInputValue = newInputValue?.trim();
+
+        const isSearchResult = Boolean(searchResults.find((result) => formattedInputValue === result.name));
+
         const canSearch = 
-            Boolean(newInputValue)              &&  // the input value is truthy, i.e. not null or undefined
-            'string' === typeof newInputValue   &&  // and it's a string
-            newInputValue.length > 1;               // with at least 2 characters
+            !isSearchResult                             &&  // the input is not a search result (does not already exist as a suggestion)
+            Boolean(formattedInputValue)                &&  // the input value is truthy, i.e. not null or undefined
+            'string' === typeof formattedInputValue     &&  // and it's a string
+            formattedInputValue.length > 1;                 // with at least 2 characters
 
         if (canSearch) {
 
             timeoutRef.current = setTimeout(() => {
 
                 clearTimeout(timeoutRef.current);
-                search(newInputValue);
+                search(formattedInputValue);
     
-            }, 300);
+            }, 350);
 
         } else {
 
@@ -130,9 +144,7 @@ export default function LocationAdd({ open, handleClose }) {
 
         abortControllerRef.current = new AbortController();
 
-        const formattedLocationName = locationName?.toString()?.trim();
-
-        if ('' !== formattedLocationName && 'string' === typeof formattedLocationName) {
+        if ('' !== locationName && 'string' === typeof locationName) {
 
             let error = null, data = null;
 
@@ -147,7 +159,7 @@ export default function LocationAdd({ open, handleClose }) {
             };
 
             const baseUrl = 'https://nominatim.openstreetmap.org/search';
-            const queryString = `?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${formattedLocationName}`;
+            const queryString = `?format=json&accept-language=ro-RO&countrycodes=ro&addressdetails=1&namedetails=0&q=${locationName}`;
             
             try {
 
@@ -186,23 +198,55 @@ export default function LocationAdd({ open, handleClose }) {
         setSearchInputValue('');
         setSearchValue('');
         setSearchResults([]);
-        setSelectedSearchResult(null);
 
     };
 
-    useEffect(() => {
+    const handleGoToLastStep = () => {
 
-        let mapObject;
+        setActiveStep(1);
+
+    };
+
+    const handleGoToFirstStep = () => {
+
+        setActiveStep(0);
+
+    };
+
+    const handleSaveLocation = () => {
+
+    };
+
+    // set some values to an empty state when the dialog opens
+    useEffect(() => {
 
         if (open) {
 
             setSearchInputValue('');
             setSearchValue(null);
             setSearchResults([]);
+            setActiveStep(0);
 
         }
+
+        return () => {
+            
+            if (open) {
+
+                setActiveStep(0);
+
+            }
+
+        };
+
+    }, [open]);
+
+    // create and initialize the map only when the active step is 0 (zero)
+    useEffect(() => {
+
+        let mapObject;
         
-        if (open && !mapObjectRef.current) {
+        if (open && 0 === activeStep && !mapObjectRef.current) {
         
             const timeoutId = setTimeout(() => {
 
@@ -264,7 +308,7 @@ export default function LocationAdd({ open, handleClose }) {
 
         };
 
-    }, [open]);
+    }, [open, activeStep]);
 
     useEffect(() => {
 
@@ -272,18 +316,26 @@ export default function LocationAdd({ open, handleClose }) {
 
     }, [map]);
 
+    // update the search result ref
     useEffect(() => {
 
         searchResultsRef.current = searchResults;
 
     }, [searchResults]);
 
-    // add a feature on the map to the selected location from the searchResults
+    // remove any features from the map
+    useEffect(() => {
+
+        vectorSourceRef.current?.clear();
+
+    }, [searchResults]);
+
+    // add a feature on the map to the selected location from the search results
     useEffect(() => {
        
-        if (selectedSearchResult) {
+        if (searchValue) {
 
-            const coordinate = [selectedSearchResult.lon, selectedSearchResult.lat];
+            const coordinate = [searchValue.lon, searchValue.lat];
 
             if (vectorSourceRef.current) {
 
@@ -299,14 +351,14 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [selectedSearchResult]);
+    }, [searchValue]);
 
     // animate the view: transition to the selected coordinate
     useEffect(() => {
         
-        if (selectedSearchResult) {
+        if (searchValue) {
 
-            const coordinate = [selectedSearchResult.lon, selectedSearchResult.lat];
+            const coordinate = [searchValue.lon, searchValue.lat];
 
             if (mapObjectRef.current) {
 
@@ -314,10 +366,13 @@ export default function LocationAdd({ open, handleClose }) {
 
                 if (view) {
 
-                    view.animate({
-                        center: coordinate,
-                        zoom: 18
-                    });
+                    view.animate(
+                        {
+                            center: coordinate,
+                            zoom: 16,
+                            duration: 500,
+                        },
+                    );
 
                 }
     
@@ -326,7 +381,15 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [selectedSearchResult]);
+    }, [searchValue]);
+
+    // update the place name and address when the selected search result is updated
+    useEffect(() => {
+
+        setPlaceName(searchValue?.name);
+        setPlaceAddress(searchValue?.display_name);
+
+    }, [searchValue]);
 
 
     return (
@@ -341,94 +404,136 @@ export default function LocationAdd({ open, handleClose }) {
                 Adaugă o locație
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
-                <ThemeProvider theme={tuaLightInnerTheme}>
-                    <Box sx={{
-                        width: '225px',
-                        background: 'white',
-                        borderRadius: '4px',
-                        position: 'absolute',
-                        top: '48px',
-                        right: '8px',
-                        zIndex: 1,
-                    }}>
-                    <Autocomplete
-                        freeSolo
-                        noOptionsText='Nicio locație'
-                        disableClearable={true}
-                        value={searchValue}
-                        onChange={handleSearchChange}
-                        inputValue={searchInputValue}
-                        onInputChange={handleSearchInputChange}
-                        id='custom-search'
-                        options={searchResults}
-                        disabled={loading}
-                        getOptionLabel={(option) => option?.name ?? ''}
-                        filterOptions={filterOptions}
-                        renderOption={(props, option) => (
-                            <li {...props}
-                                key={option.place_id}
-                                >
-                                <ListItemText
-                                    primary={option.name}
-                                    secondary={option.display_name}/>
-                            </li>
-                        )}
-                        renderInput={(params) => (
-                            <TextField {...params} 
-                                sx={{ 
-                                    width: '100%',
-                                }}
-                                color='primary'
-                                size='small'
-                                name='location'
-                                inputProps={{
-                                    ...params.inputProps,
-                                    maxLength: 256,
-                                }}
-                                InputProps={{
-                                    ...params.InputProps,
-                                    startAdornment: 
-                                        <InputAdornment position='start'>
-                                            <TravelExploreIcon color='primary' />
-                                        </InputAdornment>,
-                                    endAdornment: '' !== searchInputValue ? (
-                                            <InputAdornment position='end'>
-                                                <IconButton onClick={handleClearSearchBox}
-                                                    size='small'
-                                                    aria-label='șterge'
-                                                    sx={{ color: 'black' }}
-                                                    >
-                                                    {
-                                                        searching ? (
-                                                            <CircularProgress disableShrink
-                                                                size={24}
-                                                                thickness={4}
-                                                                sx={{
-                                                                    animationDuration: '500ms',
-                                                                    color: 'black'
-                                                                }} />
-                                                        ) : (
-                                                            <ClearIcon />
-                                                        )
-                                                    }
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
-                                    }}
+                {
+                    0 === activeStep ? (
+                        <>
+                            <ThemeProvider theme={tuaLightInnerTheme}>
+                                <Box sx={{
+                                    width: '225px',
+                                    background: 'white',
+                                    borderRadius: '4px',
+                                    position: 'absolute',
+                                    top: '8px',
+                                    right: '8px',
+                                    zIndex: 1,
+                                }}>
+                                <Autocomplete
+                                    freeSolo
+                                    noOptionsText='Nicio locație'
+                                    disableClearable={true}
+                                    value={searchValue}
+                                    onChange={handleSearchChange}
+                                    inputValue={searchInputValue}
+                                    onInputChange={handleSearchInputChange}
+                                    id='custom-search'
+                                    options={searchResults}
+                                    disabled={loading}
+                                    getOptionLabel={(option) => option?.name ?? ''}
+                                    filterOptions={filterOptions}
+                                    renderOption={(props, option) => (
+                                        <li {...props}
+                                            key={option.display_name}
+                                            >
+                                            <ListItemIcon>
+                                                <PlaceIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                                primary={option.name}
+                                                secondary={option.display_name}/>
+                                        </li>
+                                    )}
+                                    renderInput={(params) => (
+                                        <TextField {...params} 
+                                            sx={{ 
+                                                width: '100%',
+                                            }}
+                                            color='primary'
+                                            size='small'
+                                            name='location'
+                                            inputProps={{
+                                                ...params.inputProps,
+                                                maxLength: 256,
+                                            }}
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                startAdornment: 
+                                                    <InputAdornment position='start'>
+                                                        <TravelExploreIcon color='primary' />
+                                                    </InputAdornment>,
+                                                endAdornment: '' !== searchInputValue ? (
+                                                        <InputAdornment position='end'>
+                                                            <IconButton onClick={handleClearSearchBox}
+                                                                size='small'
+                                                                aria-label='șterge'
+                                                                sx={{ color: 'black' }}
+                                                                >
+                                                                {
+                                                                    searching ? (
+                                                                        <CircularProgress disableShrink
+                                                                            size={24}
+                                                                            thickness={4}
+                                                                            sx={{
+                                                                                animationDuration: '500ms',
+                                                                                color: 'black'
+                                                                            }} />
+                                                                    ) : (
+                                                                        <ClearIcon />
+                                                                    )
+                                                                }
+                                                            </IconButton>
+                                                        </InputAdornment>
+                                                    ) : null,
+                                                }}
+                                            />
+                                            
+                                    )}
                                 />
-                                
-                        )}
-                    />
-                    </Box>
-                </ThemeProvider>
-                <div id='map' style={{
-                        width: '300px',
-                        height: '300px',
-                        margin: '40px auto',
-                        position: 'relative',
-                    }}
-                    ref={mapElementRef}>
-                </div>
+                                </Box>
+                            </ThemeProvider>
+                            <div id='map' style={{
+                                    width: '300px',
+                                    height: '300px',
+                                    margin: '0 auto',
+                                }}
+                                ref={mapElementRef}>
+                            </div>
+                        </>
+                    ) : (
+                        <Box sx={{
+                            height: '300px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly'
+                        }}>
+                            <TextField sx={{ width: '100%' }}
+                                color='primary'
+                                inputProps={{
+                                    maxLength: 256
+                                }}
+                                name='place_name'
+                                //value={username.value}
+                                //helperText={username.helperText}
+                                //error={username.error}
+                                disabled={loading || saving}
+                                //onChange={handleUsernameChange}
+                            />
+                            <TextField sx={{ width: '100%' }}
+                                color='primary'
+                                inputProps={{
+                                    maxLength: 256
+                                }}
+                                name='place_address'
+                                //value={username.value}
+                                //helperText={username.helperText}
+                                //error={username.error}
+                                disabled={loading || saving}
+                                //onChange={handleUsernameChange}
+                            />
+                        </Box>
+                    )
+
+                }
                 {
                     loading && (
                         <CircularProgress
@@ -448,12 +553,39 @@ export default function LocationAdd({ open, handleClose }) {
                 }
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>
+                <Button onClick={handleClose}
+                    color='error'
+                    variant='outlined'
+                    disabled={loading}>
                     Renunță
                 </Button>
-                <Button>
-                    Salvează
-                </Button>
+                {
+                    0 === activeStep ? (
+                        <>
+                            <Button variant='contained'
+                                disabled={loading || searching || !searchValue}
+                                onClick={handleGoToLastStep}>
+                                Înainte
+                            </Button>
+                        </>
+
+                    ) : (
+                        <>
+                            <Button
+                                color='secondary'
+                                variant='outlined'
+                                disabled={loading}
+                                onClick={handleGoToFirstStep}>
+                                Înapoi
+                            </Button>
+                            <Button variant='contained'
+                                disabled={loading}
+                                onClick={handleSaveLocation}>
+                                Salvează
+                            </Button>
+                        </>
+                    )
+                }
             </DialogActions>
         </Dialog>
 

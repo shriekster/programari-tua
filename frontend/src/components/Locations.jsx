@@ -67,7 +67,7 @@ export default function Locations() {
           Locurile de desfășurare ale antrenamentelor
         </Typography>
         <Button startIcon={<AddLocationIcon />}
-          variant='outlined'
+          variant='contained'
           disabled={loading}
           sx={{ width: '150px' }}
           onClick={handleOpenAddDialog}>
