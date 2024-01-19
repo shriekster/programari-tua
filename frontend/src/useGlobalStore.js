@@ -18,6 +18,7 @@ export const useGlobalStore = create((set) => ({
   setLocationsDownloaded: (newLocationsDownloadedState) => set({ locationsDownloaded: newLocationsDownloadedState }),
   locations: null,
   setLocations: (newLocations) => set({ locations: newLocations }),
+  addLocation: (newLocation) => set((state) => ({ locations: [...state.locations, newLocation] })),
 
   // profile state
   profileDownloaded: false,

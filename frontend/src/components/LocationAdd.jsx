@@ -1,7 +1,3 @@
-// TODO: when selecting an autocomplete suggestion, do not search the location based on the input,
-// because the location (result) already exists
-// TODO: add a feature on the map and center the map to the feature's coordinate
-// when a search suggestion is selected
 // TODO: manually test this component and fix all the bugs!
 import { useState, useEffect, useRef } from 'react';
 
@@ -17,10 +13,6 @@ import Box from '@mui/material/Box';
 import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import IconButton  from '@mui/material/IconButton';
 import ClearIcon from '@mui/icons-material/Clear';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import Menu from '@mui/material/Menu';
-import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import PlaceIcon from '@mui/icons-material/Place';
@@ -44,6 +36,9 @@ import { Point } from 'ol/geom';
 import { useGeographic } from 'ol/proj';
 import 'ol/ol.css';
 
+import { useGlobalStore } from '../useGlobalStore';
+import refreshAccessToken from '../refreshAccessToken.js';
+
 const tuaLightInnerTheme = createTheme({
     palette: {
         primary: {
@@ -57,11 +52,21 @@ const filterOptions = (options, { inputValue }) => matchSorter(options, inputVal
     keys: ['display_name']
 });
 
+const isEmptyStringRegex = /^$/;
+
+// get the functions from the global store as non-reactive, fresh state,
+// because this proves the linter that the functions are not changing between renders
+// why? because it's annoying to specify functions as effect depedencies and I could not think of
+// a better solution, at least for now
+const {
+    setError,
+    setErrorMessage,
+    addLocation,
+} = useGlobalStore.getState();
+
 // eslint-disable-next-line react/prop-types
 export default function LocationAdd({ open, handleClose }) {
 
-    // eslint-disable-next-line no-unused-vars
-    const [loading, setLoading] = useState(false);
     const [searching, setSearching] = useState(false);
     const [saving, setSaving] = useState(false);
 
@@ -70,7 +75,11 @@ export default function LocationAdd({ open, handleClose }) {
     const [searchResults, setSearchResults] = useState([]);
 
     const [placeName, setPlaceName] = useState('');
+    const [placeNameError, setPlaceNameError] = useState(false);
+    const [placeNameHelperText, setPlaceNameHelperText] = useState(' ');
     const [placeAddress, setPlaceAddress] = useState('');
+    const [placeAddressError, setPlaceAddressError] = useState(false);
+    const [placeAddressHelperText, setPlaceAddressHelperText] = useState(' ');
 
     const [map, setMap] = useState(null);
 
@@ -213,7 +222,116 @@ export default function LocationAdd({ open, handleClose }) {
 
     };
 
-    const handleSaveLocation = () => {
+    const handlePlaceNameChange = (event) => {
+
+        setPlaceName(event.target.value);
+        setPlaceNameHelperText(' ');
+        setPlaceNameError(false);
+
+    };
+
+    const handlePlaceAddressChange = (event) => {
+
+        setPlaceAddress(event.target.value);
+        setPlaceAddressHelperText(' ');
+        setPlaceAddressError(false);
+
+    };
+
+    const handleSaveLocation = async () => {
+
+        const canSaveLocation =
+            !isEmptyStringRegex.test(placeName)     &&
+            !isEmptyStringRegex.test(placeAddress)  &&
+            searchValue;    
+
+        if (canSaveLocation) {
+
+            setSaving(true);
+
+            let error = null, status = 401, newLocation = null;
+
+            try {
+    
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        placeId: searchValue.place_id,
+                        osmId: searchValue.osm_id,
+                        name: placeName,
+                        displayName: placeAddress,
+                        lon: searchValue.lon,
+                        lat: searchValue.lat,
+                    }),
+                    credentials: 'same-origin'
+                };
+    
+                const response = await fetch('/api/admin/locations', requestOptions);
+                status = response.status;
+
+                const json = await response.json();
+                newLocation = json.data;
+        
+        
+            } catch (err) {
+    
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+                status = 400; // client-side error
+    
+            }
+
+            switch (status) {
+
+                case 200: {
+
+                    setSaving(false);
+                    addLocation(newLocation);
+                    handleClose();
+                    break;
+
+                }
+
+                case 401: {
+
+                    await refreshAccessToken(handleSaveLocation)
+                    break;
+
+                }
+
+                default: {
+
+                    setSaving(false);
+                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setError(true);
+                    handleClose();
+                    break;
+
+                }
+
+            }
+
+
+        } else {
+
+            if (isEmptyStringRegex.test(placeName)) {
+
+                setPlaceNameError(true);
+                setPlaceNameHelperText('Completează numele locației!');
+
+            }
+
+            if (isEmptyStringRegex.test(placeAddress)) {
+
+                setPlaceAddressError(true);
+                setPlaceAddressHelperText('Completează adresa!');
+
+            }
+
+        }
 
     };
 
@@ -427,7 +545,6 @@ export default function LocationAdd({ open, handleClose }) {
                                     onInputChange={handleSearchInputChange}
                                     id='custom-search'
                                     options={searchResults}
-                                    disabled={loading}
                                     getOptionLabel={(option) => option?.name ?? ''}
                                     filterOptions={filterOptions}
                                     renderOption={(props, option) => (
@@ -507,35 +624,41 @@ export default function LocationAdd({ open, handleClose }) {
                             justifyContent: 'space-evenly'
                         }}>
                             <TextField sx={{ width: '100%' }}
+                                size='small'
                                 color='primary'
                                 inputProps={{
                                     maxLength: 256
                                 }}
                                 name='place_name'
-                                //value={username.value}
-                                //helperText={username.helperText}
-                                //error={username.error}
-                                disabled={loading || saving}
-                                //onChange={handleUsernameChange}
+                                label='Denumire'
+                                value={placeName}
+                                helperText={placeNameHelperText}
+                                error={placeNameError}
+                                disabled={saving}
+                                onChange={handlePlaceNameChange}
                             />
                             <TextField sx={{ width: '100%' }}
+                                size='small'
                                 color='primary'
                                 inputProps={{
                                     maxLength: 256
                                 }}
                                 name='place_address'
-                                //value={username.value}
-                                //helperText={username.helperText}
-                                //error={username.error}
-                                disabled={loading || saving}
-                                //onChange={handleUsernameChange}
+                                label='Adresă'
+                                value={placeAddress}
+                                helperText={placeAddressHelperText}
+                                error={placeAddressError}
+                                multiline
+                                rows={4}
+                                disabled={saving}
+                                onChange={handlePlaceAddressChange}
                             />
                         </Box>
                     )
 
                 }
                 {
-                    loading && (
+                    saving && (
                         <CircularProgress
                             size={48}
                             color='primary'
@@ -556,14 +679,14 @@ export default function LocationAdd({ open, handleClose }) {
                 <Button onClick={handleClose}
                     color='error'
                     variant='outlined'
-                    disabled={loading}>
+                    disabled={saving}>
                     Renunță
                 </Button>
                 {
                     0 === activeStep ? (
                         <>
                             <Button variant='contained'
-                                disabled={loading || searching || !searchValue}
+                                disabled={searching || !searchValue}
                                 onClick={handleGoToLastStep}>
                                 Înainte
                             </Button>
@@ -574,12 +697,12 @@ export default function LocationAdd({ open, handleClose }) {
                             <Button
                                 color='secondary'
                                 variant='outlined'
-                                disabled={loading}
+                                disabled={saving}
                                 onClick={handleGoToFirstStep}>
                                 Înapoi
                             </Button>
                             <Button variant='contained'
-                                disabled={loading}
+                                disabled={saving}
                                 onClick={handleSaveLocation}>
                                 Salvează
                             </Button>
