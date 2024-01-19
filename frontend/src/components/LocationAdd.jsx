@@ -537,6 +537,7 @@ export default function LocationAdd({ open, handleClose }) {
                                 }}>
                                 <Autocomplete
                                     freeSolo
+                                    blurOnSelect={true}
                                     noOptionsText='Nicio locație'
                                     disableClearable={true}
                                     value={searchValue}

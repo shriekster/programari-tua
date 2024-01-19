@@ -299,7 +299,7 @@ export default function Header() {
                     <MenuItem key={menuItem} 
                       // eslint-disable-next-line no-unused-vars
                       onClick={(_) => { handleMenuItemClick(menuItem) } }
-                      selected={menuItem === selectedMenuItem}>
+                      selected={ 'Deconectare' !== menuItem && menuItem === selectedMenuItem}>
                       <MenuItemContent menuItem={menuItem} />
                     </MenuItem>
                   ))
