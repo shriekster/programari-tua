@@ -12,7 +12,6 @@ import Divider from '@mui/material/Divider';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-
 import { useGlobalStore } from '../useGlobalStore';
 
 import refreshAccessToken from '../refreshAccessToken';
