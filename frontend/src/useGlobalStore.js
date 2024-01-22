@@ -16,7 +16,7 @@ export const useGlobalStore = create((set) => ({
   // locations state
   locationsDownloaded: false,
   setLocationsDownloaded: (newLocationsDownloadedState) => set({ locationsDownloaded: newLocationsDownloadedState }),
-  locations: null,
+  locations: [],
   setLocations: (newLocations) => set({ locations: newLocations }),
   addLocation: (newLocation) => set((state) => ({ locations: [...state.locations, newLocation] })),
 
@@ -33,13 +33,13 @@ export const useGlobalStore = create((set) => ({
   // calendar, location and appointments state
   registryDownloaded: false,
   setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),
-  dates: null,
+  dates: [],
   setDates: (newDates) => set({ dates: newDates }),
-  timeRanges: null,
+  timeRanges: [],
   setTimeRanges: (newTimeRanges) => set({ timeRanges: newTimeRanges }),
-  appointments: null,
+  appointments: [],
   setAppointments: (newAppointments) => set({ appointments: newAppointments }),
-  personnelCategories: null,
+  personnelCategories: [],
   setPersonnelCategories: (newPersonnelCategories) => set({ personnelCategories: newPersonnelCategories }),
 
   // SSE related state

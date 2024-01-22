@@ -288,7 +288,13 @@ export default function LocationAdd({ open, handleClose }) {
                 case 200: {
 
                     setSaving(false);
-                    addLocation(newLocation);
+
+                    if (newLocation) {
+
+                        addLocation(newLocation);
+
+                    }
+
                     handleClose();
                     break;
 
