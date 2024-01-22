@@ -12,7 +12,9 @@ let getCredentials = null;
 let getProfileId = null;
 let getProfile = null;
 let updateProfile = null;
+let getLocations = null;
 let addLocation = null;
+let deleteLocation = null;
 
 try {
 
@@ -56,9 +58,24 @@ try {
             phone_number = ?
         WHERE id = ?`);
 
+    statements['get_locations'] = db.prepare(`
+        SELECT
+            id,
+            place_id AS placeId,
+            osm_id AS osmId,
+            lat,
+            lon,
+            display_name AS displayName,
+            name
+        FROM locations`);
+
     statements['add_location'] = db.prepare(`
         INSERT INTO locations(place_id, osm_id, lat, lon, display_name, name)
         VALUES (?, ?, ?, ?, ?, ?)`);
+
+    statements['delete_location'] = db.prepare(`
+        DELETE FROM locations
+        WHERE id = ?`)
 
 
 } catch (err) {
@@ -159,6 +176,24 @@ if (!stmtError) {
 
     };
 
+    getLocations = () => {
+
+        let error = null, locations = null;
+
+        try {
+
+            locations = statements['get_locations'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return locations ?? null;
+
+    }
+
     addLocation = (placeId, osmId, name, displayName, lon, lat) => {
 
         let error, updateInfo, location = null;
@@ -202,6 +237,38 @@ if (!stmtError) {
 
     };
 
+    deleteLocation = (locationId) => {
+
+        let error, updateInfo;
+
+        try {
+
+            updateInfo = statements['delete_location'].run(
+                Number(locationId)
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        if (!error) {
+
+            if (1 === updateInfo.changes) {
+
+                return 1;
+
+            }
+
+            return 0;
+
+        }
+
+        return -1;
+
+    };
+
 }
 
 export {
@@ -211,5 +278,7 @@ export {
     getProfile,
     updateProfile,
     addLocation,
+    deleteLocation,
+    getLocations,
 
 };

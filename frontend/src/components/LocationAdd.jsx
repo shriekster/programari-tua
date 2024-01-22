@@ -272,7 +272,7 @@ export default function LocationAdd({ open, handleClose }) {
                 status = response.status;
 
                 const json = await response.json();
-                newLocation = json.data;
+                newLocation = json.data.location;
         
         
             } catch (err) {

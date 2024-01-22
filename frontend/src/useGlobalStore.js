@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export const useGlobalStore = create((set) => ({
+export const useGlobalStore = create((set, get) => ({
 
   bears: 0,
   increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
@@ -19,6 +19,21 @@ export const useGlobalStore = create((set) => ({
   locations: [],
   setLocations: (newLocations) => set({ locations: newLocations }),
   addLocation: (newLocation) => set((state) => ({ locations: [...state.locations, newLocation] })),
+  deleteLocation: (locationId) => {
+
+    const locations = get().locations;
+
+    const removeFromIndex = locations.findIndex((location) => locationId == location.id);
+
+    if (-1 !== removeFromIndex) {
+
+      const updatedLocations = [...locations];
+      updatedLocations.splice(removeFromIndex, 1);
+      set({ locations: updatedLocations });
+
+    }
+
+  },
 
   // profile state
   profileDownloaded: false,
