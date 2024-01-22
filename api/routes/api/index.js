@@ -23,9 +23,7 @@ router.use('/sessions', sessionRoute);
 // refresh token
 router.use('/authorizations', authorizationRoute);
 
-// the rest of the API will use an authorization middleware, which will check the access token
-
-// admin API
+// the admin API uses an authorization middleware, which validates the access token
 router.use('/admin/locations', authorize, adminLocationsRoute);
 router.use('/admin/profiles', authorize, adminProfilesRoute);
 router.use('/admin/dates', authorize, adminDatesRoute);
