@@ -6,8 +6,6 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
@@ -41,6 +39,7 @@ export default function Locations() {
   const loading = useGlobalStore((state) => state.loading);
   const locations = useGlobalStore((state) => state.locations);
 
+  // fetch the locations when this component mounts
   useEffect(() => {
 
     const fetchLocations = async () => {
