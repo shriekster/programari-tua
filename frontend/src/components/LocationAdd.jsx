@@ -89,7 +89,6 @@ export default function LocationAdd({ open, handleClose }) {
     const mapObjectRef = useRef();
     const vectorSourceRef = useRef();
 
-    const searchResultsRef = useRef();
     const timeoutRef = useRef();
     const abortControllerRef = useRef();
 
@@ -434,13 +433,6 @@ export default function LocationAdd({ open, handleClose }) {
 
     }, [map]);
 
-    // update the search result ref
-    useEffect(() => {
-
-        searchResultsRef.current = searchResults;
-
-    }, [searchResults]);
-
     // remove any features from the map
     useEffect(() => {
 
@@ -451,12 +443,12 @@ export default function LocationAdd({ open, handleClose }) {
     // add a feature on the map to the selected location from the search results
     useEffect(() => {
        
-        if (searchValue) {
-
+        if (open && map && 0 === activeStep && searchValue) {
+            
             const coordinate = [searchValue.lon, searchValue.lat];
 
             if (vectorSourceRef.current) {
-
+                
                 vectorSourceRef.current.clear();
                 vectorSourceRef.current.addFeature(
                     new Feature({
@@ -469,26 +461,26 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [searchValue]);
+    }, [open, map, activeStep, searchValue]);
 
     // animate the view: transition to the selected coordinate
     useEffect(() => {
         
-        if (searchValue) {
+        if (open && 0 === activeStep && searchValue) {
 
             const coordinate = [searchValue.lon, searchValue.lat];
+            
+            if (map) {
 
-            if (mapObjectRef.current) {
-
-                const view = mapObjectRef.current.getView();
+                const view = map.getView();
 
                 if (view) {
-
+                    
                     view.animate(
                         {
                             center: coordinate,
                             zoom: 16,
-                            duration: 500,
+                            duration: 350,
                         },
                     );
 
@@ -499,7 +491,7 @@ export default function LocationAdd({ open, handleClose }) {
         }
 
         
-    }, [searchValue]);
+    }, [open, map, activeStep, searchValue]);
 
     // update the place name and address when the selected search result is updated
     useEffect(() => {
@@ -676,7 +668,11 @@ export default function LocationAdd({ open, handleClose }) {
                     )
                 }
             </DialogContent>
-            <DialogActions>
+            <DialogActions sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}>
                 <Button onClick={handleClose}
                     color='error'
                     variant='outlined'

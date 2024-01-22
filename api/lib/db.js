@@ -12,6 +12,7 @@ let getCredentials = null;
 let getProfileId = null;
 let getProfile = null;
 let updateProfile = null;
+let addLocation = null;
 
 try {
 
@@ -54,6 +55,10 @@ try {
             full_name = ?,
             phone_number = ?
         WHERE id = ?`);
+
+    statements['add_location'] = db.prepare(`
+        INSERT INTO locations(place_id, osm_id, lat, lon, display_name, name)
+        VALUES (?, ?, ?, ?, ?, ?)`);
 
 
 } catch (err) {
@@ -154,6 +159,49 @@ if (!stmtError) {
 
     };
 
+    addLocation = (placeId, osmId, name, displayName, lon, lat) => {
+
+        let error, updateInfo, location = null;
+
+        try {
+
+            updateInfo = statements['add_location'].run(
+                Number(placeId),
+                Number(osmId),
+                '' + lat,
+                '' + lon,
+                '' + displayName,
+                '' + name
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error && 1 === updateInfo.changes) {
+
+                location = {
+
+                    id: updateInfo.lastInsertRowid,
+                    placeId,
+                    osmId,
+                    name,
+                    displayName,
+                    lon,
+                    lat,
+
+                };
+
+            }
+
+        }
+
+        return location ?? null;
+
+    };
+
 }
 
 export {
@@ -161,6 +209,7 @@ export {
     getSecret,
     getCredentials,
     getProfile,
-    updateProfile
+    updateProfile,
+    addLocation,
 
 };
