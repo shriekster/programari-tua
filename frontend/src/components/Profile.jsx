@@ -173,6 +173,7 @@ export default function Profile() {
 
     };
 
+    // fetch the profile when this component mounts, if it has not beed previously fetched
     useEffect(() => {
 
         const profileDownloaded = useGlobalStore.getState().profileDownloaded;
@@ -256,8 +257,6 @@ export default function Profile() {
     
         };
 
-        // if the profile has not already been downloaded (the /admin/profile page was accessed directly),
-        // fetch it
         if (!profileDownloaded) {
 
             fetchProfile();

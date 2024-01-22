@@ -38,8 +38,10 @@ export default function Locations() {
   const loading = useGlobalStore((state) => state.loading);
   const locations = useGlobalStore((state) => state.locations);
 
-  // fetch the locations when this component mounts
+  // fetch the locations when this component mounts, if they have not been previously fetched
   useEffect(() => {
+
+    const locationsDownloaded = useGlobalStore.getState().locationsDownloaded;
 
     const fetchLocations = async () => {
 
@@ -102,7 +104,11 @@ export default function Locations() {
 
     };
 
-    fetchLocations();
+    if (!locationsDownloaded) {
+
+      fetchLocations();
+
+    }
 
   }, []);
 
