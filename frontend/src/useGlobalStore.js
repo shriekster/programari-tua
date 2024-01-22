@@ -2,9 +2,6 @@ import { create } from 'zustand'
 
 export const useGlobalStore = create((set, get) => ({
 
-  bears: 0,
-  increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-  // the first 2 state properties/methods are just examples
   // UI state: loading, error (for the snackbar)
   loading: false,
   setLoading: (newLoadingState) => set({ loading: newLoadingState }),

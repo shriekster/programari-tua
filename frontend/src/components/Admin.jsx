@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
+
+import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,11 +21,16 @@ import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import Divider from '@mui/material/Divider';
 
+import dayjs from 'dayjs';
+
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
 import refreshAccessToken from '../refreshAccessToken.js';
+
+import DateAdd from './DateAdd.jsx';
+import TimeRange from './TimeRange.jsx';
 
 // get the functions from the global store as non-reactive, fresh state,
 // because this proves the linter that the functions are not changing between renders
@@ -44,13 +50,71 @@ const {
   setTimeRanges,
   setAppointments,
   setPersonnelCategories,
+  setError,
+  setErrorMessage,
 } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
 export default function Admin() {
 
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTimeRangeId, setSelectedTimeRangeId] = useState(0);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openTimeRangeDialog, setOpenTimeRangeDialog] = useState(false);
+
   const loading = useGlobalStore((state) => state.loading);
   const subscriptionId = useGlobalStore((state) => state.subcriptionId);
+  const dates = useGlobalStore((state) => state.dates);
+  const timeRanges = useGlobalStore((state) => state.timeRanges);
+  const appointments = useGlobalStore((state) => state.appointments);
+  const personnelCategories = useGlobalStore((state) => state.personnelCategories);
+
+  const handleChangeSelectedDate = (newDate) => {
+
+    setSelectedDate(newDate);
+
+  };
+
+  const handleDownload = () => {
+
+    // TODO
+
+  };
+
+  const handleOpenAddDialog = () => {
+
+    if (selectedDate) {
+
+      setOpenAddDialog(true);
+
+    } else {
+
+      setErrorMessage('Selectează o dată din calendar!');
+      setError(true);
+
+    }
+
+  };
+
+  const handleCloseAddDialog = () => {
+
+    setOpenAddDialog(false);
+
+  };
+
+  const handleOpenTimeRangeDialog = () => {
+
+    setOpenTimeRangeDialog(true);
+
+  };
+
+  const handleCloseTimeRangeDialog = () => {
+
+    setOpenTimeRangeDialog(false);
+
+  };
+
+
 
   // subscribe to admin events
   // AND get relevant data (profile and registry data)
@@ -183,6 +247,8 @@ export default function Admin() {
         disabled={loading}
         loading={loading}
         renderLoading={() => <DayCalendarSkeleton />}
+        value={selectedDate}
+        onChange={handleChangeSelectedDate}
         />
         <Box sx={{
           width: '320px',
@@ -197,18 +263,27 @@ export default function Admin() {
             color='success'
             variant='contained'
             sx={{ width: '150px' }}
-            disabled={loading}>
+            disabled={loading}
+            onClick={handleDownload}>
             Descarcă
           </Button>
           <Button startIcon={<AddIcon />}
             color='primary'
             variant='contained'
             sx={{ width: '150px' }}
-            disabled={loading}>
+            disabled={loading}
+            onClick={handleOpenAddDialog}>
             Adaugă
           </Button>
         </Box>
         <Divider variant='middle' />
+        <List>
+          {
+            // TODO
+          }
+        </List>
+        <DateAdd open={openAddDialog} onClose={handleCloseAddDialog} />
+        <TimeRange open={openTimeRangeDialog} onClose={handleCloseTimeRangeDialog} />
     </Box>
   );
 
