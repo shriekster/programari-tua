@@ -1,4 +1,4 @@
-// TODO: manually test this component and fix all the bugs!
+
 import { useState, useEffect, useRef } from 'react';
 
 
@@ -509,7 +509,6 @@ export default function LocationAdd({ open, handleClose }) {
 
 
     return (
-
         <Dialog
             open={open} 
             onClose={handleClose}
@@ -714,7 +713,6 @@ export default function LocationAdd({ open, handleClose }) {
                 }
             </DialogActions>
         </Dialog>
-
     );
 
 }

@@ -8,6 +8,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -19,6 +21,7 @@ import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
 
 import dayjs from 'dayjs';
@@ -31,6 +34,7 @@ import refreshAccessToken from '../refreshAccessToken.js';
 
 import DateAdd from './DateAdd.jsx';
 import TimeRange from './TimeRange.jsx';
+
 
 // get the functions from the global store as non-reactive, fresh state,
 // because this proves the linter that the functions are not changing between renders
@@ -59,8 +63,11 @@ export default function Admin() {
 
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeRangeId, setSelectedTimeRangeId] = useState(0);
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openTimeRangeDialog, setOpenTimeRangeDialog] = useState(false);
+  const [openAddDate, setOpenAddDate] = useState(false);
+  const [openAddTimeRange, setOpenAddTimeRange] = useState(false);
+  const [openEditTimeRange, setOpenEditTimeRange] = useState(false);
+
+  const [displaySettings, setDisplaySettings] = useState(false);
 
   const loading = useGlobalStore((state) => state.loading);
   const subscriptionId = useGlobalStore((state) => state.subcriptionId);
@@ -75,42 +82,17 @@ export default function Admin() {
 
   };
 
-  const handleDownload = () => {
+  const handleToggleAddDate = (bool = undefined) => {
 
-    // TODO
+    if (undefined !== bool) {
 
-  };
-
-  const handleOpenAddDialog = () => {
-
-    if (selectedDate) {
-
-      setOpenAddDialog(true);
+      setOpenAddDate(bool);
 
     } else {
 
-      setErrorMessage('Selectează o dată din calendar!');
-      setError(true);
+      setOpenAddDate((prevState) => !prevState);
 
     }
-
-  };
-
-  const handleCloseAddDialog = () => {
-
-    setOpenAddDialog(false);
-
-  };
-
-  const handleOpenTimeRangeDialog = () => {
-
-    setOpenTimeRangeDialog(true);
-
-  };
-
-  const handleCloseTimeRangeDialog = () => {
-
-    setOpenTimeRangeDialog(false);
 
   };
 
@@ -235,6 +217,31 @@ export default function Admin() {
 
   }, []);
 
+  // this effect 'configures' whether the settings button is displayed or not
+  useEffect(() => {
+
+    if (dates && selectedDate) {
+
+      const localeDate = selectedDate.$d.toLocaleDateString('ro-RO');
+
+      if (dates.has(localeDate)) {
+
+        setDisplaySettings(true);
+
+      } else {
+
+        setDisplaySettings(false);
+
+      }
+
+    } else {
+
+      setDisplaySettings(false);
+
+    }
+
+  }, [dates, selectedDate]);
+
   return (
     <Box sx={{
         margin: 0,
@@ -255,35 +262,52 @@ export default function Admin() {
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           height: '40px',
-          marginBottom: '8px',
         }}>
-          <Button startIcon={<FileDownloadIcon />}
-            color='success'
-            variant='contained'
-            sx={{ width: '150px' }}
-            disabled={loading}
-            onClick={handleDownload}>
-            Descarcă
-          </Button>
-          <Button startIcon={<AddIcon />}
-            color='primary'
-            variant='contained'
-            sx={{ width: '150px' }}
-            disabled={loading}
-            onClick={handleOpenAddDialog}>
-            Adaugă
-          </Button>
-        </Box>
-        <Divider variant='middle' />
-        <List>
+          <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
           {
-            // TODO
+            displaySettings && (
+              <IconButton color='primary' disabled={loading}>
+                <SettingsIcon fontSize='large' />
+              </IconButton>
+            )
           }
-        </List>
-        <DateAdd open={openAddDialog} onClose={handleCloseAddDialog} />
-        <TimeRange open={openTimeRangeDialog} onClose={handleCloseTimeRangeDialog} />
+        </Box>
+
+          {
+            selectedDate ? (
+              displaySettings ? (
+                <List sx={{
+                  width: '320px',
+                  margin: '0 auto'
+                }}>
+                  {
+                    dates.map((date) => (
+                      <ListItem key={date.id}>
+                        
+                      </ListItem>
+                    ))
+                  }
+                </List>
+              ) : (
+                <Button variant='contained' 
+                  sx={{ display: 'block', margin: '0 auto' }}
+                  disabled={loading}
+                  onClick={handleToggleAddDate}>
+                  Configurează ziua de antrenament
+                </Button>
+              )
+            ) : (
+              <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
+                Selectează o zi din calendar
+              </Typography>
+            )
+          }
+        <DateAdd open={openAddDate} 
+          handleClose={handleToggleAddDate}
+          date={selectedDate}/>
+        {/*<TimeRange />*/}
     </Box>
   );
 
