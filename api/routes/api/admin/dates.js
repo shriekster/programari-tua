@@ -1,4 +1,6 @@
 import { Router } from 'express';
+import validateDate from '../../../middlewares/validateDate.js';
+import { addDate } from '../../../lib/db.js';
 
 const router = Router();
 
@@ -19,6 +21,31 @@ router.get('/:locationId', function(req, res) {
       hello: 'world'
     }
   })
+
+});
+
+router.post('/', validateDate, function(req, res) {
+
+  const { day, locationId } = req.body;
+
+  const date = addDate(locationId, day);
+
+  if (date) {
+
+    return res.json({
+      data: {
+        date
+      }
+    });
+
+  }
+
+  return res.status(500)
+  .json({
+    data: {
+      message: 'Internal Server Error'
+    }
+  });
 
 });
 

@@ -85,8 +85,8 @@ export default function Admin() {
   const handleToggleAddDate = (bool = undefined) => {
 
     if (undefined !== bool) {
-
-      setOpenAddDate(bool);
+      
+      setOpenAddDate(Boolean(bool));
 
     } else {
 
@@ -96,19 +96,8 @@ export default function Admin() {
 
   };
 
-
-
-  // subscribe to admin events
-  // AND get relevant data (profile and registry data)
+  // add the 'visibilitychange' event listener and remove it when the component unmounts
   useEffect(() => {
-
-    class RetriableError extends Error { }
-    class FatalError extends Error { }
-
-    const abortController = new AbortController();
-    const eventStreamContentType = 'text/event-stream; charset=utf-8';
-
-    const subscriptionIdRegex = /^[a-zA-Z0-9]{16}$/;
 
     const onVisibilityChange = (e) => {
 
@@ -121,6 +110,26 @@ export default function Admin() {
     };
 
     document.addEventListener('visibilitychange', onVisibilityChange);
+
+    return () => {
+
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+
+    };
+
+  }, []);
+
+  // subscribe to admin events and get admin data after subscribing (locations, profile and registry data)
+  // unsubscribe when the component unmounts
+  useEffect(() => {
+
+    class RetriableError extends Error { }
+    class FatalError extends Error { }
+
+    const abortController = new AbortController();
+    const eventStreamContentType = 'text/event-stream; charset=utf-8';
+
+    const subscriptionIdRegex = /^[a-zA-Z0-9]{16}$/;
 
     setLoading(true);
     
@@ -196,7 +205,7 @@ export default function Admin() {
               }
   
               if (dataObj.registry) {
-  
+                console.log(dataObj.registry)
                 setDates(new Map(dataObj.registry.dates));
                 setTimeRanges(dataObj.registry.timeRanges);
                 setAppointments(dataObj.registry.appointments);
@@ -284,7 +293,6 @@ export default function Admin() {
 
       console.log('Unsubscribing...');
       abortController.abort();
-      document.removeEventListener('visibilitychange', onVisibilityChange);
 
     };
 
@@ -295,9 +303,9 @@ export default function Admin() {
 
     if (dates && selectedDate) {
 
-      const localeDate = selectedDate.$d.toLocaleDateString('ro-RO');
+      const day = selectedDate.$d.toLocaleDateString('ro-RO');
 
-      if (dates.has(localeDate)) {
+      if (dates.has(day)) {
 
         setDisplaySettings(true);
 
@@ -355,13 +363,7 @@ export default function Admin() {
                   width: '320px',
                   margin: '0 auto'
                 }}>
-                  {
-                    dates.map((date) => (
-                      <ListItem key={date.id}>
-                        
-                      </ListItem>
-                    ))
-                  }
+
                 </List>
               ) : (
                 <Button variant='contained' 
@@ -378,7 +380,7 @@ export default function Admin() {
             )
           }
         <DateAdd open={openAddDate} 
-          handleClose={handleToggleAddDate}
+          handleClose={() => { handleToggleAddDate(false) }}
           date={selectedDate}/>
         {/*<TimeRange />*/}
     </Box>

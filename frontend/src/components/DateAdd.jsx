@@ -52,7 +52,7 @@ export default function DateAdd({ open, handleClose, date }) {
     const openMenu = Boolean(anchorEl);
     
     // eslint-disable-next-line react/prop-types
-    const formattedDate = date?.$d?.toLocaleDateString('ro-RO') ?? '';
+    const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
 
     const locations = useGlobalStore((state) => state.locations);
 
@@ -75,12 +75,6 @@ export default function DateAdd({ open, handleClose, date }) {
 
     };
 
-    const onClose = () => {
-
-      handleClose(false);
-
-    };
-
     const handleSave = async () => {
 
       const canSaveDate = 
@@ -92,7 +86,7 @@ export default function DateAdd({ open, handleClose, date }) {
 
           setSaving(true);
 
-          let error = null, status = 401;
+          let error = null, status = 401, updatedDate = null;
 
           try {
   
@@ -102,7 +96,7 @@ export default function DateAdd({ open, handleClose, date }) {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                      date: formattedDate,
+                      day,
                       locationId: locations[selectedIndex].id,
                   }),
                   credentials: 'same-origin'
@@ -110,6 +104,9 @@ export default function DateAdd({ open, handleClose, date }) {
   
               const response = await fetch('/api/admin/dates', requestOptions);
               status = response.status;
+
+              const json = await response.json();
+              updatedDate = json.data.date;
       
       
           } catch (err) {
@@ -125,6 +122,15 @@ export default function DateAdd({ open, handleClose, date }) {
               case 200: {
 
                   setSaving(false);
+
+                  if (updatedDate) {
+
+                    addDate(updatedDate);
+
+                  }
+
+                  handleClose(false);
+
                   break;
 
               }
@@ -141,7 +147,7 @@ export default function DateAdd({ open, handleClose, date }) {
                   setSaving(false);
                   setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
                   setError(true);
-                  onClose();
+                  handleClose(false);
                   break;
 
               }
@@ -162,12 +168,12 @@ export default function DateAdd({ open, handleClose, date }) {
     return (
         <Dialog
             open={open} 
-            onClose={handleClose}
+            onClose={() => { handleClose(false) }}
             fullWidth
             maxWidth='sm'
             >
             <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
-              { formattedDate }
+              { day }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
@@ -250,7 +256,7 @@ export default function DateAdd({ open, handleClose, date }) {
                     alignItems: 'center',
                     justifyContent: 'space-between'
                 }}>
-                <Button onClick={onClose}
+                <Button onClick={() => { handleClose(false) }}
                     color='error'
                     variant='outlined'
                     disabled={saving}>

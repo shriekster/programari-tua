@@ -16,6 +16,7 @@ let getLocations = null;
 let addLocation = null;
 let deleteLocation = null;
 let getDates = null;
+let addDate = null;
 let getTimeRanges = null;
 let getAppointments = null;
 
@@ -85,6 +86,10 @@ try {
         FROM dates
         LEFT JOIN locations ON dates.location_id = locations.id`);
 
+    statements['add_date'] = db.prepare(`
+        INSERT INTO dates(location_id, day)
+        VALUES (?, ?)`);
+
     statements['get_timeranges'] = db.prepare(`
         SELECT 
             time_ranges.id, 
@@ -119,6 +124,8 @@ try {
         FROM participants
         LEFT JOIN appointments ON appointments.id = participants.appointment_id
         LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id`);
+
+    
 
 
 } catch (err) {
@@ -324,7 +331,7 @@ if (!stmtError) {
 
                 for (let i = 0, n = dates.length; i < n; ++i) {
 
-                    dates[i] = [dates[i].id, dates[i]];
+                    dates[i] = [dates[i].day, dates[i]];
 
                 }
 
@@ -337,6 +344,41 @@ if (!stmtError) {
         }
 
         return dates ?? null;
+
+    };
+
+    addDate = (locationId, day) => {
+
+        let error, updateInfo, date = null;
+
+        try {
+
+            updateInfo = statements['add_date'].run(
+                Number(locationId),
+                '' + day
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error && 1 === updateInfo.changes) {
+
+                date = {
+
+                    id: updateInfo.lastInsertRowid,
+                    locationId,
+                    day
+
+                };
+
+            }
+
+        }
+
+        return date ?? null;
 
     };
 
@@ -388,6 +430,7 @@ export {
     deleteLocation,
     getLocations,
     getDates,
+    addDate,
     getTimeRanges,
     getAppointments
 

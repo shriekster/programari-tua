@@ -49,8 +49,10 @@ export const useGlobalStore = create((set, get) => ({
   setDates: (newDates) => set({ dates: newDates }),
   addDate: (date) => {
 
-    const dates = get().dates;
-    //dates.set()
+    const updatedDates = new Map(get().dates);
+    updatedDates.set(date.day, date);
+
+    set({ dates: updatedDates})
 
   },
   timeRanges: [],
