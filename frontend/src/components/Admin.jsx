@@ -19,10 +19,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
+import Badge from '@mui/material/Badge';
 
 import dayjs from 'dayjs';
 
@@ -57,6 +59,35 @@ const {
   setError,
   setErrorMessage,
 } = useGlobalStore.getState();
+
+function ServerDay(props) {
+  
+  // eslint-disable-next-line react/prop-types
+  const { dates = new Map(), day, outsideCurrentMonth, ...other } = props;
+  // eslint-disable-next-line react/prop-types
+  const formattedDay = day?.$d?.toLocaleDateString('ro-RO') ?? '';
+  // eslint-disable-next-line react/prop-types
+  const isSelected = !props.outsideCurrentMonth && dates.has(formattedDay);
+
+  if (isSelected) {
+
+    return (
+      <Badge
+        key={formattedDay}
+        overlap='circular'
+        variant='dot'
+        color='success'
+      >
+        <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+      </Badge>
+    );
+
+  }
+
+  return (
+    <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
+  );
+}
 
 // eslint-disable-next-line react/prop-types
 export default function Admin() {
@@ -337,6 +368,14 @@ export default function Admin() {
         renderLoading={() => <DayCalendarSkeleton />}
         value={selectedDate}
         onChange={handleChangeSelectedDate}
+        slots={{
+          day: ServerDay,
+        }}
+        slotProps={{
+          day: {
+            dates,
+          },
+        }}
         />
         <Box sx={{
           width: '320px',

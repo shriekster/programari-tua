@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 
 import Dialog from '@mui/material/Dialog';
@@ -7,7 +7,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
-import InputAdornment from '@mui/material/InputAdornment';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
@@ -16,21 +15,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import IconButton  from '@mui/material/IconButton';
-import ClearIcon from '@mui/icons-material/Clear';
 
 import PlaceIcon from '@mui/icons-material/Place';
 import CircularProgress from '@mui/material/CircularProgress';
 
-
-
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
-
-
-
-const isEmptyStringRegex = /^$/;
 
 // get the functions from the global store as non-reactive, fresh state,
 // because this proves the linter that the functions are not changing between renders
