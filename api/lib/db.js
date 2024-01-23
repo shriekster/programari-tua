@@ -15,6 +15,9 @@ let updateProfile = null;
 let getLocations = null;
 let addLocation = null;
 let deleteLocation = null;
+let getDates = null;
+let getTimeRanges = null;
+let getAppointments = null;
 
 try {
 
@@ -75,7 +78,47 @@ try {
 
     statements['delete_location'] = db.prepare(`
         DELETE FROM locations
-        WHERE id = ?`)
+        WHERE id = ?`);
+
+    statements['get_dates'] = db.prepare(`
+        SELECT dates.id, locations.id AS locationId, dates.day
+        FROM dates
+        LEFT JOIN locations ON dates.location_id = locations.id`);
+
+    statements['get_timeranges'] = db.prepare(`
+        SELECT 
+            time_ranges.id, 
+            dates.id AS dateId, 
+            time_ranges.capacity, 
+            time_ranges.published,
+            time_ranges.start_time AS startTime,
+            time_ranges.end_time AS endTime 
+        FROM time_ranges
+        LEFT JOIN dates ON dates.id = time_ranges.date_id`);
+
+    // TODO!
+    statements['get_appointments'] = db.prepare(`
+        SELECT 
+            appointments.id,
+            time_ranges.id AS timeRangeId,
+            appointments.phone_number AS phoneNumber
+        FROM appointments
+        LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id`);
+
+    statements['get_participants'] = db.prepare(`
+        SELECT 
+            participants.id,
+            appointments.id AS appointmentId,
+            participants.last_name AS lastName,
+            participants.first_name AS firstName,
+            participants.is_owner AS isOwner,
+            participants.is_participant AS isParticipant,
+            participants.is_adult AS isAdult,
+            personnel_categories.id AS personnelCategoryId,
+            personnel_categories.abbreviation AS personnelCategoryAbbreviation
+        FROM participants
+        LEFT JOIN appointments ON appointments.id = participants.appointment_id
+        LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id`);
 
 
 } catch (err) {
@@ -122,13 +165,13 @@ if (!stmtError) {
 
     };
 
-    getProfile = (userId) => {
+    getProfile = (userName) => {
 
         let error, profile = null;
 
         try {
 
-            profile = statements['get_profile'].get(userId);
+            profile = statements['get_profile'].get(userName);
             profile.url = `/api/admin/profiles/${profile.id}`;
             delete profile.id;
 
@@ -269,6 +312,70 @@ if (!stmtError) {
 
     };
 
+    getDates = () => {
+
+        let error = null, dates = null;
+
+        try {
+
+            dates = statements['get_dates'].all();
+
+            if (dates && dates.length) {
+
+                for (let i = 0, n = dates.length; i < n; ++i) {
+
+                    dates[i] = [dates[i].id, dates[i]];
+
+                }
+
+            }
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return dates ?? null;
+
+    };
+
+    getTimeRanges = () => {
+
+        let error = null, timeRanges = null;
+
+        try {
+
+            timeRanges = statements['get_timeranges'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return timeRanges ?? null;
+
+    };
+
+    getAppointments = () => {
+
+        let error = null, appointments = null;
+
+        try {
+
+            appointments = statements['get_appointments'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return appointments ?? null;
+
+    };
+
 }
 
 export {
@@ -280,5 +387,8 @@ export {
     addLocation,
     deleteLocation,
     getLocations,
+    getDates,
+    getTimeRanges,
+    getAppointments
 
 };

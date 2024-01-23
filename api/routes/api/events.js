@@ -2,6 +2,8 @@
 
 import { Router } from 'express';
 import { customAlphabet } from 'nanoid';
+import { getProfileName } from '../../lib/token.js';
+import { getDates, getTimeRanges, getAppointments, getLocations, getProfile } from '../../lib/db.js';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
 
@@ -96,7 +98,9 @@ const router = Router();
 
 router.get('/', function(req, res) {
 
-  const channel = Boolean(req?.isAdmin) ? 'admins' : 'users';
+  const isAdmin = Boolean(req?.isAdmin);
+
+  const channel = isAdmin? 'admins' : 'users';
 
   let newSubscriptionId = '', error = null;
 
@@ -113,6 +117,8 @@ router.get('/', function(req, res) {
 
   if (!error && newSubscriptionId) {
 
+    let data = {};
+
     const targetSubscriptions = subscriptions.get(channel);
 
     targetSubscriptions.set(newSubscriptionId, res);
@@ -128,7 +134,40 @@ router.get('/', function(req, res) {
 
     }
 
-    res.write((`event: hello_world\ndata: ${JSON.stringify({hello: 'world!'})}\n\n`));
+    if (isAdmin) {
+
+      // admin data
+      
+      const accessToken = req.cookies?.['access_token'];
+      const userName = getProfileName('access', accessToken);
+
+      const dates = getDates();
+      const timeRanges = getTimeRanges();
+      const appointments = getAppointments();
+
+      data.registry = {
+
+        dates,
+        timeRanges,
+        appointments
+
+      };
+
+      const locations = getLocations();
+
+      data.locations = locations;
+
+      const profile = getProfile(userName);
+
+      data.profile = profile;
+
+    } else {
+
+      // user data
+
+    }
+
+    res.write((`event: sync\ndata: ${JSON.stringify(data)}\n\n`));
 
   }
 

@@ -102,14 +102,6 @@ export default function Admin() {
   // AND get relevant data (profile and registry data)
   useEffect(() => {
 
-    // this flag is needed because after the SSE connection is opened,
-    // the admin receives profile and registry data and the
-    // the UI should no longer be in a 'loading' state,
-    // so when the first message arrives, the state is updated accordingly
-    let initiallyWaitingForData = true;
-
-    setLoading(true);
-
     class RetriableError extends Error { }
     class FatalError extends Error { }
 
@@ -117,6 +109,20 @@ export default function Admin() {
     const eventStreamContentType = 'text/event-stream; charset=utf-8';
 
     const subscriptionIdRegex = /^[a-zA-Z0-9]{16}$/;
+
+    const onVisibilityChange = (e) => {
+
+      if ('visible' === document.visibilityState) {
+
+        setLoading(true);
+
+      }
+
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    setLoading(true);
     
     fetchEventSource('/api/admin/events', {
 
@@ -160,25 +166,74 @@ export default function Admin() {
 
       onmessage(msg) {
 
-        // if the server emits an error message, throw an exception
-        // so it gets handled by the onerror callback below:
-        if (msg.event === 'FatalError') {
+        const { data, event } = msg;
+
+        console.log(event, data)
+
+        switch (event) {
+
+          case 'sync': {
+
+            // the UI should be in a loading state; if it is, set the loading state to false
+
+            const isLoading = useGlobalStore.getState().loading;
+
+            if (isLoading) {
+
+              setLoading(false);
+
+            }
+
+            if (data.registry) {
+
+              setDates(new Map(data.registry?.dates));
+              setTimeRanges(data.registry?.timeRanges);
+              setAppointments(data.registry?.appointments);
+              setPersonnelCategories(data.registry?.personnelCategories);
+              setRegistryDownloaded(true);
+
+            }
+
+            if (data.locations) {
+
+              setLocations(data.registry?.locations);
+              setLocationsDownloaded(true);
+
+            }
+
+            if (data.profile) {
+
+              setFullName(data.profile?.fullName);
+              setPhoneNumber(data.profile?.phoneNumber);
+              setProfileUrl(data.profile?.url);
+              setProfileDownloaded(true);
+
+            }
+
+            break;
+          }
+
+          case 'update:appointment': {
+
+            break;
+          }
+
+          case 'delete:appointment': {
+
+            break;
+          }
+
+          // if the server emits an error message, throw an exception
+          // so it gets handled by the onerror callback below:
+          case 'error': {
 
             throw new FatalError(msg.data);
 
-        }
+          }
 
-        if (initiallyWaitingForData) {
-
-          // TODO: first update the profile and registry data
-          // TODO: then update the flag and the loading state
-
-          initiallyWaitingForData = false;
-          setLoading(false);
+          default: break;
 
         }
-
-        console.log({msg})
 
       },
 
@@ -203,6 +258,8 @@ export default function Admin() {
 
       },
 
+      credentials: 'same-origin',
+
       signal: abortController.signal,
 
     });
@@ -212,6 +269,7 @@ export default function Admin() {
 
       console.log('Unsubscribing...');
       abortController.abort();
+      document.removeEventListener('visibilitychange', onVisibilityChange);
 
     };
 
