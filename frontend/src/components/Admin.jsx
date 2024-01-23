@@ -61,7 +61,7 @@ const {
 } = useGlobalStore.getState();
 
 function ServerDay(props) {
-  
+
   // eslint-disable-next-line react/prop-types
   const { dates = new Map(), day, outsideCurrentMonth, ...other } = props;
   // eslint-disable-next-line react/prop-types
@@ -76,7 +76,7 @@ function ServerDay(props) {
         key={formattedDay}
         overlap='circular'
         variant='dot'
-        color='success'
+        color='secondary'
       >
         <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
       </Badge>
