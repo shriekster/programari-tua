@@ -15,6 +15,7 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Tooltip from '@mui/material/Tooltip';
+import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -35,7 +36,8 @@ import { useGlobalStore } from '../useGlobalStore.js';
 import refreshAccessToken from '../refreshAccessToken.js';
 
 import DateAdd from './DateAdd.jsx';
-import TimeRange from './TimeRange.jsx';
+import TimeRangeAdd from './TimeRangeAdd.jsx';
+import TimeRangeEdit from './TimeRangeEdit.jsx';
 
 
 // get the functions from the global store as non-reactive, fresh state,
@@ -100,6 +102,9 @@ export default function Admin() {
 
   const [displaySettings, setDisplaySettings] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openDayMenu = Boolean(anchorEl);
+
   const loading = useGlobalStore((state) => state.loading);
   const subscriptionId = useGlobalStore((state) => state.subcriptionId);
   const dates = useGlobalStore((state) => state.dates);
@@ -126,6 +131,46 @@ export default function Admin() {
     }
 
   };
+
+  const handleToggleAddTimeRange = (bool = undefined) => {
+
+    if (undefined !== bool) {
+      
+      setOpenAddTimeRange(Boolean(bool));
+
+    } else {
+
+      setOpenAddTimeRange((prevState) => !prevState);
+
+    }
+
+  };
+
+  const handleToggleEditTimeRange = (bool = undefined) => {
+
+    if (undefined !== bool) {
+      
+      setOpenEditTimeRange(Boolean(bool));
+
+    } else {
+
+      setOpenEditTimeRange((prevState) => !prevState);
+
+    }
+
+  };
+
+  const handleDaySettingsClick = (event) => {
+
+    setAnchorEl(event.currentTarget);
+
+  };
+
+  const handleCloseDayMenu = () => {
+
+    setAnchorEl(null);
+
+  }
 
   // add the 'visibilitychange' event listener and remove it when the component unmounts
   useEffect(() => {
@@ -388,13 +433,14 @@ export default function Admin() {
           <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
           {
             displaySettings && (
-              <IconButton color='primary' disabled={loading}>
+              <IconButton color='primary' 
+                disabled={loading}
+                onClick={handleDaySettingsClick}>
                 <SettingsIcon fontSize='large' />
               </IconButton>
             )
           }
         </Box>
-
           {
             selectedDate ? (
               displaySettings ? (
@@ -418,10 +464,27 @@ export default function Admin() {
               </Typography>
             )
           }
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={openDayMenu}
+          onClose={handleCloseDayMenu}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem disabled onClick={handleCloseDayMenu}>
+            <ListItemText primary='Locație'
+              secondary='Profile: askjdhaksjh akj sdhkjashd kajsdh kajs hdkja' />
+          </MenuItem>
+          <MenuItem onClick={handleCloseDayMenu}>My account</MenuItem>
+          <MenuItem onClick={handleCloseDayMenu}>Logout</MenuItem>
+        </Menu>
         <DateAdd open={openAddDate} 
           handleClose={() => { handleToggleAddDate(false) }}
           date={selectedDate}/>
-        {/*<TimeRange />*/}
+        <TimeRangeAdd open={openAddTimeRange}
+          handleClose={() => { handleToggleAddTimeRange(false) }}/>
     </Box>
   );
 
