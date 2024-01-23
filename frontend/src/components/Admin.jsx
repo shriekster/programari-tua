@@ -166,74 +166,89 @@ export default function Admin() {
 
       onmessage(msg) {
 
+        let dataObj = null, error = null;
         const { data, event } = msg;
 
-        console.log(event, data)
+        try {
 
-        switch (event) {
+          dataObj = JSON.parse(data);
 
-          case 'sync': {
+        } catch (err) {
 
-            // the UI should be in a loading state; if it is, set the loading state to false
-
-            const isLoading = useGlobalStore.getState().loading;
-
-            if (isLoading) {
-
-              setLoading(false);
-
-            }
-
-            if (data.registry) {
-
-              setDates(new Map(data.registry?.dates));
-              setTimeRanges(data.registry?.timeRanges);
-              setAppointments(data.registry?.appointments);
-              setPersonnelCategories(data.registry?.personnelCategories);
-              setRegistryDownloaded(true);
-
-            }
-
-            if (data.locations) {
-
-              setLocations(data.registry?.locations);
-              setLocationsDownloaded(true);
-
-            }
-
-            if (data.profile) {
-
-              setFullName(data.profile?.fullName);
-              setPhoneNumber(data.profile?.phoneNumber);
-              setProfileUrl(data.profile?.url);
-              setProfileDownloaded(true);
-
-            }
-
-            break;
-          }
-
-          case 'update:appointment': {
-
-            break;
-          }
-
-          case 'delete:appointment': {
-
-            break;
-          }
-
-          // if the server emits an error message, throw an exception
-          // so it gets handled by the onerror callback below:
-          case 'error': {
-
-            throw new FatalError(msg.data);
-
-          }
-
-          default: break;
+          error = err;
 
         }
+
+        if (!error) {
+          
+          switch (event) {
+
+            case 'sync': {
+  
+              // the UI should be in a loading state; if it is, set the loading state to false
+  
+              const isLoading = useGlobalStore.getState().loading;
+  
+              if (isLoading) {
+  
+                setLoading(false);
+  
+              }
+  
+              if (dataObj.registry) {
+  
+                setDates(new Map(dataObj.registry.dates));
+                setTimeRanges(dataObj.registry.timeRanges);
+                setAppointments(dataObj.registry.appointments);
+                setPersonnelCategories(dataObj.registry.personnelCategories);
+                setRegistryDownloaded(true);
+  
+              }
+  
+              if (dataObj.locations) {
+  
+                setLocations(dataObj.locations);
+                setLocationsDownloaded(true);
+  
+              }
+  
+              if (dataObj.profile) {
+  
+                setFullName(dataObj.profile.fullName);
+                setPhoneNumber(dataObj.profile.phoneNumber);
+                setProfileUrl(dataObj.profile.url);
+                setProfileDownloaded(true);
+  
+              }
+  
+              break;
+
+            }
+  
+            case 'update:appointment': {
+  
+              break;
+            }
+  
+            case 'delete:appointment': {
+  
+              break;
+            }
+  
+            // if the server emits an error message, throw an exception
+            // so it gets handled by the onerror callback below:
+            case 'error': {
+  
+              throw new FatalError(msg.data);
+  
+            }
+  
+            default: break;
+  
+          }
+
+        }
+
 
       },
 

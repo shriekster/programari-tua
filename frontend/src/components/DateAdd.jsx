@@ -47,8 +47,6 @@ export default function DateAdd({ open, handleClose, date }) {
 
     const [saving, setSaving] = useState(false);
 
-    const [activeStep, setActiveStep] = useState(-1);
-
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const openMenu = Boolean(anchorEl);
@@ -56,7 +54,9 @@ export default function DateAdd({ open, handleClose, date }) {
     const locations = useGlobalStore((state) => state.locations);
 
     const handleClickListItem = (event) => {
+
       setAnchorEl(event.currentTarget);
+
     };
   
     const handleMenuItemClick = (event, index) => {
@@ -69,19 +69,6 @@ export default function DateAdd({ open, handleClose, date }) {
     const handleCloseMenu = () => {
 
       setAnchorEl(null);
-
-    };
-
-
-    const handleGoToLastStep = () => {
-
-        setActiveStep(1);
-
-    };
-
-    const handleGoToFirstStep = () => {
-
-        setActiveStep(0);
 
     };
 
@@ -100,11 +87,6 @@ export default function DateAdd({ open, handleClose, date }) {
 
     }, [open]);
 
-    
-    useEffect(() => {
-
-    }, [open, activeStep]);
-
 
     return (
         <Dialog
@@ -113,11 +95,11 @@ export default function DateAdd({ open, handleClose, date }) {
             fullWidth
             maxWidth='sm'
             >
-            <DialogTitle>
-                { 
-                  // eslint-disable-next-line react/prop-types
-                  date?.$d?.toLocaleDateString('ro-RO')
-                }
+            <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
+              { 
+                // eslint-disable-next-line react/prop-types
+                date?.$d?.toLocaleDateString('ro-RO')
+              }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
@@ -125,66 +107,57 @@ export default function DateAdd({ open, handleClose, date }) {
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'space-evenly'
+                    justifyContent: 'center'
                 }}>
-                {
-                    0 === activeStep ? (
-                      <>
-                      <Typography textAlign='center'>
-                        Selectează o locație
-                      </Typography>
-                        <List
-                          component='nav'
-                          aria-label='Locație'
-                          sx={{ 
-                            border: '1px solid rgba(255, 255, 255, .125)',
-                            borderRadius: '4px',
-                          }}
-                        >
-                          <ListItemButton
-                            id='location-button'
-                            aria-haspopup='listbox'
-                            aria-controls='location-menu'
-                            aria-label='Locație'
-                            aria-expanded={openMenu ? 'true' : undefined}
-                            onClick={handleClickListItem}
-                          >
-                            <ListItemIcon sx={{ minWidth: '40px !important' }}>
-                              <PlaceIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={locations?.[selectedIndex]?.name}
-                            />
-                          </ListItemButton>
-                        </List>
-                        <Menu sx={{ width: '100%'}}
-                          id='location-menu'
-                          anchorEl={anchorEl}
-                          open={openMenu}
-                          anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                          transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                          onClose={handleCloseMenu}
-                          MenuListProps={{
-                            'aria-labelledby': 'location-button',
-                            role: 'listbox',
-                          }}
-                        >
-                          {locations.map((location, index) => (
-                            <MenuItem
-                              key={location.id}
-                              selected={index === selectedIndex}
-                              onClick={(event) => handleMenuItemClick(event, index)}
-                            >
-                              {location.name}
-                            </MenuItem>
-                          ))}
-                        </Menu>
-                      </>
-                    ) : (
-                        1
-                    )
-
-                }
+                  <Typography textAlign='center' marginBottom='8px'>
+                    Selectează o locație
+                  </Typography>
+                  <List
+                    component='nav'
+                    aria-label='Locație'
+                    sx={{ 
+                      border: '1px solid rgba(255, 255, 255, .125)',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    <ListItemButton
+                      id='location-button'
+                      aria-haspopup='listbox'
+                      aria-controls='location-menu'
+                      aria-label='Locație'
+                      aria-expanded={openMenu ? 'true' : undefined}
+                      onClick={handleClickListItem}
+                    >
+                      <ListItemIcon sx={{ minWidth: '40px !important' }}>
+                        <PlaceIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={locations?.[selectedIndex]?.name}
+                      />
+                    </ListItemButton>
+                  </List>
+                  <Menu sx={{ width: '100%'}}
+                    id='location-menu'
+                    anchorEl={anchorEl}
+                    open={openMenu}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    onClose={handleCloseMenu}
+                    MenuListProps={{
+                      'aria-labelledby': 'location-button',
+                      role: 'listbox',
+                    }}
+                  >
+                    {locations.map((location, index) => (
+                      <MenuItem
+                        key={location.id}
+                        selected={index === selectedIndex}
+                        onClick={(event) => handleMenuItemClick(event, index)}
+                      >
+                        {location.name}
+                      </MenuItem>
+                    ))}
+                  </Menu>
               </Box>
                 {
                     saving && (
@@ -215,33 +188,11 @@ export default function DateAdd({ open, handleClose, date }) {
                     disabled={saving}>
                     Renunță
                 </Button>
-                {
-                    0 === activeStep ? (
-                        <>
-                            <Button variant='contained'
-                                disabled={false}
-                                onClick={handleGoToLastStep}>
-                                Înainte
-                            </Button>
-                        </>
-
-                    ) : (
-                        <>
-                            <Button
-                                color='secondary'
-                                variant='outlined'
-                                disabled={saving}
-                                onClick={handleGoToFirstStep}>
-                                Înapoi
-                            </Button>
-                            <Button variant='contained'
-                                disabled={saving}
-                                onClick={handleSaveDate}>
-                                Salvează
-                            </Button>
-                        </>
-                    )
-                }
+                <Button variant='contained'
+                    disabled={saving}
+                    onClick={handleSaveDate}>
+                    Salvează
+                </Button>
             </DialogActions>
         </Dialog>
     );
