@@ -47,6 +47,12 @@ export const useGlobalStore = create((set, get) => ({
   setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),
   dates: new Map(),
   setDates: (newDates) => set({ dates: newDates }),
+  addDate: (date) => {
+
+    const dates = get().dates;
+    //dates.set()
+
+  },
   timeRanges: [],
   setTimeRanges: (newTimeRanges) => set({ timeRanges: newTimeRanges }),
   appointments: [],

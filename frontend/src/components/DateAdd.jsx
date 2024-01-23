@@ -39,7 +39,7 @@ const isEmptyStringRegex = /^$/;
 const {
     setError,
     setErrorMessage,
-    addLocation,
+    addDate,
 } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
@@ -50,6 +50,9 @@ export default function DateAdd({ open, handleClose, date }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const openMenu = Boolean(anchorEl);
+    
+    // eslint-disable-next-line react/prop-types
+    const formattedDate = date?.$d?.toLocaleDateString('ro-RO') ?? '';
 
     const locations = useGlobalStore((state) => state.locations);
 
@@ -78,9 +81,77 @@ export default function DateAdd({ open, handleClose, date }) {
 
     };
 
-    const handleSaveDate = async () => {
+    const handleSave = async () => {
 
-    };
+      const canSaveDate = 
+          selectedIndex >= 0                &&
+          selectedIndex < locations.length  &&
+          locations[selectedIndex];
+
+      if (canSaveDate) {
+
+          setSaving(true);
+
+          let error = null, status = 401;
+
+          try {
+  
+              const requestOptions = {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                      date: formattedDate,
+                      locationId: locations[selectedIndex].id,
+                  }),
+                  credentials: 'same-origin'
+              };
+  
+              const response = await fetch('/api/admin/dates', requestOptions);
+              status = response.status;
+      
+      
+          } catch (err) {
+  
+              // eslint-disable-next-line no-unused-vars
+              error = err;
+              status = 400; // client-side error
+  
+          }
+
+          switch (status) {
+
+              case 200: {
+
+                  setSaving(false);
+                  break;
+
+              }
+
+              case 401: {
+
+                  await refreshAccessToken(handleSave)
+                  break;
+
+              }
+
+              default: {
+
+                  setSaving(false);
+                  setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                  setError(true);
+                  onClose();
+                  break;
+
+              }
+
+          }
+
+
+      }
+
+  };
 
     // set some values to an empty state when the dialog opens
     useEffect(() => {
@@ -96,10 +167,7 @@ export default function DateAdd({ open, handleClose, date }) {
             maxWidth='sm'
             >
             <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
-              { 
-                // eslint-disable-next-line react/prop-types
-                date?.$d?.toLocaleDateString('ro-RO')
-              }
+              { formattedDate }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
@@ -190,7 +258,7 @@ export default function DateAdd({ open, handleClose, date }) {
                 </Button>
                 <Button variant='contained'
                     disabled={saving}
-                    onClick={handleSaveDate}>
+                    onClick={handleSave}>
                     Salvează
                 </Button>
             </DialogActions>
