@@ -31,7 +31,8 @@ import refreshAccessToken from '../refreshAccessToken.js';
 const {
     setError,
     setErrorMessage,
-    updateDate
+    updateDate,
+    deleteDate,
 } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
@@ -42,12 +43,13 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
     const [anchorEl, setAnchorEl] = useState(null);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const openMenu = Boolean(anchorEl);
-    
+
+    const dates = useGlobalStore((state) => state.dates);
+    const locations = useGlobalStore((state) => state.locations);
+
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
-    //
-
-    const locations = useGlobalStore((state) => state.locations);
+    const dateId = dates?.get(day)?.id ?? '';
 
     const handleClickListItem = (event) => {
 
@@ -60,6 +62,14 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
       setSelectedIndex(index);
       setAnchorEl(null);
 
+      // update the location for the specific date on the server when the admin selects a new location
+      const timeoutId = setTimeout(async () => {
+
+        clearTimeout(timeoutId);
+        await handleUpdate(index);
+
+      });
+
     };
   
     const handleCloseMenu = () => {
@@ -68,105 +78,168 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
 
     };
 
-    const handleDeleteDay = async () => {
+    const handleUpdate = async (index) => {
+
+        const { locations, dates } = useGlobalStore.getState();
+        const dateId = dates?.get(day)?.id ?? '';
+
+        const canUpdateDate = 
+            index >= 0                &&
+            index < locations.length  &&
+            locations[index];
+
+        if (canUpdateDate) {
+
+            setSaving(true);
+
+            let error = null, status = 401, updatedDate = null;
+
+            try {
+
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: dateId,
+                        locationId: locations[index].id,
+                        day,
+                    }),
+                    credentials: 'same-origin'
+                };
+
+                const response = await fetch(`/api/admin/dates/${dateId}`, requestOptions);
+                status = response.status;
+
+                const json = await response.json();
+                updatedDate = json.data.date;
+        
+        
+            } catch (err) {
+
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+                status = 400; // client-side error
+
+            }
+
+            switch (status) {
+
+                case 200: {
+
+                    setSaving(false);
+
+                    if (updatedDate) {
+
+                        updateDate(updatedDate);
+
+                    }
+
+                    handleClose(false);
+
+                    break;
+
+                }
+
+                case 401: {
+
+                    await refreshAccessToken(handleUpdate)
+                    break;
+
+                }
+
+                default: {
+
+                    setSaving(false);
+                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setError(true);
+                    handleClose(false);
+                    break;
+
+                }
+
+            }
+
+
+        }
 
     };
 
-    const handleSave = async () => {
+    const handleDeleteDay = async () => {
 
-      const canSaveDate = 
-          selectedIndex >= 0                &&
-          selectedIndex < locations.length  &&
-          locations[selectedIndex];
-
-      if (canSaveDate) {
-
-          setSaving(true);
-
-          let error = null, status = 401, updatedDate = null;
-
-          try {
+        const canSaveDate = 
+            selectedIndex >= 0                &&
+            selectedIndex < locations.length  &&
+            locations[selectedIndex];
   
-              const requestOptions = {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                      day,
-                      locationId: locations[selectedIndex].id,
-                  }),
-                  credentials: 'same-origin'
-              };
+        if (canSaveDate) {
   
-              const response = await fetch('/api/admin/dates', requestOptions);
-              status = response.status;
-
-              const json = await response.json();
-              updatedDate = json.data.date;
-      
-      
-          } catch (err) {
+            setSaving(true);
   
-              // eslint-disable-next-line no-unused-vars
-              error = err;
-              status = 400; // client-side error
+            let error = null, status = 401;
   
-          }
-
-          switch (status) {
-
-              case 200: {
-
-                  setSaving(false);
-
-                  if (updatedDate) {
-
-                    updateDate(updatedDate);
-
-                  }
-
-                  handleClose(false);
-
-                  break;
-
-              }
-
-              case 401: {
-
-                  await refreshAccessToken(handleSave)
-                  break;
-
-              }
-
-              default: {
-
-                  setSaving(false);
-                  setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-                  setError(true);
-                  handleClose(false);
-                  break;
-
-              }
-
-          }
-
-
-      }
-
+            try {
+    
+                const requestOptions = {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
+                };
+    
+                const response = await fetch(`/api/admin/dates/${dateId}`, requestOptions);
+                status = response.status;
+        
+        
+            } catch (err) {
+    
+                // eslint-disable-next-line no-unused-vars
+                error = err;
+                status = 400; // client-side error
+    
+            }
+  
+            switch (status) {
+  
+                case 200: {
+  
+                    setSaving(false);
+  
+                    deleteDate(day);
+  
+                    handleClose(false);
+  
+                    break;
+  
+                }
+  
+                case 401: {
+  
+                    await refreshAccessToken(handleUpdate)
+                    break;
+  
+                }
+  
+                default: {
+  
+                    setSaving(false);
+                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+                    setError(true);
+                    handleClose(false);
+                    break;
+  
+                }
+  
+            }
+  
+  
+        }
+  
     };
 
     // set some values to an empty state when the dialog opens
     useEffect(() => {
 
     }, [open]);
-
-    // update the location for the specific date on the server when the admin selects a new location
-    useEffect(() => {
-
-
-
-    }, [locations, selectedIndex]);
 
 
     return (

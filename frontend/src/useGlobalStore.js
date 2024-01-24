@@ -52,7 +52,7 @@ export const useGlobalStore = create((set, get) => ({
     const updatedDates = new Map(get().dates);
     updatedDates.set(date.day, date);
 
-    set({ dates: updatedDates})
+    set({ dates: updatedDates});
 
   },
   updateDate: (date, fields) => {
@@ -60,11 +60,23 @@ export const useGlobalStore = create((set, get) => ({
     const updatedDates = new Map(get().dates);
     const updatedDate = updatedDates.get(date.day);
 
-    // TODO: update the date
+    for (let i = 0, f = fields.length; i < f; ++i) {
+
+      updatedDate[`${fields[i].key}`] = fields[i].value;
+
+    }
     
     updatedDates.set(updatedDate.day, updatedDate);
 
-    set({ dates: updatedDates})
+    set({ dates: updatedDates});
+
+  },
+  deleteDate: (day) => {
+
+    const updatedDates = new Map(get().dates);
+    updatedDates.delete(day);
+
+    set({ dates: updatedDates});
 
   },
   timeRanges: [],

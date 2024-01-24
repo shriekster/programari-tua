@@ -86,8 +86,8 @@ export default function DateAdd({ open, handleClose, date }) {
                     'Content-Type': 'application/json',
                   },
                   body: JSON.stringify({
-                      day,
-                      locationId: locations[selectedIndex].id,
+                    locationId: locations[selectedIndex].id,
+                    day,
                   }),
                   credentials: 'same-origin'
               };
