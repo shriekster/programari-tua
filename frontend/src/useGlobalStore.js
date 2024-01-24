@@ -55,6 +55,18 @@ export const useGlobalStore = create((set, get) => ({
     set({ dates: updatedDates})
 
   },
+  updateDate: (date, fields) => {
+
+    const updatedDates = new Map(get().dates);
+    const updatedDate = updatedDates.get(date.day);
+
+    // TODO: update the date
+    
+    updatedDates.set(updatedDate.day, updatedDate);
+
+    set({ dates: updatedDates})
+
+  },
   timeRanges: [],
   setTimeRanges: (newTimeRanges) => set({ timeRanges: newTimeRanges }),
   appointments: [],

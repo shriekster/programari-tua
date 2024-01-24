@@ -17,6 +17,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import PlaceIcon from '@mui/icons-material/Place';
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { useGlobalStore } from '../useGlobalStore';
@@ -29,11 +31,11 @@ import refreshAccessToken from '../refreshAccessToken.js';
 const {
     setError,
     setErrorMessage,
-    addDate,
+    updateDate
 } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
-export default function DateAdd({ open, handleClose, date }) {
+export default function DateEdit({ open, handleClose, handleAddTimeRange, date }) {
 
     const [saving, setSaving] = useState(false);
 
@@ -43,6 +45,7 @@ export default function DateAdd({ open, handleClose, date }) {
     
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
+    //
 
     const locations = useGlobalStore((state) => state.locations);
 
@@ -65,6 +68,10 @@ export default function DateAdd({ open, handleClose, date }) {
 
     };
 
+    const handleDeleteDay = async () => {
+
+    };
+
     const handleSave = async () => {
 
       const canSaveDate = 
@@ -81,7 +88,7 @@ export default function DateAdd({ open, handleClose, date }) {
           try {
   
               const requestOptions = {
-                  method: 'POST',
+                  method: 'PUT',
                   headers: {
                     'Content-Type': 'application/json',
                   },
@@ -115,7 +122,7 @@ export default function DateAdd({ open, handleClose, date }) {
 
                   if (updatedDate) {
 
-                    addDate(updatedDate);
+                    updateDate(updatedDate);
 
                   }
 
@@ -147,12 +154,19 @@ export default function DateAdd({ open, handleClose, date }) {
 
       }
 
-  };
+    };
 
     // set some values to an empty state when the dialog opens
     useEffect(() => {
 
     }, [open]);
+
+    // update the location for the specific date on the server when the admin selects a new location
+    useEffect(() => {
+
+
+
+    }, [locations, selectedIndex]);
 
 
     return (
@@ -168,62 +182,79 @@ export default function DateAdd({ open, handleClose, date }) {
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
                     height: '300px',
+                    width: '300px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-evenly'
                 }}>
-                  <Typography marginBottom='8px' alignSelf='flex-start'>
-                    Selectează o locație
-                  </Typography>
-                  <List
-                    component='nav'
-                    aria-label='Locație'
-                    sx={{ 
-                      border: '1px solid rgba(255, 255, 255, .125)',
-                      borderRadius: '4px',
-                      width: '280px'
-                    }}
-                  >
-                    <ListItemButton
-                      id='location-button'
-                      aria-haspopup='listbox'
-                      aria-controls='location-menu'
-                      aria-label='Locație'
-                      aria-expanded={openMenu ? 'true' : undefined}
-                      onClick={handleClickListItem}
+                <Box>
+                    <Typography marginBottom='8px' alignSelf='flex-start'>
+                        Locație
+                    </Typography>
+                    <List
+                        component='nav'
+                        aria-label='Locație'
+                        sx={{ 
+                            border: '1px solid rgba(255, 255, 255, .125)',
+                            borderRadius: '4px',
+                            width: '280px'
+                        }}
+                        >
+                        <ListItemButton
+                        id='location-button'
+                        aria-haspopup='listbox'
+                        aria-controls='location-menu'
+                        aria-label='Locație'
+                        aria-expanded={openMenu ? 'true' : undefined}
+                        onClick={handleClickListItem}
+                        >
+                        <ListItemIcon sx={{ minWidth: '40px !important' }}>
+                            <PlaceIcon />
+                        </ListItemIcon>
+                        <ListItemText
+                            primary={locations?.[selectedIndex]?.name}
+                        />
+                        </ListItemButton>
+                    </List>
+                    <Menu
+                        id='location-menu'
+                        anchorEl={anchorEl}
+                        open={openMenu}
+                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                        onClose={handleCloseMenu}
+                        MenuListProps={{
+                        'aria-labelledby': 'location-button',
+                        role: 'listbox',
+                        }}
                     >
-                      <ListItemIcon sx={{ minWidth: '40px !important' }}>
-                        <PlaceIcon />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={locations?.[selectedIndex]?.name}
-                      />
-                    </ListItemButton>
-                  </List>
-                  <Menu
-                    id='location-menu'
-                    anchorEl={anchorEl}
-                    open={openMenu}
-                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                    onClose={handleCloseMenu}
-                    MenuListProps={{
-                      'aria-labelledby': 'location-button',
-                      role: 'listbox',
-                    }}
-                  >
-                    {locations.map((location, index) => (
-                      <MenuItem
-                        key={location.id}
-                        selected={index === selectedIndex}
-                        onClick={(event) => handleMenuItemClick(event, index)}
-                        sx={{ width: '278px' }}
-                      >
-                        {location.name}
-                      </MenuItem>
-                    ))}
-                  </Menu>
+                        {locations.map((location, index) => (
+                        <MenuItem
+                            key={location.id}
+                            selected={index === selectedIndex}
+                            onClick={(event) => handleMenuItemClick(event, index)}
+                            sx={{ width: '278px'}}
+                        >
+                            {location.name}
+                        </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+                  <Button startIcon={<MoreTimeIcon />}
+                    sx={{ width: '280px' }}
+                    variant='contained'
+                    color='primary'
+                    onClick={() => { handleAddTimeRange() }}>
+                    Adaugă interval orar
+                  </Button>
+                  <Button startIcon={<DeleteIcon />}
+                    sx={{ width: '280px' }}
+                    variant='contained'
+                    color='error'
+                    onClick={handleDeleteDay}>
+                    Șterge ziua de antrenament
+                  </Button>
               </Box>
                 {
                     saving && (
@@ -246,18 +277,13 @@ export default function DateAdd({ open, handleClose, date }) {
             <DialogActions sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between'
+                    justifyContent: 'center'
                 }}>
                 <Button onClick={() => { handleClose(false) }}
                     color='error'
                     variant='outlined'
                     disabled={saving}>
                     Renunță
-                </Button>
-                <Button variant='contained'
-                    disabled={saving}
-                    onClick={handleSave}>
-                    Salvează
                 </Button>
             </DialogActions>
         </Dialog>

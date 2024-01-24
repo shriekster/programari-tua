@@ -36,6 +36,7 @@ import { useGlobalStore } from '../useGlobalStore.js';
 import refreshAccessToken from '../refreshAccessToken.js';
 
 import DateAdd from './DateAdd.jsx';
+import DateEdit from './DateEdit.jsx';
 import TimeRangeAdd from './TimeRangeAdd.jsx';
 import TimeRangeEdit from './TimeRangeEdit.jsx';
 
@@ -97,6 +98,7 @@ export default function Admin() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeRangeId, setSelectedTimeRangeId] = useState(0);
   const [openAddDate, setOpenAddDate] = useState(false);
+  const [openEditDate, setOpenEditDate] = useState(false);
   const [openAddTimeRange, setOpenAddTimeRange] = useState(false);
   const [openEditTimeRange, setOpenEditTimeRange] = useState(false);
 
@@ -132,6 +134,20 @@ export default function Admin() {
 
   };
 
+  const handleToggleEditDate = (bool = undefined) => {
+
+    if (undefined !== bool) {
+      
+      setOpenEditDate(Boolean(bool));
+
+    } else {
+
+      setOpenEditDate((prevState) => !prevState);
+
+    }
+
+  };
+
   const handleToggleAddTimeRange = (bool = undefined) => {
 
     if (undefined !== bool) {
@@ -160,17 +176,12 @@ export default function Admin() {
 
   };
 
-  const handleDaySettingsClick = (event) => {
+  const handleAddTimeRangeFromDateEdit = () => {
 
-    setAnchorEl(event.currentTarget);
+    handleToggleEditDate(false);
+    handleToggleAddTimeRange(true);
 
   };
-
-  const handleCloseDayMenu = () => {
-
-    setAnchorEl(null);
-
-  }
 
   // add the 'visibilitychange' event listener and remove it when the component unmounts
   useEffect(() => {
@@ -435,7 +446,7 @@ export default function Admin() {
             displaySettings && (
               <IconButton color='primary' 
                 disabled={loading}
-                onClick={handleDaySettingsClick}>
+                onClick={() => { handleToggleEditDate(true) }}>
                 <SettingsIcon fontSize='large' />
               </IconButton>
             )
@@ -464,24 +475,12 @@ export default function Admin() {
               </Typography>
             )
           }
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={openDayMenu}
-          onClose={handleCloseDayMenu}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
-          >
-          <MenuItem disabled onClick={handleCloseDayMenu}>
-            <ListItemText primary='Locație'
-              secondary='Profile: askjdhaksjh akj sdhkjashd kajsdh kajs hdkja' />
-          </MenuItem>
-          <MenuItem onClick={handleCloseDayMenu}>My account</MenuItem>
-          <MenuItem onClick={handleCloseDayMenu}>Logout</MenuItem>
-        </Menu>
         <DateAdd open={openAddDate} 
           handleClose={() => { handleToggleAddDate(false) }}
+          date={selectedDate}/>
+        <DateEdit open={openEditDate} 
+          handleClose={() => { handleToggleEditDate(false) }}
+          handleAddTimeRange={handleAddTimeRangeFromDateEdit}
           date={selectedDate}/>
         <TimeRangeAdd open={openAddTimeRange}
           handleClose={() => { handleToggleAddTimeRange(false) }}/>
