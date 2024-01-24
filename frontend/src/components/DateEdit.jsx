@@ -243,6 +243,7 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
             if (dateObj && locations) {
 
                 const index = locations.findIndex((location) => dateObj.locationId == location.id);
+
                 setSelectedIndex(index);
 
             }
@@ -284,13 +285,13 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                             width: '280px'
                         }}
                         >
-                        <ListItemButton
-                        id='location-button'
-                        aria-haspopup='listbox'
-                        aria-controls='location-menu'
-                        aria-label='Locație'
-                        aria-expanded={openMenu ? 'true' : undefined}
-                        onClick={handleClickListItem}
+                        <ListItemButton disabled={saving}
+                            id='location-button'
+                            aria-haspopup='listbox'
+                            aria-controls='location-menu'
+                            aria-label='Locație'
+                            aria-expanded={openMenu ? 'true' : undefined}
+                            onClick={handleClickListItem}
                         >
                         <ListItemIcon sx={{ minWidth: '40px !important' }}>
                             <PlaceIcon />
@@ -324,20 +325,22 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                         ))}
                     </Menu>
                 </Box>
-                  <Button startIcon={<MoreTimeIcon />}
+                <Button startIcon={<MoreTimeIcon />}
                     sx={{ width: '280px' }}
                     variant='contained'
                     color='primary'
+                    disabled={saving}
                     onClick={() => { handleAddTimeRange() }}>
                     Adaugă interval orar
-                  </Button>
-                  <Button startIcon={<DeleteIcon />}
+                </Button>
+                <Button startIcon={<DeleteIcon />}
                     sx={{ width: '280px' }}
                     variant='contained'
                     color='error'
+                    disabled={saving}
                     onClick={handleDeleteDay}>
                     Șterge ziua de antrenament
-                  </Button>
+                </Button>
               </Box>
                 {
                     saving && (
