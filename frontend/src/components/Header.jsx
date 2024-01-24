@@ -101,14 +101,31 @@ export default function Header() {
         }
 
         case '/admin':
-        case '/admin/':
+        case '/admin/': {
+
+          setMenu(true);
+          setRender(true);
+          setSelectedMenuItem('Calendar');
+          break;
+
+        }
+
         case '/admin/locations':
-        case '/admin/locations/':
+        case '/admin/locations/': {
+
+          setMenu(true);
+          setRender(true);
+          setSelectedMenuItem('Locații')
+          break;
+
+        }
+        
         case '/admin/profile':
         case '/admin/profile/': {
 
           setMenu(true);
           setRender(true);
+          setSelectedMenuItem('Profil');
           break;
 
         }
