@@ -483,7 +483,8 @@ export default function Admin() {
           handleAddTimeRange={handleAddTimeRangeFromDateEdit}
           date={selectedDate}/>
         <TimeRangeAdd open={openAddTimeRange}
-          handleClose={() => { handleToggleAddTimeRange(false) }}/>
+          handleClose={() => { handleToggleAddTimeRange(false) }}
+          date={selectedDate}/>
         <TimeRangeEdit open={openEditTimeRange}
           handleClose={() => { handleToggleEditTimeRange(false) }}/>
     </Box>
