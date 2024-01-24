@@ -136,8 +136,6 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
 
                     }
 
-                    handleClose(false);
-
                     break;
 
                 }
@@ -236,10 +234,23 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
   
     };
 
-    // set some values to an empty state when the dialog opens
+    // set some values to their initial state when the dialog opens
     useEffect(() => {
 
-    }, [open]);
+        if (open) {
+
+            const dateObj = dates?.get(day);
+
+            if (dateObj && locations) {
+
+                const index = locations.findIndex((location) => dateObj.locationId == location.id);
+                setSelectedIndex(index);
+
+            }
+
+        }
+
+    }, [open, dates, locations, day]);
 
 
     return (
