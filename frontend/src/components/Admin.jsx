@@ -26,6 +26,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
 import Badge from '@mui/material/Badge';
+import Chip from '@mui/material/Chip';
 
 import dayjs from 'dayjs';
 
@@ -410,6 +411,10 @@ export default function Admin() {
 
   }, [dates, selectedDate]);
 
+  // eslint-disable-next-line react/prop-types
+  const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
+  const selectedDateObj = dates?.get(selectedDay);
+
   return (
     <Box sx={{
         margin: 0,
@@ -459,7 +464,29 @@ export default function Admin() {
                   width: '320px',
                   margin: '0 auto'
                 }}>
-
+                  {
+                    timeRanges.filter((timeRange) => timeRange.dateId == selectedDateObj?.id).map((timeRange) => (
+                      <ListItem key={timeRange.id}
+                        sx={{ 
+                            cursor: 'pointer', 
+                            userSelect: 'none',
+                            border: '1px solid rgba(255, 255, 255, .125)',
+                            borderRadius: '4px', 
+                            marginBottom: '4px', 
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'}}>
+                        <ListItemText 
+                          primary={timeRange.startTime + ' - ' + timeRange.endTime}
+                          primaryTypographyProps={{ textAlign: 'center' }}/>
+                        <Chip size='small' 
+                          label={timeRange.published ? 'Publicat' : 'Nepublicat'}
+                          variant='outlined' 
+                          color={timeRange.published ? 'success' : 'warning'}/>
+                      </ListItem>
+                    ))
+                  }
                 </List>
               ) : (
                 <Button variant='contained' 
