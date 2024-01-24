@@ -4,9 +4,11 @@ export default function validateDate(req, res, next) {
 
   if (req?.body) {
 
+    const dateId = req.params?.dateId?.toString()?.trim()?.normalize('NFC') ?? ''
     const day = req.body?.day?.toString()?.trim()?.normalize('NFC') ?? '';
     const locationId = req.body?.locationId ?? 0;
 
+    const isValidDateId = '' === dateId || (dateId && validator.isInt('' + dateId, { gt: 0 }));
     const isValidDay = validator.isDate('' + day, {
         format: 'DD.MM.YYYY',
         strictMode: true,
@@ -14,7 +16,8 @@ export default function validateDate(req, res, next) {
     });
     const isValidLocationId = validator.isInt('' + locationId, { gt: 0 });
 
-    if (isValidDay && isValidLocationId) {
+    
+    if (isValidDateId && isValidDay && isValidLocationId) {
       
       req.body = { day, locationId };
 

@@ -102,7 +102,6 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                     'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        id: dateId,
                         locationId: locations[index].id,
                         day,
                     }),

@@ -17,6 +17,8 @@ let addLocation = null;
 let deleteLocation = null;
 let getDates = null;
 let addDate = null;
+let updateDate = null;
+let deleteDate = null;
 let getTimeRanges = null;
 let getAppointments = null;
 
@@ -89,6 +91,18 @@ try {
     statements['add_date'] = db.prepare(`
         INSERT INTO dates(location_id, day)
         VALUES (?, ?)`);
+    
+    statements['update_date'] = db.prepare(`
+        UPDATE dates
+        SET
+            location_id = ?,
+            day = ?
+        WHERE
+            id = ?`);
+
+    statements['delete_date'] = db.prepare(`
+        DELETE FROM dates
+        WHERE id = ?`);
 
     statements['get_timeranges'] = db.prepare(`
         SELECT 
@@ -214,7 +228,9 @@ if (!stmtError) {
 
                 profile = {
 
+                    fullName,
                     phoneNumber,
+                    url: `/api/admin/profiles/${profileId}`
 
                 };
 
@@ -382,6 +398,74 @@ if (!stmtError) {
 
     };
 
+    updateDate = (dateId, locationId, day) => {
+
+        let error, updateInfo, date = null;
+
+        try {
+
+            updateInfo = statements['update_date'].run(
+                Number(locationId),
+                '' + day,
+                Number(dateId)
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error) {
+
+                date = {
+
+                    id: dateId,
+                    locationId,
+                    day,
+
+                };
+
+            }
+
+        }
+
+        return date ?? null;
+
+    };
+
+    deleteDate = (dateId) => {
+
+        let error, updateInfo;
+
+        try {
+
+            updateInfo = statements['delete_date'].run(
+                Number(dateId)
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        if (!error) {
+
+            if (1 === updateInfo.changes) {
+
+                return 1;
+
+            }
+
+            return 0;
+
+        }
+
+        return -1;
+
+    };
+
     getTimeRanges = () => {
 
         let error = null, timeRanges = null;
@@ -431,6 +515,8 @@ export {
     getLocations,
     getDates,
     addDate,
+    updateDate,
+    deleteDate,
     getTimeRanges,
     getAppointments
 
