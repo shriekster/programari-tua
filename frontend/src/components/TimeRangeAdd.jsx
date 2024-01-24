@@ -49,7 +49,7 @@ const generateTimeArray = ([minHour, minMinute], [maxHour, maxMinute], minuteSte
 
   while (currentTime <= endTime) {
 
-    const formattedTime = currentTime.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const formattedTime = currentTime.toLocaleTimeString('ro-RO', { hour12: false, hour: '2-digit', minute: '2-digit' });
 
     timeArray.push(formattedTime);
 
@@ -58,11 +58,11 @@ const generateTimeArray = ([minHour, minMinute], [maxHour, maxMinute], minuteSte
 
   return timeArray;
 
-}
+};
 
 const hours = generateTimeArray([8, 0], [20, 0], 30);
 
-const minDistance = 1;
+const minDistance = 2;
 const minValue = 0;
 const maxValue = hours.length - 1;
 const middleValue = (minValue + maxValue) / 2;
