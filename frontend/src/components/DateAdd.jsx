@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import PlaceIcon from '@mui/icons-material/Place';
+import MapIcon from '@mui/icons-material/Map';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import { useGlobalStore } from '../useGlobalStore';
@@ -148,11 +149,6 @@ export default function DateAdd({ open, handleClose, date }) {
 
   };
 
-    // set some values to an empty state when the dialog opens
-    useEffect(() => {
-
-    }, [open]);
-
 
     return (
         <Dialog
@@ -161,8 +157,8 @@ export default function DateAdd({ open, handleClose, date }) {
             fullWidth
             maxWidth='sm'
             >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
-              { day }
+            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+              <MapIcon sx={{ marginRight: '8px' }}/>{ day }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{

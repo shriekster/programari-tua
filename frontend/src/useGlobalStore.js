@@ -74,6 +74,7 @@ export const useGlobalStore = create((set, get) => ({
   },
   timeRanges: [],
   setTimeRanges: (newTimeRanges) => set({ timeRanges: newTimeRanges }),
+  addTimeRange: (newTimeRange) => set((state) => ({ timeRanges: [...state.timeRanges, newTimeRange]})),
   appointments: [],
   setAppointments: (newAppointments) => set({ appointments: newAppointments }),
   personnelCategories: [],

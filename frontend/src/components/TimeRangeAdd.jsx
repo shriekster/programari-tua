@@ -8,19 +8,11 @@ import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import { MobileTimePicker } from '@mui/x-date-pickers/MobileTimePicker';
 import Slider from '@mui/material/Slider';
-
-import PlaceIcon from '@mui/icons-material/Place';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
-import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -54,6 +46,7 @@ const generateTimeArray = ([minHour, minMinute], [maxHour, maxMinute], minuteSte
     timeArray.push(formattedTime);
 
     currentTime.setMinutes(currentTime.getMinutes() + minuteStep);
+
   }
 
   return timeArray;
@@ -67,7 +60,7 @@ const minValue = 0;
 const maxValue = hours.length - 1;
 const middleValue = (minValue + maxValue) / 2;
 
-const marks = [
+const hourMarks = [
   {
     value: minValue,
     label: hours[minValue],
@@ -82,110 +75,45 @@ const marks = [
   },
 ];
 
+const numberMarks = [
 
+  {
+    value: 10,
+    label: 10,
+  },
+  {
+    value: 20,
+    label: 20,
+  },
+  {
+    value: 30,
+    label: 30,
+  },
+  {
+    value: 40,
+    label: 40,
+  },
+  {
+    value: 50,
+    label: 50,
+  },
 
+];
 
 // eslint-disable-next-line react/prop-types
 export default function TimeRangeAdd({ open, handleClose, date }) {
     
     const [saving, setSaving] = useState(false);
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const openMenu = Boolean(anchorEl);
-    const [timeRange, setTimeRange] = useState([10, 20]);
+    const [timeRange, setTimeRange] = useState([minValue, middleValue]);
+    const [numberOfParticipants, setNumberOfParticipants] = useState(20);
+    const [published, setPublished] = useState(false);
 
     const dates = useGlobalStore((state) => state.dates);
-    const locations = useGlobalStore((state) => state.locations);
 
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
     const dateId = dates?.get(day)?.id ?? '';
-
-    const handleUpdate = async (index) => {
-
-        const { locations, dates } = useGlobalStore.getState();
-        const dateId = dates?.get(day)?.id ?? '';
-
-        const canUpdateDate = 
-            index >= 0                &&
-            index < locations.length  &&
-            locations[index];
-
-        if (canUpdateDate) {
-
-            setSaving(true);
-
-            let error = null, status = 401, updatedDate = null;
-
-            try {
-
-                const requestOptions = {
-                    method: 'PUT',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        locationId: locations[index].id,
-                        day,
-                    }),
-                    credentials: 'same-origin'
-                };
-
-                const response = await fetch(`/api/admin/dates/${dateId}`, requestOptions);
-                status = response.status;
-
-                const json = await response.json();
-                updatedDate = json.data.date;
-        
-        
-            } catch (err) {
-
-                // eslint-disable-next-line no-unused-vars
-                error = err;
-                status = 400; // client-side error
-
-            }
-
-            switch (status) {
-
-                case 200: {
-
-                    setSaving(false);
-
-                    if (updatedDate) {
-
-                        updateDate(updatedDate);
-
-                    }
-
-                    break;
-
-                }
-
-                case 401: {
-
-                    await refreshAccessToken(handleUpdate)
-                    break;
-
-                }
-
-                default: {
-
-                    setSaving(false);
-                    setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-                    setError(true);
-                    handleClose(false);
-                    break;
-
-                }
-
-            }
-
-
-        }
-
-    };
 
     const handleChangeTimeRange = (event, newValue, activeThumb) => {
 
@@ -215,25 +143,106 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
       }
     };
 
-    // set some values to their initial state when the dialog opens
+    const handleChangeNumberOfParticipants = (event, newValue) => {
+
+      setNumberOfParticipants(newValue);
+
+    };
+
+    const handleChangePublished = (event) => {
+
+      setPublished(event.target.checked);
+
+    };
+
+    const handleSave = async () => {
+
+      setSaving(true);
+
+      let error = null, status = 401, returnedTimeRange = null;
+
+      try {
+
+          const requestOptions = {
+              method: 'POST',
+              headers: {
+              'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                dateId,
+                startTime: hours[timeRange[0]],
+                endTime: hours[timeRange[1]],
+                capacity: numberOfParticipants,
+                published,
+              }),
+              credentials: 'same-origin'
+          };
+
+          const response = await fetch(`/api/admin/timeranges`, requestOptions);
+          status = response.status;
+
+          const json = await response.json();
+          returnedTimeRange = json.data.timeRange;
+  
+  
+      } catch (err) {
+
+          // eslint-disable-next-line no-unused-vars
+          error = err;
+          status = 400; // client-side error
+
+      }
+
+      switch (status) {
+
+          case 200: {
+
+              setSaving(false);
+
+              if (returnedTimeRange) {
+
+                  addTimeRange(returnedTimeRange);
+
+              }
+
+              handleClose(false);
+
+              break;
+
+          }
+
+          case 401: {
+
+              await refreshAccessToken(handleSave);
+              break;
+
+          }
+
+          default: {
+
+              setSaving(false);
+              setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+              setError(true);
+              handleClose(false);
+              break;
+
+          }
+
+      }
+
+    };
+
     useEffect(() => {
 
-        if (open) {
+      if (open) {
 
-            const dateObj = dates?.get(day);
+        setTimeRange([minValue, middleValue]);
+        setNumberOfParticipants(20);
+        setPublished(false);
 
-            if (dateObj && locations) {
+      }
 
-                const index = locations.findIndex((location) => dateObj.locationId == location.id);
-
-                setSelectedIndex(index);
-
-            }
-
-        }
-
-    }, [open, dates, locations, day]);
-
+    }, [open]);
 
     return (
         <Dialog
@@ -242,8 +251,8 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
             fullWidth
             maxWidth='sm'
             >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
-              { day }
+            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+              <MoreTimeIcon sx={{ marginRight: '8px' }}/> { day }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
@@ -256,36 +265,53 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
                 }}>
                 <Box sx={{ width: '250px' }}>
                   <Typography>
-                    {hours[timeRange[0]]} - {hours[timeRange[1]]}
+                    Intervalul orar: {hours[timeRange[0]]} - {hours[timeRange[1]]}
                   </Typography>
                   <Slider 
-                    step={1}
-                    marks={marks}
-                    min={minValue}
-                    max={maxValue}
-                    value={timeRange}
-                    valueLabelDisplay='off'
-                    onChange={handleChangeTimeRange}
-                    disableSwap/>
+                      step={1}
+                      marks={hourMarks}
+                      min={minValue}
+                      max={maxValue}
+                      value={timeRange}
+                      valueLabelDisplay='off'
+                      onChange={handleChangeTimeRange}
+                      disableSwap/>
+                </Box>
+                <Box sx={{ width: '250px' }}>
+                  <Typography>
+                    Numărul de locuri: {numberOfParticipants}
+                  </Typography>
+                  <Slider 
+                      step={5}
+                      marks={numberMarks}
+                      min={5}
+                      max={50}
+                      value={numberOfParticipants}
+                      valueLabelDisplay='off'
+                      onChange={handleChangeNumberOfParticipants}
+                      disableSwap/>
+                </Box>
+                <Box sx={{ width: '250px' }}>
+                  <FormControlLabel control={<Checkbox size='large' checked={published} onChange={handleChangePublished} />} label='Publicat'/>
                 </Box>
               </Box>
-                {
-                    saving && (
-                        <CircularProgress
-                            size={48}
-                            color='primary'
-                            thickness={8}
-                            sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-24px',
-                                marginLeft: '-24px',
-                            }}
-                            disableShrink
-                        />
-                    )
-                }
+              {
+                  saving && (
+                      <CircularProgress
+                          size={48}
+                          color='primary'
+                          thickness={8}
+                          sx={{
+                              position: 'absolute',
+                              top: '50%',
+                              left: '50%',
+                              marginTop: '-24px',
+                              marginLeft: '-24px',
+                          }}
+                          disableShrink
+                      />
+                  )
+              }
             </DialogContent>
             <DialogActions sx={{
                     display: 'flex',
@@ -298,7 +324,7 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
                     disabled={saving}>
                     Renunță
                 </Button>
-                <Button //onClick={() => { handleClose(false) }}
+                <Button onClick={handleSave}
                     color='primary'
                     variant='contained'
                     disabled={saving}>

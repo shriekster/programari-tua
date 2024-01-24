@@ -20,6 +20,7 @@ let addDate = null;
 let updateDate = null;
 let deleteDate = null;
 let getTimeRanges = null;
+let addTimeRange = null;
 let getAppointments = null;
 
 try {
@@ -114,6 +115,10 @@ try {
             time_ranges.end_time AS endTime 
         FROM time_ranges
         LEFT JOIN dates ON dates.id = time_ranges.date_id`);
+
+    statements['add_timerange'] = db.prepare(`
+        INSERT INTO time_ranges(date_id, start_time, end_time, capacity, published)
+        VALUES (?, ?, ?, ?, ?)`);
 
     // TODO!
     statements['get_appointments'] = db.prepare(`
@@ -474,6 +479,12 @@ if (!stmtError) {
 
             timeRanges = statements['get_timeranges'].all();
 
+            for (let i = 0, t = timeRanges.length; i < t; ++i) {
+
+                timeRanges[i].published = Boolean(timeRanges[i].published);
+
+            }
+
         } catch (err) {
 
             error = err;
@@ -481,6 +492,47 @@ if (!stmtError) {
         }
 
         return timeRanges ?? null;
+
+    };
+
+    addTimeRange = (dateId, startTime, endTime, capacity, published ) => {
+
+        let error, updateInfo, timeRange = null;
+
+        try {
+
+            updateInfo = statements['add_timerange'].run(
+                Number(dateId),
+                '' + startTime,
+                '' + endTime,
+                Number(capacity),
+                Number(published),
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error && 1 === updateInfo.changes) {
+
+                timeRange = {
+
+                    id: updateInfo.lastInsertRowid,
+                    dateId: Number(dateId), 
+                    startTime, 
+                    endTime, 
+                    capacity: Number(capacity), 
+                    published
+
+                };
+
+            }
+
+        }
+
+        return timeRange ?? null;
 
     };
 
@@ -518,6 +570,7 @@ export {
     updateDate,
     deleteDate,
     getTimeRanges,
+    addTimeRange,
     getAppointments
 
 };

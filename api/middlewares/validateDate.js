@@ -6,7 +6,7 @@ export default function validateDate(req, res, next) {
 
     const dateId = req.params?.dateId?.toString()?.trim()?.normalize('NFC') ?? ''
     const day = req.body?.day?.toString()?.trim()?.normalize('NFC') ?? '';
-    const locationId = req.body?.locationId ?? 0;
+    const locationId = req.body?.locationId?.toString()?.trim()?.normalize('NFC') ?? '';
 
     const isValidDateId = '' === dateId || (dateId && validator.isInt('' + dateId, { gt: 0 }));
     const isValidDay = validator.isDate('' + day, {

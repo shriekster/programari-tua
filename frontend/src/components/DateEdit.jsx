@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 
 import PlaceIcon from '@mui/icons-material/Place';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -259,8 +260,8 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
             fullWidth
             maxWidth='sm'
             >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none' }}>
-              { day }
+            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+              <EditCalendarIcon sx={{ marginRight: '8px' }}/>{ day }
             </DialogTitle>
             <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
               <Box sx={{
@@ -365,10 +366,10 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                     justifyContent: 'center'
                 }}>
                 <Button onClick={() => { handleClose(false) }}
-                    color='error'
-                    variant='outlined'
+                    color='primary'
+                    variant='contained'
                     disabled={saving}>
-                    Renunță
+                    OK
                 </Button>
             </DialogActions>
         </Dialog>
