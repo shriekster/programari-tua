@@ -39,7 +39,6 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
-    console.log({timeRange})
     const ownAppointments = useGlobalStore((state) => state.appointments).filter((appointment) => appointment?.timeRangeId == timeRange?.id);
     
     // eslint-disable-next-line react/prop-types
