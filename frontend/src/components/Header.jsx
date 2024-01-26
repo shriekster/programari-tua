@@ -242,7 +242,7 @@ export default function Header() {
   }
 
   return (
-    <AppBar elevation={1} sx={{ height: '56px' }}>
+    <AppBar position='sticky' elevation={1} sx={{ height: '56px',}}>
       <Container maxWidth={false} sx={{ height: '56px' }}>
         <Toolbar disableGutters sx={{
             display: 'flex',

@@ -294,7 +294,7 @@ export default function Admin() {
               }
   
               if (dataObj.registry) {
-                console.log(dataObj.registry)
+                
                 setDates(new Map(dataObj.registry.dates));
                 setTimeRanges(dataObj.registry.timeRanges);
                 setAppointments(dataObj.registry.appointments);
@@ -473,14 +473,14 @@ export default function Admin() {
                             userSelect: 'none',
                             border: '1px solid rgba(255, 255, 255, .125)',
                             borderRadius: '4px', 
-                            marginBottom: '4px', 
+                            marginBottom: '4px',
                             display: 'flex',
-                            flexDirection: 'column',
                             alignItems: 'center',
                             justifyContent: 'center'}}>
                         <ListItemText 
                           primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                          primaryTypographyProps={{ textAlign: 'center' }}/>
+                          //primaryTypographyProps={{ textAlign: 'center' }}
+                          />
                         <Chip size='small' 
                           label={timeRange.published ? 'Publicat' : 'Nepublicat'}
                           variant='outlined' 
@@ -496,7 +496,7 @@ export default function Admin() {
                     disabled={loading}
                     startIcon={<InsertInvitationIcon />}
                     onClick={handleToggleAddDate}>
-                    Adaugă o zi de antrenament
+                    Adaugă ziua de antrenament
                   </Button>
                 </Box>
               )
