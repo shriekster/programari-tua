@@ -9,11 +9,14 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
 import ReportIcon from '@mui/icons-material/Report';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -35,15 +38,11 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
     const [saving, setSaving] = useState(false);
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
-    const dates = useGlobalStore((state) => state.dates);
-    const timeRanges = useGlobalStore((state) => state.timeRanges);
-
+    const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
+    const ownAppointments = useGlobalStore((state) => state.appointments).filter((appointment) => appointment?.timeRangeId == timeRange?.id);
+    
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
-    const dateId = dates?.get(day)?.id ?? '';
-    
-    const timeRange = timeRanges.find((timeRange) => timeRange.id == timeRangeId);
-    const ownAppointments = [1];
 
     const handleTogglePublished = async (event) => {
 
@@ -185,7 +184,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
           case 401: {
 
-              await refreshAccessToken(handleDelete);
+              await refreshAccessToken(requestDeletion);
               break;
 
           }
@@ -217,6 +216,8 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
     };
 
     const canDeleteTimeRange = !timeRange?.published;
+    const relativeAttendance = Math.round((timeRange?.occupied / timeRange?.capacity) * 100);
+    const barColor = !isNaN(relativeAttendance) ? (relativeAttendance < 50 ? 'success' : ( relativeAttendance < 90 ? 'warning' : 'error')) : 'info';
 
     if (open) {
 
@@ -241,7 +242,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                     control={
                       <Switch color='success'
                         disabled={saving}
-                        checked={timeRange.published}
+                        checked={Boolean(timeRange?.published)}
                         onChange={handleTogglePublished}/>
                     }
                     label='Publicat' />
@@ -258,13 +259,80 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                     )
                   }
                 </Box>
+                <Box sx={{ width: '100%', marginTop: '16px'}}>
+                  <Typography sx={{ marginBottom: '4px' }}>
+                    Locuri ocupate: {timeRange?.occupied ?? '??'} din {timeRange?.capacity ?? '??'}
+                  </Typography>
+                  <LinearProgress variant='determinate'
+                    value={!isNaN(relativeAttendance) ? relativeAttendance : 0}
+                    color={barColor}
+                    sx={{
+                      borderRadius: '4px',
+                      height: '8px',
+                      '& .MuiLinearProgress-bar1Determinate': {
+                        //borderRadius: '4px',
+                      }
+                    }}/>
+                </Box>
               </DialogTitle>
               <DialogContent sx={{ position: 'relative', }}>
                 <Box sx={{ width: '100%'}}>
                   {
-                    (new Array(1000).fill(1)).map((val, i) => (
-                      <div key={i}>{i}</div>
-                    ))
+                    ownAppointments?.map((appointment) => appointment ? (
+                        <Box key={`${appointment.timeRangeId}-${appointment.appointmentId}`}
+                          sx={{ 
+                              width: '100%',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              border: '1px solid rgba(255, 255, 255, .25)',
+                              borderRadius: '4px',
+                              padding: '8px'
+                            }}>
+                          <Button href={`tel:${appointment.phoneNumber}`}
+                            sx={{
+                              width: '100%',
+                              maxWidth: '350px',
+                              marginBottom: '8px',
+                            }}
+                            startIcon={<LocalPhoneIcon />}
+                            variant='contained'
+                            color='info'>
+                            {appointment.phoneNumber}
+                          </Button>
+                          <Box sx={{
+                              width: '100%',
+                              maxWidth: '350px',
+                              marginBottom: '8px',
+                            }}>
+                            {
+                              appointment?.participants?.map((participant) => (
+                                <Box key={`${appointment.appointmentId}-${appointment.timeRangeId}-${participant.participantId}`}
+                                  sx={{ marginBottom: '8px', }}>
+                                  <Typography>
+                                    {participant.lastName} {participant.firstName}
+                                  </Typography>
+                                  <Box sx={{
+                                      width: '100%',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'space-evenly'
+                                    }}>
+                                      <Chip variant='filled' 
+                                        label={participant.isAdult ? 'adult' : 'minor'}
+                                        color={participant.isAdult ? 'default' : 'warning'}/>
+                                      <Chip variant='filled' 
+                                        label={`candidează pt. ${participant.personnelCategoryAbbreviation}`}/>
+                                  </Box>
+                                </Box>
+                              ))
+                            }
+                          </Box>
+                        </Box>
+
+                      ) : null
+                    )
                   }
                 </Box>
                 {

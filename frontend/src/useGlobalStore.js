@@ -80,8 +80,6 @@ export const useGlobalStore = create((set, get) => ({
     const updatedTimeRanges = [...get().timeRanges];
     
     const updatedIndex = updatedTimeRanges.findIndex((timeRange) => timeRange.id == updatedTimeRange.id);
-
-    console.log({updatedTimeRange, updatedTimeRanges})
     
     if (-1 !== updatedIndex) {
 

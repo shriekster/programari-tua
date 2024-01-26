@@ -3,7 +3,7 @@
 import { Router } from 'express';
 import { customAlphabet } from 'nanoid';
 import { getProfileName } from '../../lib/token.js';
-import { getDates, getTimeRanges, getAppointments, getLocations, getProfile } from '../../lib/db.js';
+import { getDates, getTimeRanges, getAppointments, getPersonnelCategories, getLocations, getProfile } from '../../lib/db.js';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
 
@@ -144,12 +144,14 @@ router.get('/', function(req, res) {
       const dates = getDates();
       const timeRanges = getTimeRanges();
       const appointments = getAppointments();
+      const personnelCategories = getPersonnelCategories();
 
       data.registry = {
 
         dates,
         timeRanges,
-        appointments
+        appointments,
+        personnelCategories,
 
       };
 

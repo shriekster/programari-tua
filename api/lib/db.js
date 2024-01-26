@@ -24,6 +24,7 @@ let addTimeRange = null;
 let updateTimeRange = null;
 let deleteTimeRange = null;
 let getAppointments = null;
+let getPersonnelCategories = null;
 
 try {
 
@@ -114,7 +115,14 @@ try {
             time_ranges.capacity, 
             time_ranges.published,
             time_ranges.start_time AS startTime,
-            time_ranges.end_time AS endTime 
+            time_ranges.end_time AS endTime,
+            (
+                SELECT
+                    COUNT(DISTINCT participants.id) from participants
+                LEFT JOIN appointments ON appointments.id = participants.appointment_id
+                WHERE appointments.time_range_id = time_ranges.id
+            )
+            AS occupied
         FROM time_ranges
         LEFT JOIN dates ON dates.id = time_ranges.date_id`);
 
@@ -137,19 +145,12 @@ try {
         DELETE FROM time_ranges
         WHERE id = ?`);
 
-    // TODO!
     statements['get_appointments'] = db.prepare(`
-        SELECT 
-            appointments.id,
-            time_ranges.id AS timeRangeId,
-            appointments.phone_number AS phoneNumber
-        FROM appointments
-        LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id`);
-
-    statements['get_participants'] = db.prepare(`
-        SELECT 
-            participants.id,
+        SELECT
+            appointments.time_range_id AS timeRangeId,
             appointments.id AS appointmentId,
+            appointments.phone_number AS phoneNumber,
+            participants.id AS participantId,
             participants.last_name AS lastName,
             participants.first_name AS firstName,
             participants.is_adult AS isAdult,
@@ -158,6 +159,9 @@ try {
         FROM participants
         LEFT JOIN appointments ON appointments.id = participants.appointment_id
         LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id`);
+
+    statements['get_personnel_categories'] = db.prepare(`
+        SELECT * from personnel_categories`);
 
     
 
@@ -627,11 +631,57 @@ if (!stmtError) {
 
     getAppointments = () => {
 
-        let error = null, appointments = null;
+        let error = null, _appointments = null, appointments = new Map(), result = null;
 
         try {
 
-            appointments = statements['get_appointments'].all();
+            _appointments = statements['get_appointments'].all();
+
+            for (let i = 0, a = _appointments.length; i < a; ++i) {
+                
+                const appointment = appointments.get(_appointments[i].appointmentId);
+
+                if (!appointment) {
+                    
+                    const ref = Object.create(null);
+                    ref.timeRangeId = _appointments[i].timeRangeId;
+                    ref.appointmentId = _appointments[i].appointmentId;
+                    ref.phoneNumber = _appointments[i].phoneNumber;
+                    ref.participants = [];
+
+                    const participant = Object.create(null);
+
+                    participant.participantId = _appointments[i].participantId;
+                    participant.lastName = _appointments[i].lastName;
+                    participant.firstName =_appointments[i].firstName;
+                    participant.isAdult = Boolean(_appointments[i].isAdult);
+                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
+                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+
+                    ref.participants.push(participant);
+
+                    appointments.set(_appointments[i].appointmentId, ref);
+
+                } else {
+
+                    const participant = Object.create(null);
+                    
+                    participant.participantId = _appointments[i].participantId;
+                    participant.lastName = _appointments[i].lastName;
+                    participant.firstName =_appointments[i].firstName;
+                    participant.isAdult = Boolean(_appointments[i].isAdult);
+                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
+                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+
+                    appointment.participants.push(participant);
+
+                    appointments.set(_appointments[i].appointmentId, appointment);
+
+                }
+
+            }
+
+            result = Array.from(appointments.values());
 
         } catch (err) {
 
@@ -639,7 +689,25 @@ if (!stmtError) {
 
         }
 
-        return appointments ?? null;
+        return result ?? null;
+
+    };
+
+    getPersonnelCategories = () => {
+
+        let error = null, personnelCategories = null;
+
+        try {
+
+            personnelCategories = statements['get_personnel_categories'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return personnelCategories ?? null;
 
     };
 
@@ -663,5 +731,6 @@ export {
     updateTimeRange,
     deleteTimeRange,
     getAppointments,
+    getPersonnelCategories,
 
 };
