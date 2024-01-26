@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -12,8 +12,9 @@ import Slider from '@mui/material/Slider';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Switch from '@mui/material/Switch';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -27,79 +28,6 @@ const {
     setErrorMessage,
     addTimeRange,
 } = useGlobalStore.getState();
-
-const generateTimeArray = ([minHour, minMinute], [maxHour, maxMinute], minuteStep ) => {
-
-  const startTime = new Date();
-  startTime.setHours(minHour, minMinute, 0, 0); // Set the start time to 08:00:00.000
-
-  const endTime = new Date();
-  endTime.setHours(maxHour, maxMinute, 0, 0); // Set the end time to 20:00:00.000
-
-  const timeArray = [];
-
-  let currentTime = startTime;
-
-  while (currentTime <= endTime) {
-
-    const formattedTime = currentTime.toLocaleTimeString('ro-RO', { hour12: false, hour: '2-digit', minute: '2-digit' });
-
-    timeArray.push(formattedTime);
-
-    currentTime.setMinutes(currentTime.getMinutes() + minuteStep);
-
-  }
-
-  return timeArray;
-
-};
-
-const hours = generateTimeArray([8, 0], [20, 0], 30);
-
-const minDistance = 2;
-const minValue = 0;
-const maxValue = hours.length - 1;
-const middleValue = (minValue + maxValue) / 2;
-
-const hourMarks = [
-  {
-    value: minValue,
-    label: hours[minValue],
-  },
-  {
-    value: middleValue,
-    label: hours[middleValue],
-  },
-  {
-    value: maxValue,
-    label: hours[maxValue],
-  },
-];
-
-const numberMarks = [
-
-  {
-    value: 10,
-    label: 10,
-  },
-  {
-    value: 20,
-    label: 20,
-  },
-  {
-    value: 30,
-    label: 30,
-  },
-  {
-    value: 40,
-    label: 40,
-  },
-  {
-    value: 50,
-    label: 50,
-  },
-
-];
 
 // eslint-disable-next-line react/prop-types
 export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) {
@@ -199,12 +127,23 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
             fullWidth
             maxWidth='sm'
             >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-              <RecentActorsIcon fontSize='large' sx={{ marginRight: '8px' }}/>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-                <Typography fontSize={17} fontWeight={500}>{ day }</Typography>
-                <Typography fontSize={17} fontWeight={500} sx={{ margin: '0 8px' }}> | </Typography>
-                <Typography fontSize={17} fontWeight={500}>{timeRange?.startTime} - {timeRange?.endTime}</Typography>
+            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <RecentActorsIcon fontSize='large' sx={{ marginRight: '8px' }}/>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                  <Typography fontSize={17} fontWeight={500}>{ day }</Typography>
+                  <Typography fontSize={17} fontWeight={500} sx={{ margin: '0 8px' }}> | </Typography>
+                  <Typography fontSize={17} fontWeight={500}>{timeRange?.startTime} - {timeRange?.endTime}</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <FormControlLabel control={<Switch color='success' />} label='Publicat' />
+                <Button startIcon={<DeleteIcon />}
+                  color='error'
+                  variant='contained'
+                  size='small'>
+                  Șterge
+                </Button>
               </Box>
             </DialogTitle>
             <DialogContent sx={{ position: 'relative', }}>
