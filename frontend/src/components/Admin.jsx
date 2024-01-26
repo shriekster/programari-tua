@@ -480,6 +480,7 @@ export default function Admin() {
                               alignItems: 'center',
                               justifyContent: 'center'
                             }}
+                            onClick={() => { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); }}
                             >
                           <ListItemText 
                             primary={timeRange.startTime + ' - ' + timeRange.endTime}
@@ -529,7 +530,9 @@ export default function Admin() {
           handleClose={() => { handleToggleAddTimeRange(false) }}
           date={selectedDate}/>
         <TimeRangeEdit open={openEditTimeRange}
-          handleClose={() => { handleToggleEditTimeRange(false) }}/>
+          handleClose={() => { handleToggleEditTimeRange(false) }}
+          date={selectedDate}
+          timeRangeId={selectedTimeRangeId}/>
     </Box>
   );
 
