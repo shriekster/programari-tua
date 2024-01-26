@@ -27,6 +27,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
+import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 
 import dayjs from 'dayjs';
 
@@ -489,12 +490,15 @@ export default function Admin() {
                   }
                 </List>
               ) : (
-                <Button variant='contained' 
-                  sx={{ display: 'block', margin: '0 auto' }}
-                  disabled={loading}
-                  onClick={handleToggleAddDate}>
-                  Configurează ziua de antrenament
-                </Button>
+                <Box sx={{ margin: '0 auto', display: 'flex', }}>
+                  <Button variant='contained' 
+                    sx={{ margin: '0 auto', }}
+                    disabled={loading}
+                    startIcon={<InsertInvitationIcon />}
+                    onClick={handleToggleAddDate}>
+                    Adaugă o zi de antrenament
+                  </Button>
+                </Box>
               )
             ) : (
               <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
