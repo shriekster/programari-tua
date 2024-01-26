@@ -149,6 +149,7 @@ export default function DateAdd({ open, handleClose, date }) {
 
   };
 
+  if (open) {
 
     return (
         <Dialog
@@ -258,4 +259,8 @@ export default function DateAdd({ open, handleClose, date }) {
         </Dialog>
     );
 
+  }
+
+  return null;
+  
 }

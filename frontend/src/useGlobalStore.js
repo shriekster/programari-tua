@@ -75,6 +75,38 @@ export const useGlobalStore = create((set, get) => ({
   timeRanges: [],
   setTimeRanges: (newTimeRanges) => set({ timeRanges: newTimeRanges }),
   addTimeRange: (newTimeRange) => set((state) => ({ timeRanges: [...state.timeRanges, newTimeRange]})),
+  updateTimeRange: (updatedTimeRange) => {
+
+    const updatedTimeRanges = [...get().timeRanges];
+    
+    const updatedIndex = updatedTimeRanges.findIndex((timeRange) => timeRange.id == updatedTimeRange.id);
+
+    console.log({updatedTimeRange, updatedTimeRanges})
+    
+    if (-1 !== updatedIndex) {
+
+      updatedTimeRanges.splice(updatedIndex, 1, updatedTimeRange);
+
+    }
+
+    set({ timeRanges: updatedTimeRanges});
+
+  },
+  deleteTimeRange: (timeRange) => {
+
+    const updatedTimeRanges = [...get().timeRanges];
+    
+    const updatedIndex = updatedTimeRanges.findIndex((t) => t.id == timeRange.id);
+    
+    if (-1 !== updatedIndex) {
+
+      updatedTimeRanges.splice(updatedIndex, 1);
+
+    }
+
+    set({ timeRanges: updatedTimeRanges});
+
+  },
   appointments: [],
   setAppointments: (newAppointments) => set({ appointments: newAppointments }),
   personnelCategories: [],

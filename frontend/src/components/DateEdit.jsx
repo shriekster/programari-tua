@@ -256,146 +256,151 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
 
     }, [open, dates, locations, day]);
 
+    if (open) {
 
-    return (
-        <Dialog
-            open={open} 
-            onClose={() => { handleClose(false) }}
-            fullWidth
-            maxWidth='sm'
-            >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-              <EditCalendarIcon sx={{ marginRight: '8px' }}/>{ day }
-            </DialogTitle>
-            <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
-              <Box sx={{
-                    height: '300px',
-                    width: '300px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly'
-                }}>
-                <Box>
-                    {
-                        ownTimeRanges?.length ? (
-                            <Box sx={{ display: 'flex' }}>
-                                <PlaceIcon sx={{ marginRight: '4px' }} />
-                                <Typography>
-                                    {ownLocation?.name}
+        return (
+            <Dialog
+                open={open} 
+                onClose={() => { handleClose(false) }}
+                fullWidth
+                maxWidth='sm'
+                >
+                <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <EditCalendarIcon sx={{ marginRight: '8px' }}/>{ day }
+                </DialogTitle>
+                <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
+                <Box sx={{
+                        height: '300px',
+                        width: '300px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly'
+                    }}>
+                    <Box>
+                        {
+                            ownTimeRanges?.length ? (
+                                <Box sx={{ display: 'flex' }}>
+                                    <PlaceIcon sx={{ marginRight: '4px' }} />
+                                    <Typography>
+                                        {ownLocation?.name}
+                                    </Typography>
+                                </Box>
+                            ) : (
+                            <>
+                                <Typography marginBottom='8px' alignSelf='flex-start'>
+                                    Locație
                                 </Typography>
-                            </Box>
-                        ) : (
-                        <>
-                            <Typography marginBottom='8px' alignSelf='flex-start'>
-                                Locație
-                            </Typography>
-                            <List
-                                component='nav'
-                                aria-label='Locație'
-                                sx={{ 
-                                    border: '1px solid rgba(255, 255, 255, .125)',
-                                    borderRadius: '4px',
-                                    width: '280px'
-                                }}
-                                >
-                                <ListItemButton disabled={saving}
-                                    id='location-button'
-                                    aria-haspopup='listbox'
-                                    aria-controls='location-menu'
+                                <List
+                                    component='nav'
                                     aria-label='Locație'
-                                    aria-expanded={openMenu ? 'true' : undefined}
-                                    onClick={handleClickListItem}
+                                    sx={{ 
+                                        border: '1px solid rgba(255, 255, 255, .125)',
+                                        borderRadius: '4px',
+                                        width: '280px'
+                                    }}
+                                    >
+                                    <ListItemButton disabled={saving}
+                                        id='location-button'
+                                        aria-haspopup='listbox'
+                                        aria-controls='location-menu'
+                                        aria-label='Locație'
+                                        aria-expanded={openMenu ? 'true' : undefined}
+                                        onClick={handleClickListItem}
+                                    >
+                                    <ListItemIcon sx={{ minWidth: '40px !important' }}>
+                                        <PlaceIcon />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={locations?.[selectedIndex]?.name}
+                                    />
+                                    </ListItemButton>
+                                </List>
+                                <Menu
+                                    id='location-menu'
+                                    anchorEl={anchorEl}
+                                    open={openMenu}
+                                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                    onClose={handleCloseMenu}
+                                    MenuListProps={{
+                                    'aria-labelledby': 'location-button',
+                                    role: 'listbox',
+                                    }}
                                 >
-                                <ListItemIcon sx={{ minWidth: '40px !important' }}>
-                                    <PlaceIcon />
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={locations?.[selectedIndex]?.name}
-                                />
-                                </ListItemButton>
-                            </List>
-                            <Menu
-                                id='location-menu'
-                                anchorEl={anchorEl}
-                                open={openMenu}
-                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                                onClose={handleCloseMenu}
-                                MenuListProps={{
-                                'aria-labelledby': 'location-button',
-                                role: 'listbox',
-                                }}
-                            >
-                                {locations.map((location, index) => (
-                                <MenuItem
-                                    key={location.id}
-                                    selected={index === selectedIndex}
-                                    onClick={(event) => handleMenuItemClick(event, index)}
-                                    sx={{ width: '278px'}}
-                                >
-                                    {location.name}
-                                </MenuItem>
-                                ))}
-                            </Menu>
-                        </>
+                                    {locations.map((location, index) => (
+                                    <MenuItem
+                                        key={location.id}
+                                        selected={index === selectedIndex}
+                                        onClick={(event) => handleMenuItemClick(event, index)}
+                                        sx={{ width: '278px'}}
+                                    >
+                                        {location.name}
+                                    </MenuItem>
+                                    ))}
+                                </Menu>
+                            </>
+                            )
+
+                        }
+                    </Box>
+                    <Button startIcon={<MoreTimeIcon />}
+                        sx={{ width: '280px' }}
+                        variant='contained'
+                        color='primary'
+                        disabled={saving}
+                        onClick={() => { handleAddTimeRange() }}>
+                        Adaugă interval orar
+                    </Button>
+                    {
+                        !ownTimeRanges?.length && (
+                            <Button startIcon={<DeleteIcon />}
+                                sx={{ width: '280px' }}
+                                variant='contained'
+                                color='error'
+                                disabled={saving}
+                                onClick={handleDeleteDay}>
+                                Șterge ziua de antrenament
+                            </Button>
                         )
 
                     }
                 </Box>
-                <Button startIcon={<MoreTimeIcon />}
-                    sx={{ width: '280px' }}
-                    variant='contained'
-                    color='primary'
-                    disabled={saving}
-                    onClick={() => { handleAddTimeRange() }}>
-                    Adaugă interval orar
-                </Button>
-                {
-                    !ownTimeRanges?.length && (
-                        <Button startIcon={<DeleteIcon />}
-                            sx={{ width: '280px' }}
-                            variant='contained'
-                            color='error'
-                            disabled={saving}
-                            onClick={handleDeleteDay}>
-                            Șterge ziua de antrenament
-                        </Button>
-                    )
+                    {
+                        saving && (
+                            <CircularProgress
+                                size={48}
+                                color='primary'
+                                thickness={8}
+                                sx={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    marginTop: '-24px',
+                                    marginLeft: '-24px',
+                                }}
+                                disableShrink
+                            />
+                        )
+                    }
+                </DialogContent>
+                <DialogActions sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                    }}>
+                    <Button onClick={() => { handleClose(false) }}
+                        color='primary'
+                        variant='contained'
+                        disabled={saving}>
+                        OK
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        );
 
-                }
-              </Box>
-                {
-                    saving && (
-                        <CircularProgress
-                            size={48}
-                            color='primary'
-                            thickness={8}
-                            sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                marginTop: '-24px',
-                                marginLeft: '-24px',
-                            }}
-                            disableShrink
-                        />
-                    )
-                }
-            </DialogContent>
-            <DialogActions sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                <Button onClick={() => { handleClose(false) }}
-                    color='primary'
-                    variant='contained'
-                    disabled={saving}>
-                    OK
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+    }
+
+    return null;
 
 }

@@ -244,94 +244,100 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
 
     }, [open]);
 
-    return (
-        <Dialog
-            open={open} 
-            onClose={() => { handleClose(false) }}
-            fullWidth
-            maxWidth='sm'
-            >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-              <MoreTimeIcon sx={{ marginRight: '8px' }}/> { day }
-            </DialogTitle>
-            <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
-              <Box sx={{
-                    height: '300px',
-                    width: '300px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'space-evenly'
-                }}>
-                <Box sx={{ width: '250px' }}>
-                  <Typography>
-                    Intervalul orar: {hours[timeRange[0]]} - {hours[timeRange[1]]}
-                  </Typography>
-                  <Slider 
-                      step={1}
-                      marks={hourMarks}
-                      min={minValue}
-                      max={maxValue}
-                      value={timeRange}
-                      valueLabelDisplay='off'
-                      onChange={handleChangeTimeRange}
-                      disableSwap/>
+    if (open) {
+
+      return (
+          <Dialog
+              open={open} 
+              onClose={() => { handleClose(false) }}
+              fullWidth
+              maxWidth='sm'
+              >
+              <DialogTitle sx={{ cursor: 'default', userSelect: 'none', display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                <MoreTimeIcon sx={{ marginRight: '8px' }}/> { day }
+              </DialogTitle>
+              <DialogContent sx={{ margin: '0 auto', padding: 0, position: 'relative' }}>
+                <Box sx={{
+                      height: '300px',
+                      width: '300px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'space-evenly'
+                  }}>
+                  <Box sx={{ width: '250px' }}>
+                    <Typography>
+                      Intervalul orar: {hours[timeRange[0]]} - {hours[timeRange[1]]}
+                    </Typography>
+                    <Slider 
+                        step={1}
+                        marks={hourMarks}
+                        min={minValue}
+                        max={maxValue}
+                        value={timeRange}
+                        valueLabelDisplay='off'
+                        onChange={handleChangeTimeRange}
+                        disableSwap/>
+                  </Box>
+                  <Box sx={{ width: '250px' }}>
+                    <Typography>
+                      Numărul de locuri: {numberOfParticipants}
+                    </Typography>
+                    <Slider 
+                        step={5}
+                        marks={numberMarks}
+                        min={5}
+                        max={50}
+                        value={numberOfParticipants}
+                        valueLabelDisplay='off'
+                        onChange={handleChangeNumberOfParticipants}
+                        disableSwap/>
+                  </Box>
+                  <Box sx={{ width: '250px' }}>
+                    <FormControlLabel control={<Checkbox size='large' checked={published} onChange={handleChangePublished} />} label='Publicat'/>
+                  </Box>
                 </Box>
-                <Box sx={{ width: '250px' }}>
-                  <Typography>
-                    Numărul de locuri: {numberOfParticipants}
-                  </Typography>
-                  <Slider 
-                      step={5}
-                      marks={numberMarks}
-                      min={5}
-                      max={50}
-                      value={numberOfParticipants}
-                      valueLabelDisplay='off'
-                      onChange={handleChangeNumberOfParticipants}
-                      disableSwap/>
-                </Box>
-                <Box sx={{ width: '250px' }}>
-                  <FormControlLabel control={<Checkbox size='large' checked={published} onChange={handleChangePublished} />} label='Publicat'/>
-                </Box>
-              </Box>
-              {
-                  saving && (
-                      <CircularProgress
-                          size={48}
-                          color='primary'
-                          thickness={8}
-                          sx={{
-                              position: 'absolute',
-                              top: '50%',
-                              left: '50%',
-                              marginTop: '-24px',
-                              marginLeft: '-24px',
-                          }}
-                          disableShrink
-                      />
-                  )
-              }
-            </DialogContent>
-            <DialogActions sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between'
-                }}>
-                <Button onClick={() => { handleClose(false) }}
-                    color='error'
-                    variant='outlined'
-                    disabled={saving}>
-                    Renunță
-                </Button>
-                <Button onClick={handleSave}
-                    color='primary'
-                    variant='contained'
-                    disabled={saving}>
-                    Salvează
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+                {
+                    saving && (
+                        <CircularProgress
+                            size={48}
+                            color='primary'
+                            thickness={8}
+                            sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-24px',
+                                marginLeft: '-24px',
+                            }}
+                            disableShrink
+                        />
+                    )
+                }
+              </DialogContent>
+              <DialogActions sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between'
+                  }}>
+                  <Button onClick={() => { handleClose(false) }}
+                      color='error'
+                      variant='outlined'
+                      disabled={saving}>
+                      Renunță
+                  </Button>
+                  <Button onClick={handleSave}
+                      color='primary'
+                      variant='contained'
+                      disabled={saving}>
+                      Salvează
+                  </Button>
+              </DialogActions>
+          </Dialog>
+      );
+
+    }
+
+    return null;
 
 }

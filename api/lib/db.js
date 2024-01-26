@@ -21,6 +21,8 @@ let updateDate = null;
 let deleteDate = null;
 let getTimeRanges = null;
 let addTimeRange = null;
+let updateTimeRange = null;
+let deleteTimeRange = null;
 let getAppointments = null;
 
 try {
@@ -119,6 +121,21 @@ try {
     statements['add_timerange'] = db.prepare(`
         INSERT INTO time_ranges(date_id, start_time, end_time, capacity, published)
         VALUES (?, ?, ?, ?, ?)`);
+
+    statements['update_timerange'] = db.prepare(`
+        UPDATE time_ranges
+        SET
+            date_id = ?,
+            start_time = ?,
+            end_time = ?,
+            capacity = ?,
+            published = ?
+        WHERE
+            id = ?`);
+
+    statements['delete_timerange'] = db.prepare(`
+        DELETE FROM time_ranges
+        WHERE id = ?`);
 
     // TODO!
     statements['get_appointments'] = db.prepare(`
@@ -536,6 +553,52 @@ if (!stmtError) {
 
     };
 
+    updateTimeRange = (timeRangeId, dateId, startTime, endTime, capacity, published) => {
+
+        let error, updateInfo, timeRange = null;
+
+        try {
+
+            updateInfo = statements['update_timerange'].run(
+                Number(dateId),
+                '' + startTime,
+                '' + endTime,
+                Number(capacity),
+                Number(published),
+                Number(timeRangeId)
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        } finally {
+
+            if (!error) {
+
+                timeRange = {
+
+                    id: Number(timeRangeId),
+                    dateId: Number(dateId),
+                    startTime: '' + startTime,
+                    endTime: '' + endTime,
+                    capacity: Number(capacity),
+                    published: Boolean(published),
+
+                };
+
+            }
+
+        }
+
+        return timeRange ?? null;
+
+    };
+
+    deleteTimeRange = (timeRangeId) => {
+
+    };
+
     getAppointments = () => {
 
         let error = null, appointments = null;
@@ -571,6 +634,8 @@ export {
     deleteDate,
     getTimeRanges,
     addTimeRange,
+    updateTimeRange,
+    deleteTimeRange,
     getAppointments
 
 };

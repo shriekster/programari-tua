@@ -26,7 +26,8 @@ import refreshAccessToken from '../refreshAccessToken.js';
 const {
     setError,
     setErrorMessage,
-    addTimeRange,
+    updateTimeRange,
+    deleteTimeRange,
 } = useGlobalStore.getState();
 
 // eslint-disable-next-line react/prop-types
@@ -42,8 +43,11 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
     const dateId = dates?.get(day)?.id ?? '';
     
     const timeRange = timeRanges.find((timeRange) => timeRange.id == timeRangeId);
+    const ownAppointments = [1];
 
-    const handleSave = async () => {
+    const handleTogglePublished = async (event) => {
+
+      const checked = event.target.checked;
 
       setSaving(true);
 
@@ -52,17 +56,18 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
       try {
 
           const requestOptions = {
-              method: 'POST',
+              method: 'PUT',
               headers: {
               'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                test: 'test'
+                ...timeRange,
+                published: checked,
               }),
               credentials: 'same-origin'
           };
 
-          const response = await fetch(`/api/admin/timeranges`, requestOptions);
+          const response = await fetch(`/api/admin/timeranges/${timeRange?.id}`, requestOptions);
           status = response.status;
 
           const json = await response.json();
@@ -85,11 +90,9 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
               if (returnedTimeRange) {
 
-                  addTimeRange(returnedTimeRange);
+                  updateTimeRange(returnedTimeRange);
 
               }
-
-              handleClose(false);
 
               break;
 
@@ -97,7 +100,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
           case 401: {
 
-              await refreshAccessToken(handleSave);
+              await refreshAccessToken(handleTogglePublished);
               break;
 
           }
@@ -116,75 +119,158 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
     };
 
-    useEffect(() => {
+    const handleDelete = async () => {
 
-    }, [open]);
+      setSaving(true);
 
-    return (
-        <Dialog
-            open={open} 
-            onClose={() => { handleClose(false) }}
-            fullWidth
-            maxWidth='sm'
-            >
-            <DialogTitle sx={{ cursor: 'default', userSelect: 'none', }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                <RecentActorsIcon fontSize='large' sx={{ marginRight: '8px' }}/>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-                  <Typography fontSize={17} fontWeight={500}>{ day }</Typography>
-                  <Typography fontSize={17} fontWeight={500} sx={{ margin: '0 8px' }}> | </Typography>
-                  <Typography fontSize={17} fontWeight={500}>{timeRange?.startTime} - {timeRange?.endTime}</Typography>
+      let error = null, status = 401;
+
+      try {
+
+          const requestOptions = {
+              method: 'DELETE',
+              headers: {
+              'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                test: 'test'
+              }),
+              credentials: 'same-origin'
+          };
+
+          const response = await fetch(`/api/admin/timeranges/${timeRange.id}`, requestOptions);
+          status = response.status;
+  
+  
+      } catch (err) {
+
+          // eslint-disable-next-line no-unused-vars
+          error = err;
+          status = 400; // client-side error
+
+      }
+
+      switch (status) {
+
+          case 200: {
+
+              setSaving(false);
+
+              deleteTimeRange(timeRange);
+
+              handleClose(false);
+
+              break;
+
+          }
+
+          case 401: {
+
+              await refreshAccessToken(handleDelete);
+              break;
+
+          }
+
+          default: {
+
+              setSaving(false);
+              setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+              setError(true);
+              handleClose(false);
+              break;
+
+          }
+
+      }
+
+    };
+
+    const canDeleteTimeRange = !timeRange?.published;
+
+    if (open) {
+
+      return (
+          <Dialog
+              open={open} 
+              onClose={() => { handleClose(false) }}
+              fullWidth
+              maxWidth='sm'
+              >
+              <DialogTitle sx={{ cursor: 'default', userSelect: 'none', }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
+                  <RecentActorsIcon fontSize='large' sx={{ marginRight: '8px' }}/>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+                    <Typography fontSize={17} fontWeight={500}>{ day }</Typography>
+                    <Typography fontSize={17} fontWeight={500} sx={{ margin: '0 8px' }}> | </Typography>
+                    <Typography fontSize={17} fontWeight={500}>{timeRange?.startTime} - {timeRange?.endTime}</Typography>
+                  </Box>
                 </Box>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <FormControlLabel control={<Switch color='success' />} label='Publicat' />
-                <Button startIcon={<DeleteIcon />}
-                  color='error'
-                  variant='contained'
-                  size='small'>
-                  Șterge
-                </Button>
-              </Box>
-            </DialogTitle>
-            <DialogContent sx={{ position: 'relative', }}>
-              <Box sx={{ width: '100%'}}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <FormControlLabel 
+                    control={
+                      <Switch color='success'
+                        disabled={saving}
+                        checked={timeRange.published}
+                        onChange={handleTogglePublished}/>
+                    }
+                    label='Publicat' />
+                  {
+                    canDeleteTimeRange && (
+                      <Button startIcon={<DeleteIcon />}
+                        color='error'
+                        variant='contained'
+                        size='small'
+                        disabled={saving}
+                        onClick={handleDelete}>
+                        Șterge
+                      </Button>
+                    )
+                  }
+                </Box>
+              </DialogTitle>
+              <DialogContent sx={{ position: 'relative', }}>
+                <Box sx={{ width: '100%'}}>
+                  {
+                    (new Array(1000).fill(1)).map((val, i) => (
+                      <div key={i}>{i}</div>
+                    ))
+                  }
+                </Box>
                 {
-                  (new Array(1000).fill(1)).map((val, i) => (
-                    <div key={i}>{i}</div>
-                  ))
+                    saving && (
+                        <CircularProgress
+                            size={48}
+                            color='primary'
+                            thickness={8}
+                            sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                marginTop: '-24px',
+                                marginLeft: '-24px',
+                            }}
+                            disableShrink
+                        />
+                    )
                 }
-              </Box>
-              {
-                  saving && (
-                      <CircularProgress
-                          size={48}
-                          color='primary'
-                          thickness={8}
-                          sx={{
-                              position: 'absolute',
-                              top: '50%',
-                              left: '50%',
-                              marginTop: '-24px',
-                              marginLeft: '-24px',
-                          }}
-                          disableShrink
-                      />
-                  )
-              }
-            </DialogContent>
-            <DialogActions sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                }}>
-                <Button onClick={() => { handleClose(false) }}
-                    color='primary'
-                    variant='contained'
-                    disabled={saving}>
-                    OK
-                </Button>
-            </DialogActions>
-        </Dialog>
-    );
+              </DialogContent>
+              <DialogActions sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                  }}>
+                  <Button onClick={() => { handleClose(false) }}
+                      color='primary'
+                      variant='contained'
+                      disabled={saving}>
+                      OK
+                  </Button>
+              </DialogActions>
+          </Dialog>
+      );
+
+    }
+
+    return null;
 
 }
