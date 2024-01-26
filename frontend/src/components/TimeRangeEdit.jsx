@@ -372,7 +372,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                   Atenție!
                 </DialogTitle>
                 <DialogContent>
-                  Ești sigur că vrei să ștergi intervalul orar?
+                  Ești sigur că vrei să ștergi intervalul orar? Vei șterge și programările din acest interval orar!
                 </DialogContent>
                 <DialogActions sx={{
                       display: 'flex',

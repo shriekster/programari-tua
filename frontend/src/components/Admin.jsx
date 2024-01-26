@@ -9,19 +9,11 @@ import Typography from '@mui/material/Typography';
 
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Tooltip from '@mui/material/Tooltip';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
-import AddIcon from '@mui/icons-material/Add';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Divider from '@mui/material/Divider';
@@ -182,6 +174,12 @@ export default function Admin() {
 
     handleToggleEditDate(false);
     handleToggleAddTimeRange(true);
+
+  };
+
+  const handleDownload = async () => {
+
+    // TODO
 
   };
 
@@ -451,11 +449,19 @@ export default function Admin() {
           <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
           {
             displaySettings && (
-              <IconButton color='primary' 
-                disabled={loading}
-                onClick={() => { handleToggleEditDate(true) }}>
-                <SettingsIcon fontSize='large' />
-              </IconButton>
+              <>
+                <IconButton color='success' 
+                  disabled={loading}
+                  onClick={handleDownload}
+                  sx={{ marginRight: '8px' }}>
+                  <FileDownloadIcon fontSize='large' />
+                </IconButton>
+                <IconButton color='primary' 
+                  disabled={loading}
+                  onClick={() => { handleToggleEditDate(true) }}>
+                  <SettingsIcon fontSize='large' />
+                </IconButton>
+              </>
             )
           }
         </Box>
