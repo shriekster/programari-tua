@@ -478,7 +478,9 @@ export default function Admin() {
                               marginBottom: '4px',
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center'}}>
+                              justifyContent: 'center'
+                            }}
+                            >
                           <ListItemText 
                             primary={timeRange.startTime + ' - ' + timeRange.endTime}
                             primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
