@@ -179,31 +179,24 @@ export default function Admin() {
 
   const handleDownload = async () => {
 
-    const checked = event.target.checked;
+    const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
+    const selectedDateId = dates?.get(selectedDay)?.id ?? '';
 
-    setSaving(true);
+    setLoading(true);
 
-    let error = null, status = 401, returnedTimeRange = null;
+    let error = null, status = 401, fileBlob = null;
 
     try {
 
         const requestOptions = {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ...timeRange,
-              published: checked,
-            }),
+            method: 'GET',
             credentials: 'same-origin'
         };
 
-        const response = await fetch(`/api/admin/timeranges/${timeRange?.id}`, requestOptions);
+        const response = await fetch(`/api/admin/dates/${selectedDateId}/download`, requestOptions);
         status = response.status;
 
-        const json = await response.json();
-        returnedTimeRange = json.data.timeRange;
+        fileBlob = await response.blob();
 
 
     } catch (err) {
@@ -218,11 +211,22 @@ export default function Admin() {
 
         case 200: {
 
-            setSaving(false);
+            setLoading(false);
 
-            if (returnedTimeRange) {
+            if (fileBlob) {
 
-                updateTimeRange(returnedTimeRange);
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(fileBlob);
+              link.download = `${selectedDay}.xlsx`;
+        
+              // Append the link to the document
+              document.body.appendChild(link);
+        
+              // Trigger a click on the link to start the download
+              link.click();
+        
+              // Remove the link from the document
+              document.body.removeChild(link);
 
             }
 
@@ -237,12 +241,20 @@ export default function Admin() {
 
         }
 
+        case 418: {
+
+          setLoading(false);
+          setErrorMessage('Nu sunt programări în ziua selectată!');
+          setError(true);
+          break;
+
+        }
+
         default: {
 
-            setSaving(false);
+            setLoading(false);
             setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
             setError(true);
-            handleClose(false);
             break;
 
         }
@@ -538,7 +550,7 @@ export default function Admin() {
               displaySettings ? (
                 <List sx={{
                   width: '320px',
-                  margin: '0 auto'
+                  margin: '0 auto',
                 }}>
                   {
                     selectedTimeRanges.length ? (
@@ -554,7 +566,7 @@ export default function Admin() {
                               alignItems: 'center',
                               justifyContent: 'center'
                             }}
-                            onClick={() => { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); }}
+                            onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); } }}
                             >
                           <ListItemText 
                             primary={timeRange.startTime + ' - ' + timeRange.endTime}
