@@ -24,7 +24,10 @@ router.post('/', validateTimeRange, function(req, res) {
 
     return res.json({
       data: {
-        timeRange
+        timeRange: {
+          ...timeRange,
+          occupied: 0
+        }
       }
     });
 
@@ -43,7 +46,7 @@ router.put('/:timeRangeId', validateTimeRange, function(req, res) {
 
   const timeRangeId = req.params.timeRangeId;
 
-  const { id, dateId, startTime, endTime, capacity, published } = req.body;
+  const { id, dateId, startTime, endTime, capacity, published, occupied } = req.body;
   
   if (id == timeRangeId) {
 
@@ -53,7 +56,10 @@ router.put('/:timeRangeId', validateTimeRange, function(req, res) {
 
       return res.json({
         data: {
-          timeRange
+          timeRange: {
+            ...timeRange,
+            occupied: Number(occupied)
+          }
         }
       });
 

@@ -7,6 +7,9 @@ export default function validateTimeRange(req, res, next) {
     const timeRangeId = req.params?.timeRangeId?.toString()?.trim()?.normalize('NFC') ?? '';
     const isValidTimeRangeId = '' === timeRangeId || (timeRangeId && validator.isInt('' + timeRangeId, { gt: 0 }));
 
+    const occupied = req.body?.occupied?.toString()?.trim()?.normalize('NFC') ?? '';
+    const isValidOccupied = '' === occupied || (occupied && validator.isInt('' + occupied, { gt: -1 }));
+
     const id = req.body?.id?.toString()?.trim()?.normalize('NFC') ?? '';
     const dateId = req.body?.dateId?.toString()?.trim()?.normalize('NFC') ?? ''
     const startTime = req.body?.startTime?.toString()?.trim()?.normalize('NFC') ?? '';
@@ -28,12 +31,13 @@ export default function validateTimeRange(req, res, next) {
       isValidEndTime      &&
       isValidCapacity     &&
       isValidPublished    &&
-      isValidTimeRangeId;
+      isValidTimeRangeId  &&
+      isValidOccupied;
     
     if (allDataIsValid) {
       
       req.params = { timeRangeId };
-      req.body = { id, dateId, startTime, endTime, capacity, published };
+      req.body = { id, dateId, startTime, endTime, capacity, published, occupied };
 
       return next();
 
