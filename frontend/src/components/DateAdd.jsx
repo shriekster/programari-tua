@@ -147,14 +147,26 @@ export default function DateAdd({ open, handleClose, date }) {
 
       }
 
-  };
+    };
+
+    const onClose = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      handleClose(false);
+
+    };
 
   if (open) {
 
     return (
         <Dialog
             open={open} 
-            onClose={() => { handleClose(false) }}
+            onClose={onClose}
             fullWidth
             maxWidth='sm'
             >

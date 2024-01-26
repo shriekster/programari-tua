@@ -232,6 +232,18 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
 
     };
 
+    const onClose = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      handleClose(false);
+
+    };
+
     useEffect(() => {
 
       if (open) {
@@ -249,7 +261,7 @@ export default function TimeRangeAdd({ open, handleClose, date }) {
       return (
           <Dialog
               open={open} 
-              onClose={() => { handleClose(false) }}
+              onClose={onClose}
               fullWidth
               maxWidth='sm'
               >

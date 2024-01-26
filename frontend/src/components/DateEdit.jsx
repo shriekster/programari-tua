@@ -237,6 +237,18 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
   
     };
 
+    const onClose = (event, reason) => {
+
+        if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+  
+          return;
+  
+        }
+  
+        handleClose(false);
+  
+    };
+
     // set some values to their initial state when the dialog opens
     useEffect(() => {
 
@@ -261,7 +273,7 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
         return (
             <Dialog
                 open={open} 
-                onClose={() => { handleClose(false) }}
+                onClose={onClose}
                 fullWidth
                 maxWidth='sm'
                 >

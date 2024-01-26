@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
 
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -185,6 +185,18 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
     };
 
+    const onClose = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      handleClose(false);
+
+    };
+
     const canDeleteTimeRange = !timeRange?.published;
 
     if (open) {
@@ -192,7 +204,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
       return (
           <Dialog
               open={open} 
-              onClose={() => { handleClose(false) }}
+              onClose={onClose}
               fullWidth
               maxWidth='sm'
               >
@@ -216,7 +228,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                     label='Publicat' />
                   {
                     canDeleteTimeRange && (
-                      <Button startIcon={<DeleteIcon />}
+                      <Button startIcon={<AutoDeleteIcon />}
                         color='error'
                         variant='contained'
                         size='small'
