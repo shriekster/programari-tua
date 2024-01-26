@@ -179,7 +179,75 @@ export default function Admin() {
 
   const handleDownload = async () => {
 
-    // TODO
+    const checked = event.target.checked;
+
+    setSaving(true);
+
+    let error = null, status = 401, returnedTimeRange = null;
+
+    try {
+
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ...timeRange,
+              published: checked,
+            }),
+            credentials: 'same-origin'
+        };
+
+        const response = await fetch(`/api/admin/timeranges/${timeRange?.id}`, requestOptions);
+        status = response.status;
+
+        const json = await response.json();
+        returnedTimeRange = json.data.timeRange;
+
+
+    } catch (err) {
+
+        // eslint-disable-next-line no-unused-vars
+        error = err;
+        status = 400; // client-side error
+
+    }
+
+    switch (status) {
+
+        case 200: {
+
+            setSaving(false);
+
+            if (returnedTimeRange) {
+
+                updateTimeRange(returnedTimeRange);
+
+            }
+
+            break;
+
+        }
+
+        case 401: {
+
+            await refreshAccessToken(handleDownload);
+            break;
+
+        }
+
+        default: {
+
+            setSaving(false);
+            setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
+            setError(true);
+            handleClose(false);
+            break;
+
+        }
+
+    }
 
   };
 

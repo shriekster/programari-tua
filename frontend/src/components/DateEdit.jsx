@@ -145,7 +145,7 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
 
                 case 401: {
 
-                    await refreshAccessToken(handleUpdate)
+                    await refreshAccessToken(() => { handleUpdate(index) })
                     break;
 
                 }
@@ -215,7 +215,7 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
   
                 case 401: {
   
-                    await refreshAccessToken(handleUpdate)
+                    await refreshAccessToken(handleDeleteDay)
                     break;
   
                 }

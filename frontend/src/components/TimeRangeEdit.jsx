@@ -46,7 +46,15 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
     const handleTogglePublished = async (event) => {
 
-      const checked = event.target.checked;
+      // save the checked state into a 'static' variable, i.e. a property of the function object
+      if (typeof handleTogglePublished.checked === 'undefined') {
+
+        handleTogglePublished.checked = event.target.checked;
+
+      }
+
+      const checked = handleTogglePublished.checked;
+      
 
       setSaving(true);
 
@@ -99,7 +107,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
           case 401: {
 
-              await refreshAccessToken(handleTogglePublished);
+              await refreshAccessToken(() => { handleTogglePublished(event) });
               break;
 
           }
