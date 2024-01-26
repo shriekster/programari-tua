@@ -49,7 +49,11 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
 
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
-    const dateId = dates?.get(day)?.id ?? '';
+    const dateObj = dates?.get(day);
+    const dateId = dateObj?.id ?? '';
+
+    const ownLocation = locations.find((location) => dateObj?.locationId == location.id);
+    const ownTimeRanges = useGlobalStore((state) => state.timeRanges.filter((timeRange) => timeRange.dateId == dateId));
 
     const handleClickListItem = (event) => {
 
@@ -273,57 +277,71 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                     justifyContent: 'space-evenly'
                 }}>
                 <Box>
-                    <Typography marginBottom='8px' alignSelf='flex-start'>
-                        Locație
-                    </Typography>
-                    <List
-                        component='nav'
-                        aria-label='Locație'
-                        sx={{ 
-                            border: '1px solid rgba(255, 255, 255, .125)',
-                            borderRadius: '4px',
-                            width: '280px'
-                        }}
-                        >
-                        <ListItemButton disabled={saving}
-                            id='location-button'
-                            aria-haspopup='listbox'
-                            aria-controls='location-menu'
-                            aria-label='Locație'
-                            aria-expanded={openMenu ? 'true' : undefined}
-                            onClick={handleClickListItem}
-                        >
-                        <ListItemIcon sx={{ minWidth: '40px !important' }}>
-                            <PlaceIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary={locations?.[selectedIndex]?.name}
-                        />
-                        </ListItemButton>
-                    </List>
-                    <Menu
-                        id='location-menu'
-                        anchorEl={anchorEl}
-                        open={openMenu}
-                        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                        onClose={handleCloseMenu}
-                        MenuListProps={{
-                        'aria-labelledby': 'location-button',
-                        role: 'listbox',
-                        }}
-                    >
-                        {locations.map((location, index) => (
-                        <MenuItem
-                            key={location.id}
-                            selected={index === selectedIndex}
-                            onClick={(event) => handleMenuItemClick(event, index)}
-                            sx={{ width: '278px'}}
-                        >
-                            {location.name}
-                        </MenuItem>
-                        ))}
-                    </Menu>
+                    {
+                        ownTimeRanges?.length ? (
+                            <Box sx={{ display: 'flex' }}>
+                                <PlaceIcon sx={{ marginRight: '4px' }} />
+                                <Typography>
+                                    {ownLocation?.name}
+                                </Typography>
+                            </Box>
+                        ) : (
+                        <>
+                            <Typography marginBottom='8px' alignSelf='flex-start'>
+                                Locație
+                            </Typography>
+                            <List
+                                component='nav'
+                                aria-label='Locație'
+                                sx={{ 
+                                    border: '1px solid rgba(255, 255, 255, .125)',
+                                    borderRadius: '4px',
+                                    width: '280px'
+                                }}
+                                >
+                                <ListItemButton disabled={saving}
+                                    id='location-button'
+                                    aria-haspopup='listbox'
+                                    aria-controls='location-menu'
+                                    aria-label='Locație'
+                                    aria-expanded={openMenu ? 'true' : undefined}
+                                    onClick={handleClickListItem}
+                                >
+                                <ListItemIcon sx={{ minWidth: '40px !important' }}>
+                                    <PlaceIcon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={locations?.[selectedIndex]?.name}
+                                />
+                                </ListItemButton>
+                            </List>
+                            <Menu
+                                id='location-menu'
+                                anchorEl={anchorEl}
+                                open={openMenu}
+                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                onClose={handleCloseMenu}
+                                MenuListProps={{
+                                'aria-labelledby': 'location-button',
+                                role: 'listbox',
+                                }}
+                            >
+                                {locations.map((location, index) => (
+                                <MenuItem
+                                    key={location.id}
+                                    selected={index === selectedIndex}
+                                    onClick={(event) => handleMenuItemClick(event, index)}
+                                    sx={{ width: '278px'}}
+                                >
+                                    {location.name}
+                                </MenuItem>
+                                ))}
+                            </Menu>
+                        </>
+                        )
+
+                    }
                 </Box>
                 <Button startIcon={<MoreTimeIcon />}
                     sx={{ width: '280px' }}
@@ -333,14 +351,19 @@ export default function DateEdit({ open, handleClose, handleAddTimeRange, date }
                     onClick={() => { handleAddTimeRange() }}>
                     Adaugă interval orar
                 </Button>
-                <Button startIcon={<DeleteIcon />}
-                    sx={{ width: '280px' }}
-                    variant='contained'
-                    color='error'
-                    disabled={saving}
-                    onClick={handleDeleteDay}>
-                    Șterge ziua de antrenament
-                </Button>
+                {
+                    !ownTimeRanges?.length && (
+                        <Button startIcon={<DeleteIcon />}
+                            sx={{ width: '280px' }}
+                            variant='contained'
+                            color='error'
+                            disabled={saving}
+                            onClick={handleDeleteDay}>
+                            Șterge ziua de antrenament
+                        </Button>
+                    )
+
+                }
               </Box>
                 {
                     saving && (
