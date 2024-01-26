@@ -79,7 +79,7 @@ router.delete('/:dateId', function(req, res) {
 
   const dateId = req.params.dateId;
 
-  if (dateId && !isNaN(dateId) && dateId > 0) {
+  if (!isNaN(dateId) && dateId > 0) {
 
     const result = deleteDate(dateId);
 

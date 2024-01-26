@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
@@ -8,13 +8,12 @@ import DialogActions from '@mui/material/DialogActions';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Slider from '@mui/material/Slider';
-import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import CircularProgress from '@mui/material/CircularProgress';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
+import ReportIcon from '@mui/icons-material/Report';
 
 import { useGlobalStore } from '../useGlobalStore';
 import refreshAccessToken from '../refreshAccessToken.js';
@@ -34,6 +33,7 @@ const {
 export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) {
     
     const [saving, setSaving] = useState(false);
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
     const dates = useGlobalStore((state) => state.dates);
     const timeRanges = useGlobalStore((state) => state.timeRanges);
@@ -119,8 +119,27 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
 
     };
 
-    const handleDelete = async () => {
+    const showDeleteDialog = () => {
 
+      setShowDeleteConfirmation(true);
+
+    };
+
+    const closeDeleteDialog = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      setShowDeleteConfirmation(false);
+
+    };
+
+    const requestDeletion = async () => {
+
+      setShowDeleteConfirmation(false);
       setSaving(true);
 
       let error = null, status = 401;
@@ -233,7 +252,7 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                         variant='contained'
                         size='small'
                         disabled={saving}
-                        onClick={handleDelete}>
+                        onClick={showDeleteDialog}>
                         Șterge
                       </Button>
                     )
@@ -278,6 +297,34 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                       OK
                   </Button>
               </DialogActions>
+              <Dialog open={showDeleteConfirmation}
+                onClose={closeDeleteDialog}>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', cursor: 'default', userSelect: 'none' }}>
+                  <ReportIcon fontSize='large' color='error' sx={{ marginRight: '4px' }}/>
+                  Atenție!
+                </DialogTitle>
+                <DialogContent>
+                  Ești sigur că vrei să ștergi intervalul orar?
+                </DialogContent>
+                <DialogActions sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-evenly'
+                  }}>
+                  <Button onClick={requestDeletion}
+                      color='error'
+                      variant='contained'
+                      disabled={saving}>
+                      DA
+                  </Button>
+                  <Button onClick={closeDeleteDialog}
+                      color='primary'
+                      variant='contained'
+                      disabled={saving}>
+                      NU
+                  </Button>
+              </DialogActions>
+              </Dialog>
           </Dialog>
       );
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import validateTimeRange from '../../../middlewares/validateTimeRange.js';
-import { addTimeRange, updateTimeRange } from '../../../lib/db.js';
+import { addTimeRange, updateTimeRange, deleteTimeRange } from '../../../lib/db.js';
 
 const router = Router();
 
@@ -77,7 +77,32 @@ router.put('/:timeRangeId', validateTimeRange, function(req, res) {
 
 });
 
-router.delete('/:timeRangeId', validateTimeRange, function(req, res) {
+router.delete('/:timeRangeId', function(req, res) {
+
+  const timeRangeId = req.params.timeRangeId;
+
+  if (!isNaN(timeRangeId) && timeRangeId > 0) {
+
+    const result = deleteTimeRange(timeRangeId);
+
+    if ([0, 1].includes(result)) {
+  
+      return res.json({
+        data: {
+          message: 'OK'
+        }
+      });
+  
+    }
+
+  }
+
+  return res.status(500)
+  .json({
+    data: {
+      message: 'Internal Server Error'
+    }
+  });
 
 });
 

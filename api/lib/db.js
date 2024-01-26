@@ -152,8 +152,6 @@ try {
             appointments.id AS appointmentId,
             participants.last_name AS lastName,
             participants.first_name AS firstName,
-            participants.is_owner AS isOwner,
-            participants.is_participant AS isParticipant,
             participants.is_adult AS isAdult,
             personnel_categories.id AS personnelCategoryId,
             personnel_categories.abbreviation AS personnelCategoryAbbreviation
@@ -597,6 +595,34 @@ if (!stmtError) {
 
     deleteTimeRange = (timeRangeId) => {
 
+        let error, updateInfo;
+
+        try {
+
+            updateInfo = statements['delete_timerange'].run(
+                Number(timeRangeId)
+            );
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        if (!error) {
+
+            if (1 === updateInfo.changes) {
+
+                return 1;
+
+            }
+
+            return 0;
+
+        }
+
+        return -1;
+
     };
 
     getAppointments = () => {
@@ -636,6 +662,6 @@ export {
     addTimeRange,
     updateTimeRange,
     deleteTimeRange,
-    getAppointments
+    getAppointments,
 
 };
