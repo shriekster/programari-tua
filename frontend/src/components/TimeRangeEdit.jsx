@@ -269,9 +269,6 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                     sx={{
                       borderRadius: '4px',
                       height: '8px',
-                      '& .MuiLinearProgress-bar1Determinate': {
-                        //borderRadius: '4px',
-                      }
                     }}/>
                 </Box>
               </DialogTitle>
