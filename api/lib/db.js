@@ -24,6 +24,7 @@ let addTimeRange = null;
 let updateTimeRange = null;
 let deleteTimeRange = null;
 let getAppointments = null;
+let exportDate = null;
 let getPersonnelCategories = null;
 
 try {
@@ -159,6 +160,28 @@ try {
         FROM participants
         LEFT JOIN appointments ON appointments.id = participants.appointment_id
         LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id`);
+
+    statements['export_date'] = db.prepare(`
+        SELECT
+            appointments.time_range_id AS timeRangeId,
+            time_ranges.start_time AS startTime,
+            time_ranges.end_time AS endTime,
+            appointments.id AS appointmentId,
+            appointments.phone_number AS phoneNumber,
+            participants.id AS participantId,
+            participants.last_name AS lastName,
+            participants.first_name AS firstName,
+            participants.is_adult AS isAdult,
+            personnel_categories.abbreviation AS personnelCategoryAbbreviation
+        FROM participants
+        LEFT JOIN appointments ON appointments.id = participants.appointment_id
+        LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id
+        LEFT JOIN time_ranges on time_ranges.id = appointments.time_range_id
+        WHERE time_ranges.date_id = ?
+        ORDER BY 
+            appointments.time_range_id ASC,
+            appointments.id ASC,
+            participants.id ASC`)
 
     statements['get_personnel_categories'] = db.prepare(`
         SELECT * from personnel_categories`);
@@ -692,6 +715,80 @@ if (!stmtError) {
         return result ?? null;
 
     };
+
+    exportDate = (dateId) => {
+
+        let error = null, timeRanges = new Map(), _appointments = null, appointments = new Map(), result = null;
+
+        /**
+         * the relevant query is statements['export_data'], which expects a date ID
+         * TODO: get the data; timeRanges is a Map, key is timeRangeId, value is startTime, endTime and appointments,
+         * which is also a Map, key is appointmentId, value is phoneNumber and participants,
+         * which is an array containing each participant 
+         * (participantId, lastName, firstName, isAdult {mapped to one of ['minor', 'adult']}, personnelCategoryAbbreviation);
+         * 
+         * the rows will be created from this data structure and the merged rows and columns will be calculated on creation
+         */
+
+        try {
+
+            _appointments = statements['export_date'].all();
+
+            for (let i = 0, a = _appointments.length; i < a; ++i) {
+                
+                const appointment = appointments.get(_appointments[i].appointmentId);
+
+                if (!appointment) {
+                    
+                    const ref = Object.create(null);
+                    ref.timeRangeId = _appointments[i].timeRangeId;
+                    ref.appointmentId = _appointments[i].appointmentId;
+                    ref.phoneNumber = _appointments[i].phoneNumber;
+                    ref.participants = [];
+
+                    const participant = Object.create(null);
+
+                    participant.participantId = _appointments[i].participantId;
+                    participant.lastName = _appointments[i].lastName;
+                    participant.firstName =_appointments[i].firstName;
+                    participant.isAdult = Boolean(_appointments[i].isAdult);
+                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
+                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+
+                    ref.participants.push(participant);
+
+                    appointments.set(_appointments[i].appointmentId, ref);
+
+                } else {
+
+                    const participant = Object.create(null);
+                    
+                    participant.participantId = _appointments[i].participantId;
+                    participant.lastName = _appointments[i].lastName;
+                    participant.firstName =_appointments[i].firstName;
+                    participant.isAdult = Boolean(_appointments[i].isAdult);
+                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
+                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+
+                    appointment.participants.push(participant);
+
+                    appointments.set(_appointments[i].appointmentId, appointment);
+
+                }
+
+            }
+
+            result = Array.from(appointments.values());
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return result ?? null;
+
+    }
 
     getPersonnelCategories = () => {
 
