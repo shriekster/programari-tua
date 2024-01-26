@@ -415,6 +415,7 @@ export default function Admin() {
   // eslint-disable-next-line react/prop-types
   const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
   const selectedDateObj = dates?.get(selectedDay);
+  const selectedTimeRanges = timeRanges.filter((timeRange) => timeRange.dateId == selectedDateObj?.id);
 
   return (
     <Box sx={{
@@ -466,27 +467,36 @@ export default function Admin() {
                   margin: '0 auto'
                 }}>
                   {
-                    timeRanges.filter((timeRange) => timeRange.dateId == selectedDateObj?.id).map((timeRange) => (
-                      <ListItem key={timeRange.id}
-                        sx={{ 
-                            cursor: 'pointer', 
-                            userSelect: 'none',
-                            border: '1px solid rgba(255, 255, 255, .125)',
-                            borderRadius: '4px', 
-                            marginBottom: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'}}>
-                        <ListItemText 
-                          primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                          //primaryTypographyProps={{ textAlign: 'center' }}
+                    selectedTimeRanges.length ? (
+                      selectedTimeRanges.map((timeRange) => (
+                        <ListItem key={timeRange.id}
+                          sx={{ 
+                              cursor: 'pointer', 
+                              userSelect: 'none',
+                              border: '1px solid rgba(255, 255, 255, .125)',
+                              borderRadius: '4px', 
+                              marginBottom: '4px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center'}}>
+                          <ListItemText 
+                            primary={timeRange.startTime + ' - ' + timeRange.endTime}
+                            primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
+                            />
+                          <Chip size='small' 
+                            label={timeRange.published ? 'Publicat' : 'Nepublicat'}
+                            variant='outlined' 
+                            color={timeRange.published ? 'success' : 'warning'}/>
+                        </ListItem>
+                      ))
+                    ) : (
+                      <ListItem>
+                        <ListItemText sx={{ cursor: 'default', userSelect: 'none' }}
+                          primary={'Apasă ⚙️ pentru a adăuga un interval orar'}
+                          primaryTypographyProps={{ textAlign: 'center' , color: 'rgba(255, 255, 255, .5)',  }}
                           />
-                        <Chip size='small' 
-                          label={timeRange.published ? 'Publicat' : 'Nepublicat'}
-                          variant='outlined' 
-                          color={timeRange.published ? 'success' : 'warning'}/>
-                      </ListItem>
-                    ))
+                    </ListItem>
+                    )
                   }
                 </List>
               ) : (
