@@ -163,9 +163,18 @@ try {
 
     statements['export_date'] = db.prepare(`
         SELECT
+            dates.day AS day,
             appointments.time_range_id AS timeRangeId,
             time_ranges.start_time AS startTime,
             time_ranges.end_time AS endTime,
+            (
+                SELECT
+                    COUNT(DISTINCT participants.id) from participants
+                LEFT JOIN appointments ON appointments.id = participants.appointment_id
+                WHERE appointments.time_range_id = time_ranges.id
+            )
+            AS occupied,
+            time_ranges.capacity AS capacity,
             appointments.id AS appointmentId,
             appointments.phone_number AS phoneNumber,
             participants.id AS participantId,
@@ -177,11 +186,12 @@ try {
         LEFT JOIN appointments ON appointments.id = participants.appointment_id
         LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id
         LEFT JOIN time_ranges on time_ranges.id = appointments.time_range_id
+        LEFT JOIN dates on dates.id = time_ranges.date_id
         WHERE time_ranges.date_id = ?
         ORDER BY 
             appointments.time_range_id ASC,
             appointments.id ASC,
-            participants.id ASC`)
+            participants.id ASC`);
 
     statements['get_personnel_categories'] = db.prepare(`
         SELECT * from personnel_categories`);
@@ -718,7 +728,8 @@ if (!stmtError) {
 
     exportDate = (dateId) => {
 
-        let error = null, timeRanges = new Map(), _appointments = null, appointments = new Map(), result = null;
+        let day = null, timeRanges = new Map(), _appointments = null, result = null,
+        row = 0, col = 0;
 
         /**
          * the relevant query is statements['export_data'], which expects a date ID
@@ -728,63 +739,175 @@ if (!stmtError) {
          * (participantId, lastName, firstName, isAdult {mapped to one of ['minor', 'adult']}, personnelCategoryAbbreviation);
          * 
          * the rows will be created from this data structure and the merged rows and columns will be calculated on creation
+         * 4 rows: nume, prenume; adult/minor; pt. [personnelCategoryAbbreviation]; numar de telefon
          */
 
         try {
 
-            _appointments = statements['export_date'].all();
+            _appointments = statements['export_date'].all(
+                Number(dateId)
+            );
+
+            if (_appointments && _appointments.length) {
+
+                day = _appointments[0].day;
+                result = Object.create(null);
+                result.rows = [];
+                result.cellMerges = [];
+                result.error = false;
+
+                result.rows.push({
+                    c1: day,
+                    c2: '',
+                    c3: '',
+                    c4: ''
+                });
+
+                result.cellMerges.push({
+                    s: { r: row, c: 0 }, e: { r: row, c: 3 }
+                });
+
+                row += 1;
+
+            }
 
             for (let i = 0, a = _appointments.length; i < a; ++i) {
                 
-                const appointment = appointments.get(_appointments[i].appointmentId);
+                const timeRange = timeRanges.get(_appointments[i].timeRangeId);
 
-                if (!appointment) {
+                _appointments[i].isAdult = _appointments[i].isAdult ? 'adult' : 'minor';
+
+                if (!timeRange) {
+
+                    result.rows.push({
+                        c1: '',
+                        c2: '',
+                        c3: '',
+                        c4: ''
+                    });
+    
+                    row += 1;
+
+                    const t = Object.create(null);
+                    t.timeRangeId = _appointments[i].timeRangeId;
+                    t.startTime = _appointments[i].startTime;
+                    t.endTime = _appointments[i].endTime;
+                    t.occupied = _appointments[i].occupied;
+                    t.capacity = _appointments[i].capacity;
+
+                    t.appointments = new Map();
+                    const a = Object.create(null);
+                    a.appointmentId = _appointments[i].appointmentId;
+                    a.phoneNumber = _appointments[i].phoneNumber;
+                    a.participants = [];
                     
-                    const ref = Object.create(null);
-                    ref.timeRangeId = _appointments[i].timeRangeId;
-                    ref.appointmentId = _appointments[i].appointmentId;
-                    ref.phoneNumber = _appointments[i].phoneNumber;
-                    ref.participants = [];
+                    const p = Object.create(null);
+                    p.participantId = _appointments[i].participantId;
+                    p.lastName = _appointments[i].lastName;
+                    p.firstName = _appointments[i].firstName;
+                    p.isAdult = _appointments[i].isAdult ? 'adult' : 'minor';
+                    p.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
 
-                    const participant = Object.create(null);
+                    a.participants.push(p);
 
-                    participant.participantId = _appointments[i].participantId;
-                    participant.lastName = _appointments[i].lastName;
-                    participant.firstName =_appointments[i].firstName;
-                    participant.isAdult = Boolean(_appointments[i].isAdult);
-                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
-                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+                    t.appointments.set(_appointments[i].appointmentId, a);
 
-                    ref.participants.push(participant);
+                    timeRanges.set(_appointments[i].timeRangeId, t);
 
-                    appointments.set(_appointments[i].appointmentId, ref);
+                    result.rows.push({
+                        c1: `${t.startTime} - ${t.endTime}`,
+                        c2: '',
+                        c3: `total: ${t.occupied} / ${t.capacity}`,
+                        c4: '',
+                    });
+    
+                    result.cellMerges.push({
+                        s: { r: row, c: 0 }, e: { r: row, c: 1 },
+                    }, {
+                        s: { r: row, c: 2 }, e: { r: row, c: 3 },
+                    });
+    
+                    row += 1;
+
+                    result.rows.push({
+                        c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
+                        c2: `${_appointments[i].isAdult}`,
+                        c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                        c4: `${_appointments[i].phoneNumber}`,
+                    });
+
+                    row += 1;
 
                 } else {
 
-                    const participant = Object.create(null);
-                    
-                    participant.participantId = _appointments[i].participantId;
-                    participant.lastName = _appointments[i].lastName;
-                    participant.firstName =_appointments[i].firstName;
-                    participant.isAdult = Boolean(_appointments[i].isAdult);
-                    participant.personnelCategoryId = _appointments[i].personnelCategoryId;
-                    participant.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+                    const appointment = timeRange.appointments.get(_appointments[i].appointmentId);
 
-                    appointment.participants.push(participant);
+                    if (!appointment) {
+                        
+                        const a = Object.create(null);
+                        a.appointmentId = _appointments[i].appointmentId;
+                        a.phoneNumber = _appointments[i].phoneNumber;
+                        a.participants = [];
+                        
+                        const p = Object.create(null);
+                        p.participantId = _appointments[i].participantId;
+                        p.lastName = _appointments[i].lastName;
+                        p.firstName = _appointments[i].firstName;
+                        p.isAdult = _appointments[i].isAdult ? 'adult' : 'minor';
+                        p.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+    
+                        a.participants.push(p);
 
-                    appointments.set(_appointments[i].appointmentId, appointment);
+                        timeRange.appointments.set(_appointments[i].appointmentId, a);
+    
+                        result.rows.push({
+                            c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
+                            c2: `${_appointments[i].isAdult}`,
+                            c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                            c4: `${_appointments[i].phoneNumber}`,
+                        });
+    
+                        row += 1;
+
+                    } else {
+
+                        const p = Object.create(null);
+                        p.participantId = _appointments[i].participantId;
+                        p.lastName = _appointments[i].lastName;
+                        p.firstName = _appointments[i].firstName;
+                        p.isAdult = _appointments[i].isAdult ? 'adult' : 'minor';
+                        p.personnelCategoryAbbreviation = _appointments[i].personnelCategoryAbbreviation;
+    
+                        appointment.participants.push(p);
+
+                        timeRange.appointments.set(_appointments[i].appointmentId, appointment);
+    
+                        result.rows.push({
+                            c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
+                            c2: `${_appointments[i].isAdult}`,
+                            c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                            c4: `${_appointments[i].phoneNumber}`,
+                        });
+
+                        result.cellMerges.push({
+                            s: { r: row - 1, c: 3 }, e: { r: row, c: 3 }
+                        });
+    
+                        row += 1;
+
+                    }
 
                 }
 
             }
 
-            result = Array.from(appointments.values());
-
         } catch (err) {
-
-            error = err;
+            console.log(err)
+            result.error = Boolean(err);
 
         }
+
+        //console.log(result.rows)
 
         return result ?? null;
 
@@ -828,6 +951,7 @@ export {
     updateTimeRange,
     deleteTimeRange,
     getAppointments,
+    exportDate,
     getPersonnelCategories,
 
 };
