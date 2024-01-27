@@ -309,26 +309,29 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                           <Box sx={{
                               width: '100%',
                               maxWidth: '350px',
-                              marginBottom: '8px',
+                              marginBottom: '16px',
                             }}>
                             {
                               appointment?.participants?.map((participant) => (
                                 <Box key={`${appointment.appointmentId}-${appointment.timeRangeId}-${participant.participantId}`}
-                                  sx={{ marginBottom: '8px', }}>
-                                  <Typography>
+                                  sx={{ marginBottom: '16px', }}>
+                                  <Typography sx={{ marginBottom: '8px' }}>
                                     {participant.lastName} {participant.firstName}
                                   </Typography>
                                   <Box sx={{
                                       width: '100%',
                                       display: 'flex',
                                       alignItems: 'center',
-                                      justifyContent: 'space-evenly'
+                                      justifyContent: 'flex-start'
                                     }}>
                                       <Chip variant='filled' 
                                         label={participant.isAdult ? 'adult' : 'minor'}
-                                        color={participant.isAdult ? 'default' : 'warning'}/>
-                                      <Chip variant='filled' 
-                                        label={`candidează pt. ${participant.personnelCategoryAbbreviation}`}/>
+                                        color={participant.isAdult ? 'default' : 'warning'}
+                                        size='small'
+                                        sx={{ marginRight: '8px' }}/>
+                                      <Chip variant='outlined' 
+                                        label={`candidează pt. ${participant.personnelCategoryAbbreviation}`}
+                                        size='small'/>
                                   </Box>
                                 </Box>
                               ))
