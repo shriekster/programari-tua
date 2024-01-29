@@ -57,7 +57,7 @@ function ServerDay(props) {
   // eslint-disable-next-line react/prop-types
   const formattedDay = day?.$d?.toLocaleDateString('ro-RO') ?? '';
   // eslint-disable-next-line react/prop-types
-  const isSelected = !props.outsideCurrentMonth && dates.has(formattedDay);
+  const isSelected = dates.has(formattedDay);
 
   if (isSelected) {
 
