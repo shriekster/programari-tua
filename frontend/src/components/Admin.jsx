@@ -21,8 +21,6 @@ import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
 import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 
-import dayjs from 'dayjs';
-
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { useGlobalStore } from '../useGlobalStore.js';
@@ -98,15 +96,9 @@ export default function Admin() {
 
   const [displaySettings, setDisplaySettings] = useState(false);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openDayMenu = Boolean(anchorEl);
-
   const loading = useGlobalStore((state) => state.loading);
-  const subscriptionId = useGlobalStore((state) => state.subcriptionId);
   const dates = useGlobalStore((state) => state.dates);
   const timeRanges = useGlobalStore((state) => state.timeRanges);
-  const appointments = useGlobalStore((state) => state.appointments);
-  const personnelCategories = useGlobalStore((state) => state.personnelCategories);
 
   const handleChangeSelectedDate = (newDate) => {
 
