@@ -7,6 +7,7 @@ const dbFilePath = path.resolve(process.cwd(), './data/tua.db');
 let stmtError = null;
 const statements = {};
 
+// admin
 let getSecret = null;
 let getCredentials = null;
 let getProfileId = null;
@@ -27,6 +28,9 @@ let getAppointments = null;
 let exportDate = null;
 let getPersonnelCategories = null;
 
+// user
+let getUserDates = null;
+
 try {
 
     db = new Database(dbFilePath, {
@@ -44,6 +48,7 @@ try {
 
 try {
 
+    // admin
     statements['get_secret'] = db.prepare(`
         SELECT value
         FROM secrets
@@ -196,8 +201,9 @@ try {
     statements['get_personnel_categories'] = db.prepare(`
         SELECT * from personnel_categories`);
 
-    
-
+    // user
+    statements['get_user_dates'] = db.prepare(`
+        `);
 
 } catch (err) {
     
@@ -207,6 +213,7 @@ try {
 
 if (!stmtError) {
 
+    // admin
     getSecret = (scope) => {
 
         let error = null, secret = null;
@@ -931,10 +938,16 @@ if (!stmtError) {
 
     };
 
+    // user
+    getUserDates = () => {
+
+    };
+
 }
 
 export {
 
+    // admin
     getSecret,
     getCredentials,
     getProfile,
@@ -953,5 +966,8 @@ export {
     getAppointments,
     exportDate,
     getPersonnelCategories,
+
+    // user
+    getUserDates,
 
 };

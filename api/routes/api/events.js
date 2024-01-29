@@ -3,7 +3,13 @@
 import { Router } from 'express';
 import { customAlphabet } from 'nanoid';
 import { getProfileName } from '../../lib/token.js';
-import { getDates, getTimeRanges, getAppointments, getPersonnelCategories, getLocations, getProfile } from '../../lib/db.js';
+import { 
+  // admin
+  getDates, getTimeRanges, getAppointments, getPersonnelCategories, getLocations, getProfile,
+
+  //user
+  
+} from '../../lib/db.js';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
 

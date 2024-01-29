@@ -24,12 +24,8 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
-import refreshAccessToken from '../refreshAccessToken.js';
-
-import DateAdd from './DateAdd.jsx';
-import DateEdit from './DateEdit.jsx';
-import TimeRangeAdd from './TimeRangeAdd.jsx';
 import TimeRangeEdit from './TimeRangeEdit.jsx';
+import AppointmentAdd from './AppointmentAdd.jsx';
 
 
 // get the functions from the global store as non-reactive, fresh state,
@@ -112,7 +108,7 @@ export default function Home() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTimeRangeId, setSelectedTimeRangeId] = useState(0);
 
-  const [openEditTimeRange, setOpenEditTimeRange] = useState(false);
+  const [openAddAppointment, setOpenAddAppointment] = useState(false);
 
   const loading = useGlobalStore((state) => state.loading);
   const dates = useGlobalStore((state) => state.dates);
@@ -125,152 +121,9 @@ export default function Home() {
 
   };
 
-  const handleToggleAddDate = (bool = undefined) => {
+  const handleToggleAddAppointment = () => {
 
-    if (undefined !== bool) {
-      
-      setOpenAddDate(Boolean(bool));
-
-    } else {
-
-      setOpenAddDate((prevState) => !prevState);
-
-    }
-
-  };
-
-  const handleToggleEditDate = (bool = undefined) => {
-
-    if (undefined !== bool) {
-      
-      setOpenEditDate(Boolean(bool));
-
-    } else {
-
-      setOpenEditDate((prevState) => !prevState);
-
-    }
-
-  };
-
-  const handleToggleAddTimeRange = (bool = undefined) => {
-
-    if (undefined !== bool) {
-      
-      setOpenAddTimeRange(Boolean(bool));
-
-    } else {
-
-      setOpenAddTimeRange((prevState) => !prevState);
-
-    }
-
-  };
-
-  const handleToggleEditTimeRange = (bool = undefined) => {
-
-    if (undefined !== bool) {
-      
-      setOpenEditTimeRange(Boolean(bool));
-
-    } else {
-
-      setOpenEditTimeRange((prevState) => !prevState);
-
-    }
-
-  };
-
-  const handleAddTimeRangeFromDateEdit = () => {
-
-    handleToggleEditDate(false);
-    handleToggleAddTimeRange(true);
-
-  };
-
-  const handleDownload = async () => {
-
-    const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
-    const selectedDateId = dates?.get(selectedDay)?.id ?? '';
-
-    setLoading(true);
-
-    let error = null, status = 401, fileBlob = null;
-
-    try {
-
-        const requestOptions = {
-            method: 'GET',
-            credentials: 'same-origin'
-        };
-
-        const response = await fetch(`/api/admin/dates/${selectedDateId}/download`, requestOptions);
-        status = response.status;
-
-        fileBlob = await response.blob();
-
-
-    } catch (err) {
-
-        // eslint-disable-next-line no-unused-vars
-        error = err;
-        status = 400; // client-side error
-
-    }
-
-    switch (status) {
-
-        case 200: {
-
-            setLoading(false);
-
-            if (fileBlob) {
-
-              const link = document.createElement('a');
-              link.href = URL.createObjectURL(fileBlob);
-              link.download = `${selectedDay}.xlsx`;
-        
-              // Append the link to the document
-              document.body.appendChild(link);
-        
-              // Trigger a click on the link to start the download
-              link.click();
-        
-              // Remove the link from the document
-              document.body.removeChild(link);
-
-            }
-
-            break;
-
-        }
-
-        case 401: {
-
-            await refreshAccessToken(handleDownload);
-            break;
-
-        }
-
-        case 418: {
-
-          setLoading(false);
-          setErrorMessage('Nu sunt programări în ziua selectată!');
-          setError(true);
-          break;
-
-        }
-
-        default: {
-
-            setLoading(false);
-            setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-            setError(true);
-            break;
-
-        }
-
-    }
+    setOpenAddAppointment((prevState) => !prevState);
 
   };
 
@@ -441,7 +294,9 @@ export default function Home() {
         
         if (err instanceof FatalError) {
 
-            throw err; // rethrow to stop the operation
+          setError(true);
+          setErrorMessage('A apărut o problemă, reîmprospătează pagina!');
+          throw err; // rethrow to stop the operation
 
         } else {
             // do nothing to automatically retry. You can also
@@ -522,7 +377,7 @@ export default function Home() {
                           alignItems: 'center',
                           justifyContent: 'center'
                         }}
-                        onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); } }}
+                        onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
                         >
                       <ListItemText 
                         primary={timeRange.startTime + ' - ' + timeRange.endTime}
@@ -571,8 +426,8 @@ export default function Home() {
                 </Box>
               )
             }
-          <TimeRangeEdit open={openEditTimeRange}
-            handleClose={() => { handleToggleEditTimeRange(false) }}
+          <AppointmentAdd open={openAddAppointment}
+            handleClose={handleToggleAddAppointment}
             date={selectedDate}
             timeRangeId={selectedTimeRangeId}/>
       </Box>
