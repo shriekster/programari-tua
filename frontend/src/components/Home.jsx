@@ -54,7 +54,6 @@ const {
   setPersonnelCategories,
   setError,
   setErrorMessage,
-  setUserTheme,
 } = useGlobalStore.getState();
 
 function ServerDay(props) {
@@ -287,6 +286,7 @@ export default function Home() {
   // add the 'visibilitychange' event listener and remove it when the component unmounts
   useEffect(() => {
 
+    // eslint-disable-next-line no-unused-vars
     const onVisibilityChange = (e) => {
 
       if ('visible' === document.visibilityState) {
@@ -307,7 +307,7 @@ export default function Home() {
 
   }, []);
 
-  // subscribe to admin events and get admin data after subscribing (locations, profile and registry data)
+  // subscribe to user events and get admin data after subscribing (locations, profile and registry data)
   // unsubscribe when the component unmounts
   useEffect(() => {
 
@@ -321,7 +321,7 @@ export default function Home() {
 
     setLoading(true);
     
-    fetchEventSource('/api/admin/events', {
+    fetchEventSource('/api/events', {
 
       async onopen(response) {
 
@@ -340,18 +340,8 @@ export default function Home() {
 
         } else if (response.status >= 400 && response.status < 500 && response.status !== 429) {
           
-          if (401 === response.status) {
-
-            // try to refresh the access token if it's expired,
-            // then retry
-            await refreshAccessToken(fetchEventSource);
-
-          } else {
-
-            // non-retriable error for every other client-side error:
+            // non-retriable error for every client-side error
             throw new FatalError();
-
-          }
 
         } else {
 
@@ -476,7 +466,7 @@ export default function Home() {
 
     });
 
-    // unsubscribe from admin events
+    // unsubscribe from user events
     return () => {
 
       console.log('Unsubscribing...');
@@ -623,7 +613,7 @@ export default function Home() {
                   </Box>
                 )
               ) : (
-                <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
+                <Typography textAlign='center' sx={{ opacity: .5, cursor: 'default', userSelect: 'none' }}>
                   Selectează o zi din calendar
                 </Typography>
               )

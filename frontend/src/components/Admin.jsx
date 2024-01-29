@@ -594,7 +594,7 @@ export default function Admin() {
                 </Box>
               )
             ) : (
-              <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
+              <Typography textAlign='center' sx={{ opacity: .5, cursor: 'default', userSelect: 'none' }}>
                 Selectează o zi din calendar
               </Typography>
             )
