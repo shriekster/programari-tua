@@ -114,4 +114,16 @@ export const useGlobalStore = create((set, get) => ({
   subscriptionId: '',
   setSubscriptionId: (newSubscriptionId) => set({ subscriptionId: newSubscriptionId }),
 
+  // user theme state
+  userTheme: 'dark',
+  toggleUserTheme: () => {
+    
+    const currentTheme = get().userTheme;
+
+    const newTheme = 'dark' === currentTheme ? 'light' : 'dark';
+
+    set({ userTheme: newTheme })
+    
+  },
+
 }));

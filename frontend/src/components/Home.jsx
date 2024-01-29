@@ -1,6 +1,5 @@
 
-// TODO: 'global' snackbar
-// TODO: find a solution for geocoding (location search)
+
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
@@ -20,6 +19,8 @@ import Divider from '@mui/material/Divider';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
 import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
@@ -53,6 +54,7 @@ const {
   setPersonnelCategories,
   setError,
   setErrorMessage,
+  setUserTheme,
 } = useGlobalStore.getState();
 
 function ServerDay(props) {
@@ -84,6 +86,29 @@ function ServerDay(props) {
   );
 }
 
+const tuaDarkTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7f805d'
+    },
+    mode: 'dark'
+  },
+});
+
+const tuaLightTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7f805d'
+    },
+    mode: 'light'
+  },
+});
+
+const theme = {
+  'dark': tuaDarkTheme,
+  'light': tuaLightTheme,
+};
+
 // eslint-disable-next-line react/prop-types
 export default function Home() {
 
@@ -102,6 +127,7 @@ export default function Home() {
   const timeRanges = useGlobalStore((state) => state.timeRanges);
   const appointments = useGlobalStore((state) => state.appointments);
   const personnelCategories = useGlobalStore((state) => state.personnelCategories);
+  const userTheme = useGlobalStore((state) => state.userTheme);
 
   const handleChangeSelectedDate = (newDate) => {
 
@@ -491,130 +517,133 @@ export default function Home() {
   const selectedTimeRanges = timeRanges.filter((timeRange) => timeRange.dateId == selectedDateObj?.id);
 
   return (
-    <Box sx={{
-        margin: 0,
-        padding: 0,
-      }}>
-      <DateCalendar 
-        views={['day']}
-        showDaysOutsideCurrentMonth
-        displayWeekNumber
-        disabled={loading}
-        loading={loading}
-        renderLoading={() => <DayCalendarSkeleton />}
-        value={selectedDate}
-        onChange={handleChangeSelectedDate}
-        slots={{
-          day: ServerDay,
-        }}
-        slotProps={{
-          day: {
-            dates,
-          },
-        }}
-        />
-        <Box sx={{
-          width: '320px',
-          margin: '0 auto',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '40px',
+    <ThemeProvider theme={theme[`${userTheme}`]}>
+      <CssBaseline />
+      <Box sx={{
+          margin: 0,
+          padding: 0,
         }}>
-          <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
-          {
-            displaySettings && (
-              <>
-                <IconButton color='success' 
-                  disabled={loading}
-                  onClick={handleDownload}
-                  sx={{ marginRight: '8px' }}>
-                  <FileDownloadIcon fontSize='large' />
-                </IconButton>
-                <IconButton color='primary' 
-                  disabled={loading}
-                  onClick={() => { handleToggleEditDate(true) }}>
-                  <SettingsIcon fontSize='large' />
-                </IconButton>
-              </>
-            )
-          }
-        </Box>
-          {
-            selectedDate ? (
-              displaySettings ? (
-                <List sx={{
-                  width: '320px',
-                  margin: '0 auto',
-                }}>
-                  {
-                    selectedTimeRanges.length ? (
-                      selectedTimeRanges.map((timeRange) => (
-                        <ListItem key={timeRange.id}
-                          sx={{ 
-                              cursor: 'pointer', 
-                              userSelect: 'none',
-                              border: '1px solid rgba(255, 255, 255, .125)',
-                              borderRadius: '4px', 
-                              marginBottom: '4px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                            onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); } }}
-                            >
-                          <ListItemText 
-                            primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                            primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
-                            />
-                          <Chip size='small' 
-                            label={timeRange.published ? 'Publicat' : 'Nepublicat'}
-                            variant='outlined' 
-                            color={timeRange.published ? 'success' : 'warning'}/>
-                        </ListItem>
-                      ))
-                    ) : (
-                      <ListItem>
-                        <ListItemText sx={{ cursor: 'default', userSelect: 'none' }}
-                          primary={'Apasă ⚙️ pentru a adăuga un interval orar'}
-                          primaryTypographyProps={{ textAlign: 'center' , color: 'rgba(255, 255, 255, .5)',  }}
-                          />
-                    </ListItem>
-                    )
-                  }
-                </List>
-              ) : (
-                <Box sx={{ margin: '0 auto', display: 'flex', }}>
-                  <Button variant='contained' 
-                    sx={{ margin: '0 auto', }}
+        <DateCalendar 
+          views={['day']}
+          showDaysOutsideCurrentMonth
+          displayWeekNumber
+          disabled={loading}
+          loading={loading}
+          renderLoading={() => <DayCalendarSkeleton />}
+          value={selectedDate}
+          onChange={handleChangeSelectedDate}
+          slots={{
+            day: ServerDay,
+          }}
+          slotProps={{
+            day: {
+              dates,
+            },
+          }}
+          />
+          <Box sx={{
+            width: '320px',
+            margin: '0 auto',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '40px',
+          }}>
+            <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
+            {
+              displaySettings && (
+                <>
+                  <IconButton color='success' 
                     disabled={loading}
-                    startIcon={<InsertInvitationIcon />}
-                    onClick={handleToggleAddDate}>
-                    Adaugă ziua de antrenament
-                  </Button>
-                </Box>
+                    onClick={handleDownload}
+                    sx={{ marginRight: '8px' }}>
+                    <FileDownloadIcon fontSize='large' />
+                  </IconButton>
+                  <IconButton color='primary' 
+                    disabled={loading}
+                    onClick={() => { handleToggleEditDate(true) }}>
+                    <SettingsIcon fontSize='large' />
+                  </IconButton>
+                </>
               )
-            ) : (
-              <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
-                Selectează o zi din calendar
-              </Typography>
-            )
-          }
-        <DateAdd open={openAddDate} 
-          handleClose={() => { handleToggleAddDate(false) }}
-          date={selectedDate}/>
-        <DateEdit open={openEditDate} 
-          handleClose={() => { handleToggleEditDate(false) }}
-          handleAddTimeRange={handleAddTimeRangeFromDateEdit}
-          date={selectedDate}/>
-        <TimeRangeAdd open={openAddTimeRange}
-          handleClose={() => { handleToggleAddTimeRange(false) }}
-          date={selectedDate}/>
-        <TimeRangeEdit open={openEditTimeRange}
-          handleClose={() => { handleToggleEditTimeRange(false) }}
-          date={selectedDate}
-          timeRangeId={selectedTimeRangeId}/>
-    </Box>
+            }
+          </Box>
+            {
+              selectedDate ? (
+                displaySettings ? (
+                  <List sx={{
+                    width: '320px',
+                    margin: '0 auto',
+                  }}>
+                    {
+                      selectedTimeRanges.length ? (
+                        selectedTimeRanges.map((timeRange) => (
+                          <ListItem key={timeRange.id}
+                            sx={{ 
+                                cursor: 'pointer', 
+                                userSelect: 'none',
+                                border: '1px solid rgba(255, 255, 255, .125)',
+                                borderRadius: '4px', 
+                                marginBottom: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                              onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleEditTimeRange(true); } }}
+                              >
+                            <ListItemText 
+                              primary={timeRange.startTime + ' - ' + timeRange.endTime}
+                              primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
+                              />
+                            <Chip size='small' 
+                              label={timeRange.published ? 'Publicat' : 'Nepublicat'}
+                              variant='outlined' 
+                              color={timeRange.published ? 'success' : 'warning'}/>
+                          </ListItem>
+                        ))
+                      ) : (
+                        <ListItem>
+                          <ListItemText sx={{ cursor: 'default', userSelect: 'none' }}
+                            primary={'Apasă ⚙️ pentru a adăuga un interval orar'}
+                            primaryTypographyProps={{ textAlign: 'center' , color: 'rgba(255, 255, 255, .5)',  }}
+                            />
+                      </ListItem>
+                      )
+                    }
+                  </List>
+                ) : (
+                  <Box sx={{ margin: '0 auto', display: 'flex', }}>
+                    <Button variant='contained' 
+                      sx={{ margin: '0 auto', }}
+                      disabled={loading}
+                      startIcon={<InsertInvitationIcon />}
+                      onClick={handleToggleAddDate}>
+                      Adaugă ziua de antrenament
+                    </Button>
+                  </Box>
+                )
+              ) : (
+                <Typography textAlign='center' sx={{ color: 'rgba(255, 255, 255, .5)', cursor: 'default', userSelect: 'none' }}>
+                  Selectează o zi din calendar
+                </Typography>
+              )
+            }
+          <DateAdd open={openAddDate} 
+            handleClose={() => { handleToggleAddDate(false) }}
+            date={selectedDate}/>
+          <DateEdit open={openEditDate} 
+            handleClose={() => { handleToggleEditDate(false) }}
+            handleAddTimeRange={handleAddTimeRangeFromDateEdit}
+            date={selectedDate}/>
+          <TimeRangeAdd open={openAddTimeRange}
+            handleClose={() => { handleToggleAddTimeRange(false) }}
+            date={selectedDate}/>
+          <TimeRangeEdit open={openEditTimeRange}
+            handleClose={() => { handleToggleEditTimeRange(false) }}
+            date={selectedDate}
+            timeRangeId={selectedTimeRangeId}/>
+      </Box>
+    </ThemeProvider>
   );
 
 }

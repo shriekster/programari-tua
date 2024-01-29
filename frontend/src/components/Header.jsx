@@ -18,10 +18,45 @@ import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PlaceIcon from '@mui/icons-material/Place';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+// get the functions from the global store as non-reactive, fresh state,
+// because this proves the linter that the functions are not changing between renders
+// why? because it's annoying to specify functions as effect depedencies and I could not think of
+// a better solution, at least for now
+const {
+  toggleUserTheme,
+} = useGlobalStore.getState();
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
 import TuaIcon from './TuaIcon';
+
+const tuaDarkTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7f805d'
+    },
+    mode: 'dark'
+  },
+});
+
+const tuaLightTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#7f805d'
+    },
+    mode: 'light'
+  },
+});
+
+const theme = {
+  'dark': tuaDarkTheme,
+  'light': tuaLightTheme,
+};
 
 const isAppointmentPageRegex = /^\/appointments\/[a-zA-Z0-9]{16}$/;
 
@@ -75,6 +110,8 @@ export default function Header() {
   const [selectedMenuItem, setSelectedMenuItem] = useState('');
 
   const [loading, setLoading] = useGlobalStore((state) => [state.loading, state.setLoading]);
+
+  const userTheme = useGlobalStore((state) => state.userTheme);
 
   const [location, setLocation] = useLocation();
 
@@ -242,92 +279,102 @@ export default function Header() {
   }
 
   return (
-    <AppBar position='sticky' elevation={1} sx={{ height: '56px',}}>
-      <Container maxWidth={false} sx={{ height: '56px' }}>
-        <Toolbar disableGutters sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative',
-            height: '56px !important'
-          }}
-          variant='dense'>
-          <TuaIcon sx={{ position: 'absolute', left: 0 }} />
-          <Typography
-              variant='h5'
-              noWrap
-              sx={{
-                display: 'flex',
-                fontFamily: 'monospace',
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-              }}
-          >
-              TUA
-          </Typography>
-          {
-            Boolean(hasMenu) && (
-              <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
-                <Tooltip title='Setări'>
-                  <div>
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
-                        size='large'
-                        disabled={loading}>
-                        <MenuIcon fontSize='large' />
-                    </IconButton>
-                  </div>
-                </Tooltip>
-                <Menu
-                  id='menu'
-                  keepMounted
-                  anchorEl={menuAnchor}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  open={Boolean(menuAnchor)}
-                  onClose={handleCloseUserMenu}
-                  slotProps={{
-                    paper: {
-                      elevation: 6,
-                      sx: {
-                          overflow: 'visible',
-                          filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                          mt: .5,
-                          '&::before': {
-                            content: '""',
-                            display: 'block',
-                            position: 'absolute',
-                            top: 0,
-                            right: 12,
-                            width: 10,
-                            height: 10,
-                            backgroundColor: 'rgb(18, 18, 18)',
-                            backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
-                            transform: 'translateY(-50%) rotate(45deg)',
-                            zIndex: 6,
+    <ThemeProvider theme={theme[`${userTheme}`]}>
+      <CssBaseline />
+      <AppBar position='sticky' elevation={1} sx={{ height: '56px',}}>
+        <Container maxWidth={false} sx={{ height: '56px' }}>
+          <Toolbar disableGutters sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              height: '56px !important'
+            }}
+            variant='dense'>
+            <TuaIcon sx={{ position: 'absolute', left: 0 }} />
+            <Typography
+                variant='h5'
+                noWrap
+                sx={{
+                  display: 'flex',
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  letterSpacing: '.3rem',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  userSelect: 'none',
+                  cursor: 'default'
+                }}
+            >
+                TUA
+            </Typography>
+            {
+              hasMenu ? (
+                <Box sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
+                  <Tooltip title='Setări'>
+                    <div>
+                      <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}
+                          size='large'
+                          disabled={loading}>
+                          <MenuIcon fontSize='large' />
+                      </IconButton>
+                    </div>
+                  </Tooltip>
+                  <Menu
+                    id='menu'
+                    keepMounted
+                    anchorEl={menuAnchor}
+                    anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                    transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                    open={Boolean(menuAnchor)}
+                    onClose={handleCloseUserMenu}
+                    slotProps={{
+                      paper: {
+                        elevation: 6,
+                        sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: .5,
+                            '&::before': {
+                              content: '""',
+                              display: 'block',
+                              position: 'absolute',
+                              top: 0,
+                              right: 12,
+                              width: 10,
+                              height: 10,
+                              backgroundColor: 'rgb(18, 18, 18)',
+                              backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.11))',
+                              transform: 'translateY(-50%) rotate(45deg)',
+                              zIndex: 6,
+                          },
                         },
-                      },
-                    }
-                  }}
-                >
-                {
-                  menuItems.map((menuItem) => (
-                    <MenuItem key={menuItem} 
-                      // eslint-disable-next-line no-unused-vars
-                      onClick={(_) => { handleMenuItemClick(menuItem) } }
-                      selected={ 'Deconectare' !== menuItem && menuItem === selectedMenuItem}>
-                      <MenuItemContent menuItem={menuItem} />
-                    </MenuItem>
-                  ))
-                }
-                </Menu>
-              </Box>
-            )
-          }
-        </Toolbar>
-      </Container>
-    </AppBar>
+                      }
+                    }}
+                  >
+                  {
+                    menuItems.map((menuItem) => (
+                      <MenuItem key={menuItem} 
+                        // eslint-disable-next-line no-unused-vars
+                        onClick={(_) => { handleMenuItemClick(menuItem) } }
+                        selected={ 'Deconectare' !== menuItem && menuItem === selectedMenuItem}>
+                        <MenuItemContent menuItem={menuItem} />
+                      </MenuItem>
+                    ))
+                  }
+                  </Menu>
+                </Box>
+              ) : (
+                <IconButton onClick={toggleUserTheme} color='inherit'
+                  sx={{ flexGrow: 0,  position: 'absolute', right: 0 }}>
+                  {'dark' === userTheme ? <DarkModeIcon /> : <LightModeIcon />}
+                </IconButton>
+              )
+            }
+          </Toolbar>
+        </Container>
+      </AppBar>
+    </ThemeProvider>
   );
 
 }
