@@ -176,6 +176,7 @@ export default function Admin() {
 
     setLoading(true);
 
+    // eslint-disable-next-line no-unused-vars
     let error = null, status = 401, fileBlob = null;
 
     try {
@@ -258,6 +259,7 @@ export default function Admin() {
   // add the 'visibilitychange' event listener and remove it when the component unmounts
   useEffect(() => {
 
+    // eslint-disable-next-line no-unused-vars
     const onVisibilityChange = (e) => {
 
       if ('visible' === document.visibilityState) {
