@@ -203,7 +203,9 @@ try {
 
     // user
     statements['get_user_dates'] = db.prepare(`
-        `);
+        SELECT dates.id, locations.id AS locationId, dates.day
+        FROM dates
+        LEFT JOIN locations ON dates.location_id = locations.id`);
 
 } catch (err) {
     

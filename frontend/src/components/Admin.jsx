@@ -1,6 +1,5 @@
 
-// TODO: 'global' snackbar
-// TODO: find a solution for geocoding (location search)
+
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
@@ -59,10 +58,11 @@ function ServerDay(props) {
 
   // eslint-disable-next-line react/prop-types
   const { dates = new Map(), day, outsideCurrentMonth, ...other } = props;
+  
   // eslint-disable-next-line react/prop-types
   const formattedDay = day?.$d?.toLocaleDateString('ro-RO') ?? '';
   // eslint-disable-next-line react/prop-types
-  const isSelected = !props.outsideCurrentMonth && dates.has(formattedDay);
+  const isSelected = dates.has(formattedDay);
 
   if (isSelected) {
 
@@ -82,6 +82,7 @@ function ServerDay(props) {
   return (
     <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
   );
+  
 }
 
 // eslint-disable-next-line react/prop-types
@@ -364,9 +365,9 @@ export default function Admin() {
                 setLoading(false);
   
               }
-  
+
               if (dataObj.registry) {
-                
+
                 setDates(new Map(dataObj.registry.dates));
                 setTimeRanges(dataObj.registry.timeRanges);
                 setAppointments(dataObj.registry.appointments);

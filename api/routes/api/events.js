@@ -117,7 +117,6 @@ router.get('/', function(req, res) {
   } catch (err) {
 
     error = err;
-    console.log(err);
 
   }
 
