@@ -8,7 +8,7 @@ import {
   getDates, getTimeRanges, getAppointments, getPersonnelCategories, getLocations, getProfile,
 
   //user
-  
+  getUserDates, 
 } from '../../lib/db.js';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
@@ -142,7 +142,6 @@ router.get('/', function(req, res) {
     if (isAdmin) {
 
       // admin data
-      
       const accessToken = req.cookies?.['access_token'];
       const userName = getProfileName('access', accessToken);
 
@@ -171,6 +170,27 @@ router.get('/', function(req, res) {
     } else {
 
       // user data
+      const dates = getUserDates();
+      //const timeRanges = getTimeRanges();
+      //const appointments = getAppointments();
+      //const personnelCategories = getPersonnelCategories();
+
+      data.registry = {
+
+        dates,
+        //timeRanges,
+        //appointments,
+        //personnelCategories,
+
+      };
+
+      //const locations = getLocations();
+
+      //data.locations = locations;
+
+      //const profile = getProfile(userName);
+
+      //data.profile = profile;
 
     }
 

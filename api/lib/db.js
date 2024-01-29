@@ -127,8 +127,7 @@ try {
                     COUNT(DISTINCT participants.id) from participants
                 LEFT JOIN appointments ON appointments.id = participants.appointment_id
                 WHERE appointments.time_range_id = time_ranges.id
-            )
-            AS occupied
+            ) AS occupied
         FROM time_ranges
         LEFT JOIN dates ON dates.id = time_ranges.date_id`);
 
@@ -203,9 +202,22 @@ try {
 
     // user
     statements['get_user_dates'] = db.prepare(`
-        SELECT dates.id, locations.id AS locationId, dates.day
+        SELECT 
+            dates.id,
+            dates.day,
+            locations.display_name AS locationDisplayName,
+            locations.lat AS latitude,
+            locations.lon AS longitude,
+            (
+                SELECT COUNT(time_ranges.published) 
+                FROM time_ranges
+                WHERE 
+                    time_ranges.date_id = dates.id AND
+                    time_ranges.published = 1
+            ) AS publishedTimeRanges
         FROM dates
-        LEFT JOIN locations ON dates.location_id = locations.id`);
+        LEFT JOIN locations ON dates.location_id = locations.id
+        WHERE publishedTimeRanges > 0`);
 
 } catch (err) {
     
@@ -942,6 +954,30 @@ if (!stmtError) {
 
     // user
     getUserDates = () => {
+
+        let error = null, dates = null;
+
+        try {
+
+            dates = statements['get_user_dates'].all();
+
+            if (dates && dates.length) {
+
+                for (let i = 0, n = dates.length; i < n; ++i) {
+
+                    dates[i] = [dates[i].day, dates[i]];
+
+                }
+
+            }
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return dates ?? null;
 
     };
 

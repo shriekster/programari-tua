@@ -229,9 +229,9 @@ export default function Home() {
               if (dataObj.registry) {
                 
                 setDates(new Map(dataObj.registry.dates));
-                setTimeRanges(dataObj.registry.timeRanges);
-                setAppointments(dataObj.registry.appointments);
-                setPersonnelCategories(dataObj.registry.personnelCategories);
+                //setTimeRanges(dataObj.registry.timeRanges);
+                //setAppointments(dataObj.registry.appointments);
+                //setPersonnelCategories(dataObj.registry.personnelCategories);
                 setRegistryDownloaded(true);
   
               }
@@ -365,37 +365,49 @@ export default function Home() {
             {
               selectedDate ? (
                 selectedTimeRanges.length ? (
-                  selectedTimeRanges.map((timeRange) => (
-                    <ListItem key={timeRange.id}
-                      sx={{ 
-                          cursor: 'pointer', 
-                          userSelect: 'none',
-                          border: '1px solid rgba(255, 255, 255, .125)',
-                          borderRadius: '4px', 
-                          marginBottom: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }}
-                        onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
-                        >
-                      <ListItemText 
-                        primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                        primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
-                        />
-                      <Chip size='small' 
-                        label={timeRange.published ? 'Publicat' : 'Nepublicat'}
-                        variant='outlined' 
-                        color={timeRange.published ? 'success' : 'warning'}/>
-                    </ListItem>
-                  ))
+                  <List sx={{
+                    width: '320px',
+                    margin: '0 auto',
+                  }}>
+                  {
+                    selectedTimeRanges.map((timeRange) => (
+                      <ListItem key={timeRange.id}
+                        sx={{ 
+                            cursor: 'pointer', 
+                            userSelect: 'none',
+                            border: '1px solid rgba(255, 255, 255, .125)',
+                            borderRadius: '4px', 
+                            marginBottom: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }}
+                          onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
+                          >
+                        <ListItemText 
+                          primary={timeRange.startTime + ' - ' + timeRange.endTime}
+                          primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
+                          />
+                        <Chip size='small' 
+                          label={timeRange.published ? 'Publicat' : 'Nepublicat'}
+                          variant='outlined' 
+                          color={timeRange.published ? 'success' : 'warning'}/>
+                      </ListItem>
+                    ))
+                  }
+                  </List>
                 ) : (
-                  <ListItem>
-                    <ListItemText sx={{ cursor: 'default', userSelect: 'none' }}
-                      primary={`Momentan nu se fac programări pentru ${selectedDay}`}
-                      primaryTypographyProps={{ textAlign: 'center' , sx: { opacity: .5 }, }}
-                      />
-                  </ListItem>
+                  <Box sx={{ width: '320px', margin: '0 auto', }}>
+                    <Typography textAlign='center' sx={{ opacity: .5 }}>
+                      Momentan nu se fac programări pentru {selectedDay}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                      <Typography textAlign='center' sx={{ opacity: .5, display: 'inline' }}>
+                          Selectează una dintre zilele marcate cu 
+                      </Typography>
+                      <CircleIcon fontSize='small' color='success' sx={{ display: 'inline' }}/>
+                    </Box>
+                  </Box>
                 )
               ) : (
                 <Box sx={{ width: '320px', margin: '0 auto', }}>
@@ -410,14 +422,14 @@ export default function Home() {
                     <Typography sx={{ opacity: .5, cursor: 'default', userSelect: 'none', marginBottom: '8px' }}>
                       Legendă
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: '8px' }}>
-                      <CircleIcon fontSize='small' color='success' sx={{ marginRight: '8px' }}/>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginBottom: '8px', gap: '8px' }}>
+                      <CircleIcon fontSize='small' color='success'/>
                       <Typography textAlign='center' sx={{ opacity: .5, cursor: 'default', userSelect: 'none' }}>
                         sunt locuri libere
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start' }}>
-                      <CircleIcon fontSize='small' color='error' sx={{ marginRight: '8px' }}/>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px' }}>
+                      <CircleIcon fontSize='small' color='error'/>
                       <Typography textAlign='center' sx={{ opacity: .5, cursor: 'default', userSelect: 'none' }}>
                         nu sunt locuri libere
                       </Typography>
