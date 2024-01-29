@@ -121,7 +121,7 @@ export default function Header() {
     const isAppointmentPage = isAppointmentPageRegex.test(location);
 
     if (isAppointmentPage) {
-      console.log({isAppointmentPage})
+
       setMenu(false);
       setRender(true);
 
