@@ -229,7 +229,7 @@ export default function Home() {
               if (dataObj.registry) {
                 
                 setDates(new Map(dataObj.registry.dates));
-                //setTimeRanges(dataObj.registry.timeRanges);
+                setTimeRanges(dataObj.registry.timeRanges);
                 //setAppointments(dataObj.registry.appointments);
                 //setPersonnelCategories(dataObj.registry.personnelCategories);
                 setRegistryDownloaded(true);
@@ -325,6 +325,7 @@ export default function Home() {
   // eslint-disable-next-line react/prop-types
   const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
   const selectedDateObj = dates?.get(selectedDay);
+ 
   const selectedTimeRanges = timeRanges.filter((timeRange) => timeRange.dateId == selectedDateObj?.id);
 
   return (
@@ -375,7 +376,7 @@ export default function Home() {
                         sx={{ 
                             cursor: 'pointer', 
                             userSelect: 'none',
-                            border: '1px solid rgba(255, 255, 255, .125)',
+                            border: '1px solid rgba(128, 128, 128, .25)',
                             borderRadius: '4px', 
                             marginBottom: '4px',
                             display: 'flex',
@@ -386,12 +387,8 @@ export default function Home() {
                           >
                         <ListItemText 
                           primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                          primaryTypographyProps={{ textAlign: 'center', width: '200px' }}
+                          primaryTypographyProps={{ textAlign: 'center' }}
                           />
-                        <Chip size='small' 
-                          label={timeRange.published ? 'Publicat' : 'Nepublicat'}
-                          variant='outlined' 
-                          color={timeRange.published ? 'success' : 'warning'}/>
                       </ListItem>
                     ))
                   }

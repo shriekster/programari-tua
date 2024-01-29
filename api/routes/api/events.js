@@ -8,7 +8,7 @@ import {
   getDates, getTimeRanges, getAppointments, getPersonnelCategories, getLocations, getProfile,
 
   //user
-  getUserDates, 
+  getUserDates, getUserTimeRanges,
 } from '../../lib/db.js';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
@@ -171,14 +171,14 @@ router.get('/', function(req, res) {
 
       // user data
       const dates = getUserDates();
-      //const timeRanges = getTimeRanges();
+      const timeRanges = getUserTimeRanges();
       //const appointments = getAppointments();
       //const personnelCategories = getPersonnelCategories();
 
       data.registry = {
 
         dates,
-        //timeRanges,
+        timeRanges,
         //appointments,
         //personnelCategories,
 

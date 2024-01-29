@@ -30,6 +30,7 @@ let getPersonnelCategories = null;
 
 // user
 let getUserDates = null;
+let getUserTimeRanges = null;
 
 try {
 
@@ -218,6 +219,23 @@ try {
         FROM dates
         LEFT JOIN locations ON dates.location_id = locations.id
         WHERE publishedTimeRanges > 0`);
+
+    statements['get_user_timeranges'] = db.prepare(`
+        SELECT 
+            time_ranges.id, 
+            dates.id AS dateId, 
+            time_ranges.capacity, 
+            time_ranges.start_time AS startTime,
+            time_ranges.end_time AS endTime,
+            (
+                SELECT
+                    COUNT(DISTINCT participants.id) from participants
+                LEFT JOIN appointments ON appointments.id = participants.appointment_id
+                WHERE appointments.time_range_id = time_ranges.id
+            ) AS occupied
+        FROM time_ranges
+        LEFT JOIN dates ON dates.id = time_ranges.date_id
+        WHERE time_ranges.published = 1`);
 
 } catch (err) {
     
@@ -981,6 +999,24 @@ if (!stmtError) {
 
     };
 
+    getUserTimeRanges = () => {
+
+        let error = null, timeRanges = null;
+
+        try {
+
+            timeRanges = statements['get_user_timeranges'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return timeRanges ?? null;
+
+    };
+
 }
 
 export {
@@ -1007,5 +1043,6 @@ export {
 
     // user
     getUserDates,
+    getUserTimeRanges,
 
 };
