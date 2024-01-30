@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
 import Divider from '@mui/material/Divider';
+import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Fade from '@mui/material/Fade';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -167,12 +168,6 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         error: false,
       });
   
-    };
-
-    const showConfirmationDialog = () => {
-
-      setShowConfirmation(true);
-
     };
 
     const closeConfirmationDialog = (event, reason) => {
@@ -437,49 +432,48 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     onChange={handleFirstName1Change}/>
                     {
                       extraParticipant ? (
-                        <>
-                        <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
-                        <TextField sx={{
-                            width: '100%',
-                            maxWidth: '300px',
-                          }}
-                          label='Nume'
-                          color='primary'
-                          inputProps={{
-                            maxLength: 64
-                          }}
-                          name='lastName2'
-                          autoComplete='family-name'
-                          value={lastName2.value}
-                          helperText={lastName2.helperText}
-                          error={lastName2.error}
-                          disabled={saving}
-                          onChange={handleLastName2Change}/>
-                        <TextField sx={{
-                            width: '100%',
-                            maxWidth: '300px',
-                          }}
-                          label='Prenume'
-                          color='primary'
-                          inputProps={{
-                            maxLength: 64
-                          }}
-                          name='firstName2'
-                          autoComplete='given-name'
-                          value={firstName2.value}
-                          helperText={firstName2.helperText}
-                          error={firstName2.error}
-                          disabled={saving}
-                          onChange={handleFirstName2Change}/>
-                        <Button
-                          sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
-                          variant='outlined'
-                          color='error'
-                          startIcon={<PersonRemoveIcon />}
-                          onClick={handleRemoveExtraParticipant}>
-                          Renunță la a doua persoană
-                        </Button>
-                        </>
+                        <Paper elevation={24}>
+                          <TextField sx={{
+                              width: '100%',
+                              maxWidth: '300px',
+                            }}
+                            label='Nume'
+                            color='primary'
+                            inputProps={{
+                              maxLength: 64
+                            }}
+                            name='lastName2'
+                            autoComplete='family-name'
+                            value={lastName2.value}
+                            helperText={lastName2.helperText}
+                            error={lastName2.error}
+                            disabled={saving}
+                            onChange={handleLastName2Change}/>
+                          <TextField sx={{
+                              width: '100%',
+                              maxWidth: '300px',
+                            }}
+                            label='Prenume'
+                            color='primary'
+                            inputProps={{
+                              maxLength: 64
+                            }}
+                            name='firstName2'
+                            autoComplete='given-name'
+                            value={firstName2.value}
+                            helperText={firstName2.helperText}
+                            error={firstName2.error}
+                            disabled={saving}
+                            onChange={handleFirstName2Change}/>
+                          <Button
+                            sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
+                            variant='outlined'
+                            color='error'
+                            startIcon={<PersonRemoveIcon />}
+                            onClick={handleRemoveExtraParticipant}>
+                            Renunță la a doua persoană
+                          </Button>
+                        </Paper>
                       ) : (
                         <Button
                           sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
