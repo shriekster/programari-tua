@@ -39,8 +39,6 @@ const {
   setRegistryDownloaded,
   setDates,
   setTimeRanges,
-  setAppointments,
-  setPersonnelCategories,
   setError,
   setErrorMessage,
 } = useGlobalStore.getState();
@@ -350,6 +348,7 @@ export default function Home() {
           views={['day']}
           showDaysOutsideCurrentMonth
           displayWeekNumber
+          disablePast
           disabled={loading}
           loading={loading}
           renderLoading={() => <DayCalendarSkeleton />}
