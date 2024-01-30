@@ -325,18 +325,21 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', maxWidth: '300px', width: '100%' }}>
                       <PlaceIcon color='error' fontSize='large' />
                       <Typography>
-                        Locație: {dateObj?.locationDisplayName}
+                        {dateObj?.locationDisplayName}
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', maxWidth: '300px', width: '100%' }}>
-                      <IconButton onClick={handleCopyLocation}>
-                        <ContentCopyIcon />
-                      </IconButton>
-                      <Typography>
-                        Copiază locația
-                      </Typography>
+                      <Button size='small'
+                        startIcon={<ContentCopyIcon />}
+                        sx={{ textTransform: 'none' }}
+                        disabled={copied}
+                        onClick={handleCopyLocation}
+                        color='inherit'
+                        >
+                        Copiază adresa
+                      </Button>
                       <Fade in={copied}>
-                        <CheckIcon color='success' />
+                        <CheckIcon color='success' fontSize='small' />
                       </Fade>
                     </Box>
                     <Button
