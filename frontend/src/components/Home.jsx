@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
@@ -53,11 +54,27 @@ const {
 function ServerDay(props) {
 
   // eslint-disable-next-line react/prop-types
-  const { dates = new Map(), day, outsideCurrentMonth, ...other } = props;
+  const { dates = new Map(), timeRanges = [], day, outsideCurrentMonth, ...other } = props;
   // eslint-disable-next-line react/prop-types
   const formattedDay = day?.$d?.toLocaleDateString('ro-RO') ?? '';
+  const dateObj = dates.get(formattedDay);
   // eslint-disable-next-line react/prop-types
   const isSelected = dates.has(formattedDay);
+
+  const selectedTimeRanges = timeRanges.filter((timeRange) => timeRange.dateId == dateObj?.id);
+  
+  let isFull = true;
+
+  for (let i = 0, t = selectedTimeRanges.length; i < t; ++i) {
+
+    if (selectedTimeRanges[i].occupied < selectedTimeRanges[i].capacity) {
+
+      isFull = false;
+      break;
+
+    }
+
+  }
 
   if (isSelected) {
 
@@ -66,7 +83,7 @@ function ServerDay(props) {
         key={formattedDay}
         overlap='circular'
         variant='dot'
-        color='secondary'
+        color={isFull ? 'error' : 'success'}
       >
         <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
       </Badge>
@@ -350,6 +367,7 @@ export default function Home() {
           slotProps={{
             day: {
               dates,
+              timeRanges
             },
           }}
           />
@@ -371,26 +389,42 @@ export default function Home() {
                     margin: '0 auto',
                   }}>
                   {
-                    selectedTimeRanges.map((timeRange) => (
-                      <ListItem key={timeRange.id}
-                        sx={{ 
-                            cursor: 'pointer', 
-                            userSelect: 'none',
-                            border: '1px solid rgba(128, 128, 128, .25)',
-                            borderRadius: '4px', 
-                            marginBottom: '4px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }}
-                          onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
+                    selectedTimeRanges.map((timeRange) => {
+
+                      const freeSeats = timeRange.capacity - timeRange.occupied;
+
+                      const color = freeSeats > 0 ? 'success' : 'error';
+                      const secondaryText = freeSeats > 0 ? ( 1 === freeSeats ? '1 loc liber' : `${freeSeats} locuri libere` ) : 'niciun loc liber';
+                      const disabled = 0 === freeSeats;
+
+                      return (
+                        <Button key={timeRange.id}
+                          sx={{ 
+                              userSelect: 'none',
+                              borderRadius: '4px', 
+                              marginBottom: '4px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              width: '100%',
+                              textTransform: 'none'
+                            }}
+                            color={color}
+                            variant='contained'
+                            disabled={disabled}
+                            onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
                           >
-                        <ListItemText 
-                          primary={timeRange.startTime + ' - ' + timeRange.endTime}
-                          primaryTypographyProps={{ textAlign: 'center' }}
-                          />
-                      </ListItem>
-                    ))
+                            <Typography fontWeight={700} fontSize={18}>
+                              {`${timeRange.startTime} - ${timeRange.endTime}`}
+                            </Typography>
+                            <Typography>
+                              {secondaryText}
+                            </Typography>
+                        </Button>
+                      );
+
+                    })
                   }
                   </List>
                 ) : (
