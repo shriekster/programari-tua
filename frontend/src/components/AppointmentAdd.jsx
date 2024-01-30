@@ -364,7 +364,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   </Box>
                 </Box>
               </DialogTitle>
-              <DialogContent sx={{ position: 'relative', border: '1px solid rgba(128, 128, 128, .4)', borderRadius: '4px', margin: '2px' }}>
+              <DialogContent sx={{ position: 'relative', }}>
                 <Box sx={{ width: '100%', padding: '8px 0'}}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px'  }}>
                   <TextField sx={{
@@ -432,7 +432,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     onChange={handleFirstName1Change}/>
                     {
                       extraParticipant ? (
-                        <Paper elevation={24}>
+                        <Paper elevation={24}
+                          sx={{ borderRadius: '4px', padding: '4px'}}>
                           <TextField sx={{
                               width: '100%',
                               maxWidth: '300px',
