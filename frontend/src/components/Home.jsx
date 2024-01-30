@@ -391,8 +391,8 @@ export default function Home() {
                   {
                     selectedTimeRanges.map((timeRange) => {
 
+                      const primaryText = `${timeRange.startTime} - ${timeRange.endTime}`;
                       const freeSeats = timeRange.capacity - timeRange.occupied;
-
                       const color = freeSeats > 0 ? 'success' : 'error';
                       const secondaryText = freeSeats > 0 ? ( 1 === freeSeats ? '1 loc liber' : `${freeSeats} locuri libere` ) : 'niciun loc liber';
                       const disabled = 0 === freeSeats;
@@ -402,7 +402,7 @@ export default function Home() {
                           sx={{ 
                               userSelect: 'none',
                               borderRadius: '4px', 
-                              marginBottom: '4px',
+                              marginBottom: '8px',
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
@@ -416,7 +416,7 @@ export default function Home() {
                             onClick={() => { if (!loading) { setSelectedTimeRangeId(timeRange.id); handleToggleAddAppointment(); } }}
                           >
                             <Typography fontWeight={700} fontSize={18}>
-                              {`${timeRange.startTime} - ${timeRange.endTime}`}
+                              {primaryText}
                             </Typography>
                             <Typography>
                               {secondaryText}
