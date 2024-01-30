@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import Fade from '@mui/material/Fade';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -25,6 +26,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 import CheckIcon from '@mui/icons-material/Check';
+import TaskIcon from '@mui/icons-material/Task';
 import PlaceIcon from '@mui/icons-material/Place';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -329,18 +331,20 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', maxWidth: '300px', width: '100%' }}>
-                      <Button size='small'
-                        startIcon={<ContentCopyIcon />}
-                        sx={{ textTransform: 'none' }}
-                        disabled={copied}
-                        onClick={handleCopyLocation}
-                        color='inherit'
-                        >
-                        Copiază adresa
-                      </Button>
-                      <Fade in={copied}>
-                        <CheckIcon color='success' fontSize='small' />
-                      </Fade>
+                      <Tooltip
+                        open={copied}
+                        title='Copiat!'
+                        placement='right'
+                        arrow>
+                        <Button size='small'
+                          startIcon={<ContentCopyIcon />}
+                          sx={{ textTransform: 'none' }}
+                          onClick={handleCopyLocation}
+                          color='inherit'
+                          >
+                          Copiază adresa
+                        </Button>
+                      </Tooltip>
                     </Box>
                     <Button
                       href={`https://www.waze.com/ul?ll=${dateObj?.latitude},${dateObj.longitude}&navigate=yes&zoom=18`}
