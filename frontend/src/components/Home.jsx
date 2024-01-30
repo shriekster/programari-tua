@@ -465,6 +465,7 @@ export default function Home() {
           <AppointmentAdd open={openAddAppointment}
             handleClose={handleToggleAddAppointment}
             date={selectedDate}
+            dateObj={selectedDateObj}
             timeRangeId={selectedTimeRangeId}/>
       </Box>
     </ThemeProvider>
