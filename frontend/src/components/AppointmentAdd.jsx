@@ -19,7 +19,6 @@ import ReportIcon from '@mui/icons-material/Report';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 
 import { useGlobalStore } from '../useGlobalStore';
-import refreshAccessToken from '../refreshAccessToken.js';
 
 // get the functions from the global store as non-reactive, fresh state,
 // because this proves the linter that the functions are not changing between renders
@@ -105,13 +104,6 @@ export default function AppointmentAdd({ open, handleClose, date, timeRangeId })
 
           }
 
-          case 401: {
-
-              await refreshAccessToken(() => { handleTogglePublished(event) });
-              break;
-
-          }
-
           default: {
 
               setSaving(false);
@@ -186,13 +178,6 @@ export default function AppointmentAdd({ open, handleClose, date, timeRangeId })
 
               handleClose(false);
 
-              break;
-
-          }
-
-          case 401: {
-
-              await refreshAccessToken(requestDeletion);
               break;
 
           }

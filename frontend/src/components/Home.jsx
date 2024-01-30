@@ -3,13 +3,9 @@
 import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemButton from '@mui/material/ListItemButton';
 import Button from '@mui/material/Button';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
@@ -17,7 +13,6 @@ import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import CircleIcon from '@mui/icons-material/Circle';
 import Divider from '@mui/material/Divider';
 import Badge from '@mui/material/Badge';
-import Chip from '@mui/material/Chip';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
@@ -25,7 +20,6 @@ import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { useGlobalStore } from '../useGlobalStore.js';
 
-import TimeRangeEdit from './TimeRangeEdit.jsx';
 import AppointmentAdd from './AppointmentAdd.jsx';
 
 
