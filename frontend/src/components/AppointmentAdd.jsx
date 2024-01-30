@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 
 import { useState, useEffect, useRef } from 'react';
 
@@ -12,6 +13,7 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Fade from '@mui/material/Fade';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -30,6 +32,9 @@ import TaskIcon from '@mui/icons-material/Task';
 import PlaceIcon from '@mui/icons-material/Place';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
+import WarningIcon from '@mui/icons-material/Warning';
 
 import { useGlobalStore } from '../useGlobalStore';
 
@@ -50,6 +55,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
     
     const [saving, setSaving] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [extraParticipant, setExtraParticipant] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState({
       value: '',
       helperText: ' ',
@@ -80,18 +86,6 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     const timeoutRef = useRef(null);
 
-    const handleCopyLocation = () => {
-
-      navigator.clipboard.writeText(dateObj?.locationDisplayName?.toString())
-      .then(() => {
-        setCopied(true);
-      })
-      .catch((reason) => {
-        setCopied(false);
-      });
-
-    };
-
     const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
     
     // eslint-disable-next-line react/prop-types
@@ -111,6 +105,70 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
   
     };
 
+    const handleLastName1Change = (event) => {
+
+      setLastName1({
+        value: event.target.value,
+        helperText: ' ',
+        error: false,
+      });
+  
+    };
+
+    const handleFirstName1Change = (event) => {
+
+      setFirstName1({
+        value: event.target.value,
+        helperText: ' ',
+        error: false,
+      });
+  
+    };
+
+    const handleAddExtraParticipant = () => {
+
+      setExtraParticipant(true);
+
+    };
+
+    const handleRemoveExtraParticipant = () => {
+
+      setExtraParticipant(false);
+
+      setLastName2({
+        value: '',
+        helperText: ' ',
+        error: false
+      });
+
+      setFirstName2({
+        value: '',
+        helperText: ' ',
+        error: false
+      });
+
+    };
+
+    const handleLastName2Change = (event) => {
+
+      setLastName2({
+        value: event.target.value,
+        helperText: ' ',
+        error: false,
+      });
+  
+    };
+
+    const handleFirstName2Change = (event) => {
+
+      setFirstName2({
+        value: event.target.value,
+        helperText: ' ',
+        error: false,
+      });
+  
+    };
+
     const showConfirmationDialog = () => {
 
       setShowConfirmation(true);
@@ -126,6 +184,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       }
 
       setShowConfirmation(false);
+
+    };
+
+    const handleSubmit = () => {
+
+      setShowConfirmation(true);
 
     };
 
@@ -200,6 +264,18 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
+    const handleCopyLocation = () => {
+
+      navigator.clipboard.writeText(dateObj?.locationDisplayName?.toString())
+      .then(() => {
+        setCopied(true);
+      })
+      .catch((reason) => {
+        setCopied(false);
+      });
+
+    };
+
     const onClose = (event, reason) => {
 
       if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
@@ -221,6 +297,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           helperText: ' ',
           error: false
         });
+
+        setExtraParticipant(false);
 
         setLastName1({
           value: '',
@@ -291,7 +369,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   </Box>
                 </Box>
               </DialogTitle>
-              <DialogContent sx={{ position: 'relative', border: '1px solid rgba(128, 128, 128, .25)', borderRadius: '4px', margin: '2px' }}>
+              <DialogContent sx={{ position: 'relative', border: '1px solid rgba(128, 128, 128, .4)', borderRadius: '4px', margin: '2px' }}>
                 <Box sx={{ width: '100%', padding: '8px 0'}}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px'  }}>
                   <TextField sx={{
@@ -324,6 +402,96 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     error={phoneNumber.error}
                     disabled={saving}
                     onChange={handlePhoneNumberChange}/>
+                  <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
+                  <TextField sx={{
+                      width: '100%',
+                      maxWidth: '300px',
+                    }}
+                    label='Nume'
+                    color='primary'
+                    inputProps={{
+                      maxLength: 64
+                    }}
+                    name='lastName1'
+                    autoComplete='family-name'
+                    value={lastName1.value}
+                    helperText={lastName1.helperText}
+                    error={lastName1.error}
+                    disabled={saving}
+                    onChange={handleLastName1Change}/>
+                  <TextField sx={{
+                      width: '100%',
+                      maxWidth: '300px',
+                    }}
+                    label='Prenume'
+                    color='primary'
+                    inputProps={{
+                      maxLength: 64
+                    }}
+                    name='firstName1'
+                    autoComplete='given-name'
+                    value={firstName1.value}
+                    helperText={firstName1.helperText}
+                    error={firstName1.error}
+                    disabled={saving}
+                    onChange={handleFirstName1Change}/>
+                    {
+                      extraParticipant ? (
+                        <>
+                        <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
+                        <TextField sx={{
+                            width: '100%',
+                            maxWidth: '300px',
+                          }}
+                          label='Nume'
+                          color='primary'
+                          inputProps={{
+                            maxLength: 64
+                          }}
+                          name='lastName2'
+                          autoComplete='family-name'
+                          value={lastName2.value}
+                          helperText={lastName2.helperText}
+                          error={lastName2.error}
+                          disabled={saving}
+                          onChange={handleLastName2Change}/>
+                        <TextField sx={{
+                            width: '100%',
+                            maxWidth: '300px',
+                          }}
+                          label='Prenume'
+                          color='primary'
+                          inputProps={{
+                            maxLength: 64
+                          }}
+                          name='firstName2'
+                          autoComplete='given-name'
+                          value={firstName2.value}
+                          helperText={firstName2.helperText}
+                          error={firstName2.error}
+                          disabled={saving}
+                          onChange={handleFirstName2Change}/>
+                        <Button
+                          sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
+                          variant='outlined'
+                          color='error'
+                          startIcon={<PersonRemoveIcon />}
+                          onClick={handleRemoveExtraParticipant}>
+                          Renunță la a doua persoană
+                        </Button>
+                        </>
+                      ) : (
+                        <Button
+                          sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
+                          variant='outlined'
+                          color='secondary'
+                          startIcon={<PersonAddIcon />}
+                          onClick={handleAddExtraParticipant}>
+                          Adaugă o persoană
+                        </Button>
+                      )
+
+                    }
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', maxWidth: '300px', width: '100%' }}>
                       <PlaceIcon color='error' fontSize='large' />
                       <Typography>
@@ -380,40 +548,45 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       alignItems: 'center',
                       justifyContent: 'center'
                   }}>
-                  <Button onClick={() => { handleClose(false) }}
+                  <Button
                     sx={{ width: '100%', maxWidth: '300px' }}
                     color='primary'
                     variant='contained'
-                    disabled={saving}>
+                    disabled={saving}
+                    onClick={handleSubmit}>
                     Solicită programare
                   </Button>
               </DialogActions>
               <Dialog open={showConfirmation}
                 onClose={closeConfirmationDialog}>
-                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', cursor: 'default', userSelect: 'none' }}>
-                  <ReportIcon fontSize='large' color='error' sx={{ marginRight: '4px' }}/>
-                  Atenție!
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>
+                  <WarningIcon fontSize='large' color='warning' sx={{ marginRight: '4px' }}/>
                 </DialogTitle>
                 <DialogContent>
-                  Ești sigur că vrei să ștergi intervalul orar? Vei șterge și programările din acest interval orar!
+                  <Typography>
+                    Este corect numărul de telefon pe care l-ai introdus,
+                    <span style={{ fontWeight: 700, marginLeft: '4px' }}>{phoneNumber.value}</span>
+                    ?
+                  </Typography>
                 </DialogContent>
                 <DialogActions sx={{
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-evenly'
                   }}>
-                  <Button onClick={requestAppointment}
-                      color='error'
-                      variant='contained'
-                      disabled={saving}>
-                      DA
-                  </Button>
                   <Button onClick={closeConfirmationDialog}
-                      color='primary'
+                      color='error'
                       variant='contained'
                       disabled={saving}>
                       NU
                   </Button>
+                  <Button onClick={requestAppointment}
+                      color='primary'
+                      variant='contained'
+                      disabled={saving}>
+                      DA
+                  </Button>
+
               </DialogActions>
               </Dialog>
           </Dialog>
