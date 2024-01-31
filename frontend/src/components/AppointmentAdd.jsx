@@ -75,6 +75,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       helperText: ' ',
       error: false
     });
+    const [personnelCategory1, setPersonnelCategory1] = useState({
+      value: '',
+      helperText: ' ',
+      error: false
+    });
+    const [personnelCategory1Index, setPersonnelCategory1Index] = useState(-1);
     const [lastName2, setLastName2] = useState({
       value: '',
       helperText: ' ',
@@ -90,6 +96,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       helperText: ' ',
       error: false
     });
+    const [personnelCategory2, setPersonnelCategory2] = useState({
+      value: '',
+      helperText: ' ',
+      error: false
+    });
+    const [personnelCategory2Index, setPersonnelCategory2Index] = useState(-1);
 
     const [copied, setCopied] = useState(false);
     const [isSecureContext, setSecureContext] = useState(false);
@@ -147,6 +159,24 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
+    const handlePersonnelCategory1Change = (event) => {
+
+      setPersonnelCategory1({
+        value: event.target.value,
+        helperText: ' ',
+        error: false
+      });
+
+      const newIndex = personnelCategories?.findIndex((category) => category?.name === event.target.value);
+
+      if (0 <= newIndex && newIndex < personnelCategories?.length) {
+
+        setPersonnelCategory1Index(newIndex);
+
+      }
+
+    };
+
     const handleAddExtraParticipant = () => {
 
       setExtraParticipant(true);
@@ -174,6 +204,14 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         helperText: ' ',
         error: false
       });
+
+      setPersonnelCategory2({
+        value: '',
+        helperText: ' ',
+        error: false
+      });
+
+      setPersonnelCategory2Index(-1);
 
     };
 
@@ -204,6 +242,24 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         helperText: ' ',
         error: false
       });
+
+    };
+
+    const handlePersonnelCategory2Change = (event) => {
+
+      setPersonnelCategory2({
+        value: event.target.value,
+        helperText: ' ',
+        error: false
+      });
+
+      const newIndex = personnelCategories?.findIndex((category) => category?.name === event.target.value);
+
+      if (0 <= newIndex && newIndex < personnelCategories?.length) {
+
+        setPersonnelCategory2Index(newIndex);
+
+      }
 
     };
 
@@ -269,6 +325,16 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
       }
 
+      if (!personnelCategory1.value) {
+
+        setPersonnelCategory1({
+          value: '',
+          helperText: 'Selectează categoria!',
+          error: true
+        });
+
+      }
+
       if (extraParticipant) {
 
         if (!lastName2.value) {
@@ -305,6 +371,15 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
   
         }
   
+        if (!personnelCategory2.value) {
+
+          setPersonnelCategory2({
+            value: '',
+            helperText: 'Selectează categoria!',
+            error: true
+          });
+  
+        }
 
       }
 
@@ -448,6 +523,14 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           error: false
         });
 
+        setPersonnelCategory1({
+          value: '',
+          helperText: ' ',
+          error: false
+        });
+
+        setPersonnelCategory1Index(-1);
+
         setLastName2({
           value: '',
           helperText: ' ',
@@ -465,6 +548,14 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           helperText: ' ',
           error: false
         });
+
+        setPersonnelCategory2({
+          value: '',
+          helperText: ' ',
+          error: false
+        });
+
+        setPersonnelCategory2Index(-1);
 
         setSecureContext(window.isSecureContext);
 
@@ -495,7 +586,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       }
 
     }, [copied]);
-
+    
     if (open) {
 
       return (
@@ -601,24 +692,24 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       </RadioGroup>
                       <FormHelperText>{maturity1.helperText}</FormHelperText>
                     </FormControl>
-                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="demo-simple-select-helper-label">Categoria de personal pentru care candidează</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-helper-label"
-                      id="demo-simple-select-helper"
-                      //value={age}
-                      label="Age"
-                      //onChange={handleChange}
-                    >
-                      <MenuItem value="">
-                        <em>None</em>
-                      </MenuItem>
-                      <MenuItem value={10}>Ten</MenuItem>
-                      <MenuItem value={20}>Twenty</MenuItem>
-                      <MenuItem value={30}>Thirty</MenuItem>
-                    </Select>
-                    <FormHelperText>With label + helper text</FormHelperText>
-                  </FormControl>
+                    <FormControl error={personnelCategory1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                      <Typography>Categoria de personal pentru care candidează</Typography>
+                      <Select
+                        id='select-personnel-category-1'
+                        value={personnelCategory1.value}
+                        onChange={handlePersonnelCategory1Change}
+                      >
+                        {
+                          personnelCategories?.map((category) => (
+                            <MenuItem key={`${category?.id}_1`} 
+                              value={category?.name}>
+                              {category?.name}
+                            </MenuItem>
+                          ))
+                        }
+                      </Select>
+                      <FormHelperText>{personnelCategory1.helperText}</FormHelperText>
+                    </FormControl>
                     {
                       !extraParticipant && (
                         <Button
@@ -683,6 +774,24 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                               <FormControlLabel value='adult' control={<Radio />} label='Adult' />
                             </RadioGroup>
                             <FormHelperText>{maturity2.helperText}</FormHelperText>
+                          </FormControl>
+                          <FormControl error={personnelCategory1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                            <Typography>Categoria de personal pentru care candidează</Typography>
+                            <Select
+                              id='select-personnel-category-2'
+                              value={personnelCategory2.value}
+                              onChange={handlePersonnelCategory2Change}
+                            >
+                              {
+                                personnelCategories?.map((category) => (
+                                  <MenuItem key={`${category?.id}_2`} 
+                                    value={category?.name}>
+                                    {category?.name}
+                                  </MenuItem>
+                                ))
+                              }
+                            </Select>
+                            <FormHelperText>{personnelCategory2.helperText}</FormHelperText>
                           </FormControl>
                           <Button
                             sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
