@@ -113,6 +113,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
 
+    const firstErrorRef = useRef(null);
     const timeoutRef = useRef(null);
 
     const handlePhoneNumberChange = (event) => {
@@ -387,6 +388,30 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
         setShowConfirmation(true);
 
+      } else {
+
+        const timeoutId = setTimeout(() => {
+
+          clearTimeout(timeoutId);
+          scrollToFirstError();
+
+        }, 16);
+        
+
+      }
+
+    };
+
+    const scrollToFirstError = () => {
+
+      if (firstErrorRef.current) {
+
+        firstErrorRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+
       }
 
     };
@@ -493,6 +518,15 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
+    // set the first error ref to null when any of the tracked fields changes its value
+    useEffect(() => {
+     
+      firstErrorRef.current = null;
+
+    }, [phoneNumber.value, lastName1.value, firstName1.value, maturity1.value, personnelCategory1.value,
+        lastName2.value, firstName2.value, maturity2.value, personnelCategory1.value]);
+
+    // re-initialize some state values
     useEffect(() => {
 
       if (open) {
@@ -561,8 +595,21 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
       }
 
+      // set the first error ref to null
+      return () => {
+
+        if (open) {
+
+          firstErrorRef.current = null;
+
+        }
+
+      };
+
     }, [open]);
 
+    // after the location text is copied to clipboard (i.e. copied becomes true),
+    // set it to false (after at least 2 seconds)
     useEffect(() => {
 
       if (copied) {
@@ -640,7 +687,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       helperText={phoneNumber.helperText}
                       error={phoneNumber.error}
                       disabled={saving}
-                      onChange={handlePhoneNumberChange}/>
+                      onChange={handlePhoneNumberChange}
+                      ref={(node) => {
+                        if (node && !firstErrorRef.current && phoneNumber.error) {
+                          firstErrorRef.current = node;
+                        }
+                      }}/>
                   </Paper>
                   <Paper elevation={24}
                     sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
@@ -661,7 +713,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       helperText={lastName1.helperText}
                       error={lastName1.error}
                       disabled={saving}
-                      onChange={handleLastName1Change}/>
+                      onChange={handleLastName1Change}
+                      ref={(node) => {
+                        if (node && !firstErrorRef.current && lastName1.error) {
+                          firstErrorRef.current = node;
+                        }
+                      }}/>
                     <TextField sx={{
                         width: '100%',
                         maxWidth: '300px',
@@ -678,7 +735,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       helperText={firstName1.helperText}
                       error={firstName1.error}
                       disabled={saving}
-                      onChange={handleFirstName1Change}/>
+                      onChange={handleFirstName1Change}
+                      ref={(node) => {
+                        if (node && !firstErrorRef.current && firstName1.error) {
+                          firstErrorRef.current = node;
+                        }
+                      }}/>
                     <FormControl error={maturity1.error} sx={{ width: '100%', maxWidth: '300px' }}>
                       <FormLabel id='maturity1'>Vârstă</FormLabel>
                       <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
@@ -686,6 +748,11 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                         name='maturity-1'
                         value={maturity1.value}
                         onChange={handleMaturity1Change}
+                        ref={(node) => {
+                          if (node && !firstErrorRef.current && maturity1.error) {
+                            firstErrorRef.current = node;
+                          }
+                        }}
                       >
                         <FormControlLabel value='minor' control={<Radio />} label='Minor' />
                         <FormControlLabel value='adult' control={<Radio />} label='Adult' />
@@ -698,6 +765,11 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                         id='select-personnel-category-1'
                         value={personnelCategory1.value}
                         onChange={handlePersonnelCategory1Change}
+                        ref={(node) => {
+                          if (node && !firstErrorRef.current && personnelCategory1.error) {
+                            firstErrorRef.current = node;
+                          }
+                        }}
                       >
                         {
                           personnelCategories?.map((category) => (
@@ -744,7 +816,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             helperText={lastName2.helperText}
                             error={lastName2.error}
                             disabled={saving}
-                            onChange={handleLastName2Change}/>
+                            onChange={handleLastName2Change}
+                            ref={(node) => {
+                              if (node && !firstErrorRef.current && lastName2.error) {
+                                firstErrorRef.current = node;
+                              }
+                            }}/>
                           <TextField sx={{
                               width: '100%',
                               maxWidth: '300px',
@@ -761,7 +838,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             helperText={firstName2.helperText}
                             error={firstName2.error}
                             disabled={saving}
-                            onChange={handleFirstName2Change}/>
+                            onChange={handleFirstName2Change}
+                            ref={(node) => {
+                              if (node && !firstErrorRef.current && firstName2.error) {
+                                firstErrorRef.current = node;
+                              }
+                            }}/>
                           <FormControl error={maturity2.error} sx={{ width: '100%', maxWidth: '300px' }}>
                             <FormLabel id='maturity2'>Vârstă</FormLabel>
                             <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
@@ -769,6 +851,11 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                               name='maturity-2'
                               value={maturity2.value}
                               onChange={handleMaturity2Change}
+                              ref={(node) => {
+                                if (node && !firstErrorRef.current && maturity2.error) {
+                                  firstErrorRef.current = node;
+                                }
+                              }}
                             >
                               <FormControlLabel value='minor' control={<Radio />} label='Minor' />
                               <FormControlLabel value='adult' control={<Radio />} label='Adult' />
@@ -781,6 +868,11 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                               id='select-personnel-category-2'
                               value={personnelCategory2.value}
                               onChange={handlePersonnelCategory2Change}
+                              ref={(node) => {
+                                if (node && !firstErrorRef.current && personnelCategory2.error) {
+                                  firstErrorRef.current = node;
+                                }
+                              }}
                             >
                               {
                                 personnelCategories?.map((category) => (
