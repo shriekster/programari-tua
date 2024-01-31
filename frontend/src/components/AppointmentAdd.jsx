@@ -1113,7 +1113,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px', marginBottom: '16px'  }}>
                     <InfoOutlinedIcon color='info'/>
                     <Typography>
-                      Accesul în cadrul proiectului se face pe baza unei adeverințe emise de către medicul de familie, care conține sintagma "Clinic sănătos pentru educație fizică și sport".
+                      Accesul în cadrul proiectului se face pe baza unei adeverințe emise de către medicul de familie, care conține sintagma &quot;Clinic sănătos pentru educație fizică și sport&quot;.
                     </Typography>
                   </Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px', marginBottom: '16px'  }}>
