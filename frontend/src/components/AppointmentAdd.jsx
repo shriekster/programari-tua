@@ -20,9 +20,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
 import BlockIcon from '@mui/icons-material/Block';
 import PersonIcon from '@mui/icons-material/Person';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
@@ -34,6 +34,9 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import WarningIcon from '@mui/icons-material/Warning';
+import ArticleIcon from '@mui/icons-material/Article';
+import InfoIcon from '@mui/icons-material/Info';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import { useGlobalStore } from '../useGlobalStore';
 
@@ -102,6 +105,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       error: false
     });
     const [personnelCategory2Index, setPersonnelCategory2Index] = useState(-1);
+    const [agreement, setAgreement] = useState({
+      value: false,
+      helperText: ' ',
+      error: false
+    });
+    const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
 
     const [copied, setCopied] = useState(false);
     const [isSecureContext, setSecureContext] = useState(false);
@@ -276,6 +285,34 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
+    const handleAgreementChange = (event) => {
+
+      setAgreement({
+        value: event.target.checked,
+        helperText: ' ',
+        error: false,
+      });
+
+    };
+
+    const handleOpenTermsAndConditions = () => {
+
+      setShowTermsAndConditions(true);
+
+    };
+
+    const handleCloseTermsAndConditions = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      setShowTermsAndConditions(false);
+
+    };
+
     const handleSubmit = () => {
 
       let canSubmit = true;
@@ -381,6 +418,18 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           });
   
         }
+
+      }
+
+      if (!agreement.value) {
+
+        setAgreement({
+          value: false,
+          helperText: 'Bifează dacă ești de acord!',
+          error: true,
+        });
+
+        canSubmit = false;
 
       }
 
@@ -524,7 +573,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       firstErrorRef.current = null;
 
     }, [phoneNumber.value, lastName1.value, firstName1.value, maturity1.value, personnelCategory1.value,
-        lastName2.value, firstName2.value, maturity2.value, personnelCategory1.value]);
+        lastName2.value, firstName2.value, maturity2.value, personnelCategory1.value, agreement.value]);
 
     // re-initialize some state values
     useEffect(() => {
@@ -592,6 +641,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         setPersonnelCategory2Index(-1);
 
         setSecureContext(window.isSecureContext);
+
+        setAgreement({
+          value: false,
+          helperText: ' ',
+          error: false
+        });
 
       }
 
@@ -899,38 +954,64 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     }
                   <Paper elevation={24}
                     sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
-                        <PlaceIcon color='error' fontSize='large' sx={{ alignSelf: 'flex-start' }} />
-                        <Typography>
-                          {dateObj?.locationDisplayName}
-                        </Typography>
-                      {
-                        isSecureContext && (
-                          <Tooltip
-                            open={copied}
-                            title='Copiat!'
-                            placement='right'
-                            arrow>
-                            <Button size='small'
-                              startIcon={<ContentCopyIcon />}
-                              sx={{ textTransform: 'none', alignSelf: 'flex-start' }}
-                              onClick={handleCopyLocation}
-                              color='inherit'
-                              >
-                              Copiază adresa
-                            </Button>
-                          </Tooltip>
-                        )
-                      }
-                      <Button
-                        href={`https://www.waze.com/ul?ll=${dateObj?.latitude},${dateObj.longitude}&navigate=yes&zoom=18`}
-                        target='_blank'
-                        variant='outlined'
-                        color='info'
-                        sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
-                        endIcon={<OpenInNewIcon />}>
-                        Deschide cu Waze
-                      </Button>
-                    </Paper>
+                    <PlaceIcon color='error' fontSize='large' sx={{ alignSelf: 'flex-start' }} />
+                    <Typography>
+                      {dateObj?.locationDisplayName}
+                    </Typography>
+                    {
+                      isSecureContext && (
+                        <Tooltip
+                          open={copied}
+                          title='Copiat!'
+                          placement='right'
+                          arrow>
+                          <Button size='small'
+                            startIcon={<ContentCopyIcon />}
+                            sx={{ textTransform: 'none', alignSelf: 'flex-start' }}
+                            onClick={handleCopyLocation}
+                            color='inherit'
+                            >
+                            Copiază adresa
+                          </Button>
+                        </Tooltip>
+                      )
+                    }
+                    <Button
+                      href={`https://www.waze.com/ul?ll=${dateObj?.latitude},${dateObj.longitude}&navigate=yes&zoom=18`}
+                      target='_blank'
+                      variant='outlined'
+                      color='primary'
+                      sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
+                      endIcon={<OpenInNewIcon />}>
+                      Deschide cu Waze
+                    </Button>
+                  </Paper>
+                  <Paper elevation={24}
+                    sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                    <InfoIcon color='info' fontSize='large' sx={{ alignSelf: 'flex-start' }} />
+                    <FormControl error={agreement.error} sx={{ width: '100%' }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox checked={agreement.value} onChange={handleAgreementChange} name='agreement' />
+                        }
+                        label='Sunt de acord cu termenii și condițiile de participare la simularea traseului utilitar-aplicativ'
+                        ref={(node) => {
+                          if (node && !firstErrorRef.current && agreement.error) {
+                            firstErrorRef.current = node;
+                          }
+                        }}
+                        />
+                      <FormHelperText>{agreement.helperText}</FormHelperText>
+                    </FormControl>
+                    <Button variant='outlined'
+                      startIcon={<ArticleIcon />}
+                      sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
+                      onClick={handleOpenTermsAndConditions}
+                      color='info'
+                      >
+                      Termeni și condiții
+                    </Button>
+                  </Paper>
                   </Box>
                 </Box>
                 {
@@ -978,6 +1059,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   </Button>
                 </Box>
               </DialogActions>
+
               <Dialog open={showConfirmation}
                 onClose={closeConfirmationDialog}>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>
@@ -1010,8 +1092,58 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       DA
                   </Button>
 
-              </DialogActions>
+                </DialogActions>
               </Dialog>
+
+              <Dialog open={showTermsAndConditions}
+                onClose={handleCloseTermsAndConditions}>
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', cursor: 'default', userSelect: 'none' }}>
+                  <ArticleIcon fontSize='large' color='info' sx={{ marginRight: '4px' }}/>
+                  <Typography>
+                    Termeni și condiții
+                  </Typography>
+                </DialogTitle>
+                <DialogContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px', marginBottom: '16px' }}>
+                    <InfoOutlinedIcon color='info'/>
+                    <Typography>
+                      Programarea pentru simularea traseului utilitar-aplicativ se face prin intermediul acestei pagini sau la numărul de telefon <a href={`tel:${contactInfo?.phoneNumber}`} style={{ color: 'inherit' }}>{contactInfo?.phoneNumber}</a>.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px', marginBottom: '16px'  }}>
+                    <InfoOutlinedIcon color='info'/>
+                    <Typography>
+                      Accesul în cadrul proiectului se face pe baza unei adeverințe emise de către medicul de familie, care conține sintagma "Clinic sănătos pentru educație fizică și sport".
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px', marginBottom: '16px'  }}>
+                    <InfoOutlinedIcon color='info'/>
+                    <Typography>
+                      Solicitarea unei programări prin intermediul acestei pagini implică acordul pentru stocarea numelui, prenumelui participanților și a numărului de telefon al persoanei care solicită programarea, scopul fiind constituirea unei liste cu participanții la simularea traseului utilitar-aplicativ. Aceste date nu sunt oferite niciunei terțe părți și sunt necesare pentru funcționarea aplicației. Participanții pot solicita oricând ștergerea acestor date, luând la cunoștință faptul că nu vor putea efectua programări pe această pagină fără oferirea datelor menționate anterior.
+                    </Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '4px' }}>
+                    <InfoOutlinedIcon color='info'/>
+                    <Typography>
+                      Asociația Spirit Tânăr își rezervă dreptul de a selecta participanții în cadrul proiectului.
+                    </Typography>
+                  </Box>
+                </DialogContent>
+                <DialogActions sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                  }}>
+                  <Button onClick={handleCloseTermsAndConditions}
+                      color='info'
+                      variant='contained'
+                      sx={{ width: '100%' }}
+                      disabled={saving}>
+                      OK
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
           </Dialog>
       );
 
