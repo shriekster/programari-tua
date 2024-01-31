@@ -31,6 +31,7 @@ let getPersonnelCategories = null;
 // user
 let getUserDates = null;
 let getUserTimeRanges = null;
+let getContactInfo = null;
 
 try {
 
@@ -1017,6 +1018,20 @@ if (!stmtError) {
 
     };
 
+    getContactInfo = () => {
+
+        const contactInfo = getProfile('admin');
+
+        if (contactInfo && contactInfo.url) {
+
+            delete contactInfo.url;
+
+        }
+
+        return contactInfo;
+
+    };
+
 }
 
 export {
@@ -1044,5 +1059,6 @@ export {
     // user
     getUserDates,
     getUserTimeRanges,
+    getContactInfo,
 
 };

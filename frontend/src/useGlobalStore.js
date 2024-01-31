@@ -42,6 +42,10 @@ export const useGlobalStore = create((set, get) => ({
   phoneNumber: '',
   setPhoneNumber: (newPhoneNumber) => set({ phoneNumber: newPhoneNumber }),
 
+  // contact info state
+  contactInfo: null,
+  setContactInfo: (newContactInfo) => set({ contactInfo: newContactInfo }),
+
   // calendar, location and appointments state
   registryDownloaded: false,
   setRegistryDownloaded: (newRegistryDownloadedState) => set({ registryDownloaded: newRegistryDownloadedState }),

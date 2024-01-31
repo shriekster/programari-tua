@@ -96,6 +96,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
     const personnelCategories = useGlobalStore((state) => state.personnelCategories);
+    const contactInfo = useGlobalStore((state) => state.contactInfo);
 
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';

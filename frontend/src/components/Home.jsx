@@ -30,16 +30,11 @@ import AppointmentAdd from './AppointmentAdd.jsx';
 const {
   setLoading,
   setSubscriptionId,
-  setLocationsDownloaded,
-  setLocations,
-  setProfileDownloaded,
-  setProfileUrl,
-  setFullName,
-  setPhoneNumber,
   setRegistryDownloaded,
   setDates,
   setTimeRanges,
   setPersonnelCategories,
+  setContactInfo,
   setError,
   setErrorMessage,
 } = useGlobalStore.getState();
@@ -240,17 +235,14 @@ export default function Home() {
                 
                 setDates(new Map(dataObj.registry.dates));
                 setTimeRanges(dataObj.registry.timeRanges);
-                //setAppointments(dataObj.registry.appointments);
                 setPersonnelCategories(dataObj.registry.personnelCategories);
                 setRegistryDownloaded(true);
   
               }
   
-              if (dataObj.profile) {
+              if (dataObj.contactInfo) {
   
-                setFullName(dataObj.profile.fullName);
-                setPhoneNumber(dataObj.profile.phoneNumber);
-                setProfileDownloaded(true);
+                setContactInfo(dataObj.contactInfo);
   
               }
   
