@@ -39,6 +39,7 @@ const {
   setRegistryDownloaded,
   setDates,
   setTimeRanges,
+  setPersonnelCategories,
   setError,
   setErrorMessage,
 } = useGlobalStore.getState();
@@ -240,15 +241,8 @@ export default function Home() {
                 setDates(new Map(dataObj.registry.dates));
                 setTimeRanges(dataObj.registry.timeRanges);
                 //setAppointments(dataObj.registry.appointments);
-                //setPersonnelCategories(dataObj.registry.personnelCategories);
+                setPersonnelCategories(dataObj.registry.personnelCategories);
                 setRegistryDownloaded(true);
-  
-              }
-  
-              if (dataObj.locations) {
-  
-                setLocations(dataObj.locations);
-                setLocationsDownloaded(true);
   
               }
   
@@ -256,7 +250,6 @@ export default function Home() {
   
                 setFullName(dataObj.profile.fullName);
                 setPhoneNumber(dataObj.profile.phoneNumber);
-                setProfileUrl(dataObj.profile.url);
                 setProfileDownloaded(true);
   
               }

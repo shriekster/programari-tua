@@ -20,6 +20,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import FormHelperText from '@mui/material/FormHelperText';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import BlockIcon from '@mui/icons-material/Block';
 import PersonIcon from '@mui/icons-material/Person';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
@@ -39,9 +42,9 @@ import { useGlobalStore } from '../useGlobalStore';
 // why? because it's annoying to specify functions as effect depedencies and I could not think of
 // a better solution, at least for now
 const {
-    setError,
-    setErrorMessage,
-    // TODO
+  setError,
+  setErrorMessage,
+  // TODO
 } = useGlobalStore.getState();
 
 const isRomanianMobilePhoneRegex = /^(\+?40|0)\s?7\d{2}(\/|\s|\.|-)?\d{3}(\s|\.|-)?\d{3}$/;
@@ -91,12 +94,13 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
     const [copied, setCopied] = useState(false);
     const [isSecureContext, setSecureContext] = useState(false);
 
-    const timeoutRef = useRef(null);
-
     const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
-    
+    const personnelCategories = useGlobalStore((state) => state.personnelCategories);
+
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
+
+    const timeoutRef = useRef(null);
 
     const handlePhoneNumberChange = (event) => {
 
@@ -596,6 +600,24 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       </RadioGroup>
                       <FormHelperText>{maturity1.helperText}</FormHelperText>
                     </FormControl>
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel id="demo-simple-select-helper-label">Categoria de personal pentru care candidează</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-helper-label"
+                      id="demo-simple-select-helper"
+                      //value={age}
+                      label="Age"
+                      //onChange={handleChange}
+                    >
+                      <MenuItem value="">
+                        <em>None</em>
+                      </MenuItem>
+                      <MenuItem value={10}>Ten</MenuItem>
+                      <MenuItem value={20}>Twenty</MenuItem>
+                      <MenuItem value={30}>Thirty</MenuItem>
+                    </Select>
+                    <FormHelperText>With label + helper text</FormHelperText>
+                  </FormControl>
                     {
                       !extraParticipant && (
                         <Button
