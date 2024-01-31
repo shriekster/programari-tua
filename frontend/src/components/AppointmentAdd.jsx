@@ -775,7 +775,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             </RadioGroup>
                             <FormHelperText>{maturity2.helperText}</FormHelperText>
                           </FormControl>
-                          <FormControl error={personnelCategory1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                          <FormControl error={personnelCategory2.error} sx={{ width: '100%', maxWidth: '300px' }}>
                             <Typography>Categoria de personal pentru care candidează</Typography>
                             <Select
                               id='select-personnel-category-2'
