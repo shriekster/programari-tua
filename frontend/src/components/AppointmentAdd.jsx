@@ -13,23 +13,18 @@ import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
 import CircularProgress from '@mui/material/CircularProgress';
 import Tooltip from '@mui/material/Tooltip';
-import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Fade from '@mui/material/Fade';
-import LinearProgress from '@mui/material/LinearProgress';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import Chip from '@mui/material/Chip';
-import RecentActorsIcon from '@mui/icons-material/RecentActors';
-import AutoDeleteIcon from '@mui/icons-material/AutoDelete';
-import ReportIcon from '@mui/icons-material/Report';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import BlockIcon from '@mui/icons-material/Block';
 import PersonIcon from '@mui/icons-material/Person';
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
 import CheckIcon from '@mui/icons-material/Check';
-import TaskIcon from '@mui/icons-material/Task';
 import PlaceIcon from '@mui/icons-material/Place';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
@@ -72,12 +67,22 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       helperText: ' ',
       error: false
     });
+    const [maturity1, setMaturity1] = useState({
+      value: '',
+      helperText: ' ',
+      error: false
+    });
     const [lastName2, setLastName2] = useState({
       value: '',
       helperText: ' ',
       error: false
     });
     const [firstName2, setFirstName2] = useState({
+      value: '',
+      helperText: ' ',
+      error: false
+    });
+    const [maturity2, setMaturity2] = useState({
       value: '',
       helperText: ' ',
       error: false
@@ -127,6 +132,16 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
   
     };
 
+    const handleMaturity1Change = (event) => {
+
+      setMaturity1({
+        value: event.target.value,
+        helperText: ' ',
+        error: false
+      });
+
+    };
+
     const handleAddExtraParticipant = () => {
 
       setExtraParticipant(true);
@@ -144,6 +159,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       });
 
       setFirstName2({
+        value: '',
+        helperText: ' ',
+        error: false
+      });
+
+      setMaturity2({
         value: '',
         helperText: ' ',
         error: false
@@ -169,6 +190,16 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         error: false,
       });
   
+    };
+
+    const handleMaturity2Change = (event) => {
+
+      setMaturity2({
+        value: event.target.value,
+        helperText: ' ',
+        error: false
+      });
+
     };
 
     const closeConfirmationDialog = (event, reason) => {
@@ -223,6 +254,16 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
       }
 
+      if (!maturity1.value) {
+
+        setMaturity1({
+          value: '',
+          helperText: 'Selectează vârsta!',
+          error: true
+        });
+
+      }
+
       if (extraParticipant) {
 
         if (!lastName2.value) {
@@ -249,6 +290,17 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
   
         }
 
+        if (!maturity2.value) {
+
+          setMaturity2({
+            value: '',
+            helperText: 'Selectează vârsta!',
+            error: true
+          });
+  
+        }
+  
+
       }
 
       if (canSubmit) {
@@ -268,20 +320,27 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
       try {
 
-          const requestOptions = {
-              method: 'POST',
-              headers: {
-              'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                test: 'test'
-                // TODO
-              }),
-              credentials: 'same-origin'
-          };
+        const participants = [];
 
-          const response = await fetch(`/api/appointments`, requestOptions);
-          status = response.status;
+        participants.push({
+          // TODO;
+        })
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              timeRangeId: timeRange?.id,
+              phoneNumber: phoneNumber.value,
+              // TODO
+            }),
+            credentials: 'same-origin'
+        };
+
+        const response = await fetch(`/api/appointments`, requestOptions);
+        status = response.status;
   
   
       } catch (err) {
@@ -378,6 +437,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           error: false
         });
 
+        setMaturity1({
+          value: '',
+          helperText: ' ',
+          error: false
+        });
+
         setLastName2({
           value: '',
           helperText: ' ',
@@ -385,6 +450,12 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         });
 
         setFirstName2({
+          value: '',
+          helperText: ' ',
+          error: false
+        });
+
+        setMaturity2({
           value: '',
           helperText: ' ',
           error: false
@@ -512,6 +583,19 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       error={firstName1.error}
                       disabled={saving}
                       onChange={handleFirstName1Change}/>
+                    <FormControl error={maturity1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                      <FormLabel id='maturity1'>Vârstă</FormLabel>
+                      <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
+                        aria-labelledby='maturity1'
+                        name='maturity-1'
+                        value={maturity1.value}
+                        onChange={handleMaturity1Change}
+                      >
+                        <FormControlLabel value='minor' control={<Radio />} label='Minor' />
+                        <FormControlLabel value='adult' control={<Radio />} label='Adult' />
+                      </RadioGroup>
+                      <FormHelperText>{maturity1.helperText}</FormHelperText>
+                    </FormControl>
                     {
                       !extraParticipant && (
                         <Button
@@ -564,6 +648,19 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             error={firstName2.error}
                             disabled={saving}
                             onChange={handleFirstName2Change}/>
+                          <FormControl error={maturity2.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                            <FormLabel id='maturity2'>Vârstă</FormLabel>
+                            <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
+                              aria-labelledby='maturity2'
+                              name='maturity-2'
+                              value={maturity2.value}
+                              onChange={handleMaturity2Change}
+                            >
+                              <FormControlLabel value='minor' control={<Radio />} label='Minor' />
+                              <FormControlLabel value='adult' control={<Radio />} label='Adult' />
+                            </RadioGroup>
+                            <FormHelperText>{maturity2.helperText}</FormHelperText>
+                          </FormControl>
                           <Button
                             sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
                             variant='outlined'
