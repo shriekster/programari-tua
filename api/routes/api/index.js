@@ -9,6 +9,8 @@ import adminDatesRoute from './admin/dates.js';
 import adminTimeRangesRoute from './admin/timeRanges.js';
 import adminAppointmentsRoute from './admin/appointments.js';
 
+import appointmentsRoute from './appointments.js';
+
 import { router as eventsRoute } from './events.js';
 
 
@@ -33,6 +35,7 @@ router.use('/admin/events', authorize, getSubcriptionId, eventsRoute);
 
 // user API
 router.use('/events', getSubcriptionId, eventsRoute);
+router.use('/appointments', appointmentsRoute);
 
 
 //module.exports = router;

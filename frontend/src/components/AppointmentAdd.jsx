@@ -118,6 +118,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
     const timeRange = useGlobalStore((state) => state.timeRanges).find((timeRange) => timeRange?.id == timeRangeId);
     const personnelCategories = useGlobalStore((state) => state.personnelCategories);
     const contactInfo = useGlobalStore((state) => state.contactInfo);
+    const subscriptionId = useGlobalStore((state) => state.subscriptionId);
 
     // eslint-disable-next-line react/prop-types
     const day = date?.$d?.toLocaleDateString('ro-RO') ?? '';
@@ -476,9 +477,27 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
         const participants = [];
 
-        participants.push({
-          // TODO;
-        })
+        const participant1 = {
+          lastName: lastName1.value,
+          firstName: firstName1.value,
+          age: maturity1.value,
+          personnelCategoryId: personnelCategories?.[personnelCategory1Index]?.id
+        };
+
+        participants.push(participant1);
+
+        if (extraParticipant) {
+
+          const participant2 = {
+            lastName: lastName2.value,
+            firstName: firstName2.value,
+            age: maturity2.value,
+            personnelCategoryId: personnelCategories?.[personnelCategory2Index]?.id
+          };
+  
+          participants.push(participant2);
+
+        }
 
         const requestOptions = {
             method: 'POST',
@@ -488,7 +507,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
             body: JSON.stringify({
               timeRangeId: timeRange?.id,
               phoneNumber: phoneNumber.value,
-              // TODO
+              participants,
+              subscriptionId,
             }),
             credentials: 'same-origin'
         };
@@ -519,6 +539,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
           }
 
+          // this case means that the selected time range is fully occupied
           case 403: {
 
             setSaving(false);
@@ -527,7 +548,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
             handleClose();
             break;
 
-        }
+          }
 
           default: {
 
