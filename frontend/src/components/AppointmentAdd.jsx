@@ -774,12 +774,14 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   <Button onClick={closeConfirmationDialog}
                       color='error'
                       variant='contained'
+                      sx={{ width: '50%' }}
                       disabled={saving}>
                       NU
                   </Button>
                   <Button onClick={requestAppointment}
                       color='primary'
                       variant='contained'
+                      sx={{ width: '50%' }}
                       disabled={saving}>
                       DA
                   </Button>
