@@ -184,7 +184,77 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     const handleSubmit = () => {
 
-      setShowConfirmation(true);
+      let canSubmit = true;
+
+      if (!phoneNumber.value) {
+
+        setPhoneNumber({
+          value: '',
+          helperText: 'Completează numărul de telefon!',
+          error: true,
+        });
+
+        canSubmit = false;
+
+      }
+
+      if (!lastName1.value) {
+
+        setLastName1({
+          value: '',
+          helperText: 'Completează numele!',
+          error: true,
+        });
+
+        canSubmit = false;
+
+      }
+
+      if (!firstName1.value) {
+
+        setFirstName1({
+          value: '',
+          helperText: 'Completează prenumele!',
+          error: true,
+        });
+
+        canSubmit = false;
+
+      }
+
+      if (extraParticipant) {
+
+        if (!lastName2.value) {
+
+          setLastName2({
+            value: '',
+            helperText: 'Completează numele!',
+            error: true,
+          });
+  
+          canSubmit = false;
+  
+        }
+
+        if (!firstName2.value) {
+
+          setFirstName2({
+            value: '',
+            helperText: 'Completează prenumele!',
+            error: true,
+          });
+  
+          canSubmit = false;
+  
+        }
+
+      }
+
+      if (canSubmit) {
+
+        setShowConfirmation(true);
+
+      }
 
     };
 
