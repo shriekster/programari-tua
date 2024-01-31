@@ -392,80 +392,91 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     }}
                     name='phoneNumber'
                     autoComplete='tel-national'
+                    variant='outlined'
                     value={phoneNumber.value}
                     helperText={phoneNumber.helperText}
                     error={phoneNumber.error}
                     disabled={saving}
                     onChange={handlePhoneNumberChange}/>
-                  <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
-                  <TextField sx={{
-                      width: '100%',
-                      maxWidth: '300px',
-                    }}
-                    label='Nume'
-                    color='primary'
-                    inputProps={{
-                      maxLength: 64
-                    }}
-                    name='lastName1'
-                    autoComplete='family-name'
-                    value={lastName1.value}
-                    helperText={lastName1.helperText}
-                    error={lastName1.error}
-                    disabled={saving}
-                    onChange={handleLastName1Change}/>
-                  <TextField sx={{
-                      width: '100%',
-                      maxWidth: '300px',
-                    }}
-                    label='Prenume'
-                    color='primary'
-                    inputProps={{
-                      maxLength: 64
-                    }}
-                    name='firstName1'
-                    autoComplete='given-name'
-                    value={firstName1.value}
-                    helperText={firstName1.helperText}
-                    error={firstName1.error}
-                    disabled={saving}
-                    onChange={handleFirstName1Change}/>
+                  <Paper elevation={24}
+                    sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                    <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-end' }}/>
+                    <TextField sx={{
+                        width: '100%',
+                        maxWidth: '300px',
+                      }}
+                      label='Nume'
+                      color='primary'
+                      inputProps={{
+                        maxLength: 64
+                      }}
+                      name='lastName1'
+                      autoComplete='family-name'
+                      variant='standard'
+                      value={lastName1.value}
+                      helperText={lastName1.helperText}
+                      error={lastName1.error}
+                      disabled={saving}
+                      onChange={handleLastName1Change}/>
+                    <TextField sx={{
+                        width: '100%',
+                        maxWidth: '300px',
+                      }}
+                      label='Prenume'
+                      color='primary'
+                      inputProps={{
+                        maxLength: 64
+                      }}
+                      name='firstName1'
+                      autoComplete='given-name'
+                      variant='standard'
+                      value={firstName1.value}
+                      helperText={firstName1.helperText}
+                      error={firstName1.error}
+                      disabled={saving}
+                      onChange={handleFirstName1Change}/>
+                  </Paper>
                     {
                       extraParticipant ? (
-                        <Paper elevation={24}
-                          sx={{ borderRadius: '4px', padding: '4px'}}>
-                          <TextField sx={{
-                              width: '100%',
-                              maxWidth: '300px',
-                            }}
-                            label='Nume'
-                            color='primary'
-                            inputProps={{
-                              maxLength: 64
-                            }}
-                            name='lastName2'
-                            autoComplete='family-name'
-                            value={lastName2.value}
-                            helperText={lastName2.helperText}
-                            error={lastName2.error}
-                            disabled={saving}
-                            onChange={handleLastName2Change}/>
-                          <TextField sx={{
-                              width: '100%',
-                              maxWidth: '300px',
-                            }}
-                            label='Prenume'
-                            color='primary'
-                            inputProps={{
-                              maxLength: 64
-                            }}
-                            name='firstName2'
-                            autoComplete='given-name'
-                            value={firstName2.value}
-                            helperText={firstName2.helperText}
-                            error={firstName2.error}
-                            disabled={saving}
-                            onChange={handleFirstName2Change}/>
+                        <>
+                          <Paper elevation={24}
+                            sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                            <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-end' }}/>
+                            <TextField sx={{
+                                width: '100%',
+                                maxWidth: '300px',
+                              }}
+                              label='Nume'
+                              color='primary'
+                              inputProps={{
+                                maxLength: 64
+                              }}
+                              name='lastName2'
+                              autoComplete='family-name'
+                              variant='standard'
+                              value={lastName2.value}
+                              helperText={lastName2.helperText}
+                              error={lastName2.error}
+                              disabled={saving}
+                              onChange={handleLastName2Change}/>
+                            <TextField sx={{
+                                width: '100%',
+                                maxWidth: '300px',
+                              }}
+                              label='Prenume'
+                              color='primary'
+                              inputProps={{
+                                maxLength: 64
+                              }}
+                              name='firstName2'
+                              autoComplete='given-name'
+                              variant='standard'
+                              value={firstName2.value}
+                              helperText={firstName2.helperText}
+                              error={firstName2.error}
+                              disabled={saving}
+                              onChange={handleFirstName2Change}/>
+                          </Paper>
                           <Button
                             sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
                             variant='outlined'
@@ -474,7 +485,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             onClick={handleRemoveExtraParticipant}>
                             Renunță la a doua persoană
                           </Button>
-                        </Paper>
+                        </>
                       ) : (
                         <Button
                           sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
