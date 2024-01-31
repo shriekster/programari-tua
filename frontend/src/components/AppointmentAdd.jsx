@@ -1099,7 +1099,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                 onClose={handleCloseTermsAndConditions}>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', cursor: 'default', userSelect: 'none' }}>
                   <ArticleIcon fontSize='large' color='info' sx={{ marginRight: '4px' }}/>
-                  <Typography>
+                  <Typography fontWeight={500} fontSize={20}>
                     Termeni și condiții
                   </Typography>
                 </DialogTitle>
@@ -1137,7 +1137,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   <Button onClick={handleCloseTermsAndConditions}
                       color='info'
                       variant='contained'
-                      sx={{ width: '100%' }}
+                      sx={{ width: '100%', maxWidth: '300px' }}
                       disabled={saving}>
                       OK
                   </Button>
