@@ -84,6 +84,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
     });
 
     const [copied, setCopied] = useState(false);
+    const [isSecureContext, setSecureContext] = useState(false);
 
     const timeoutRef = useRef(null);
 
@@ -389,6 +390,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           error: false
         });
 
+        setSecureContext(window.isSecureContext);
+
       }
 
     }, [open]);
@@ -437,40 +440,44 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
               <DialogContent sx={{ position: 'relative', }}>
                 <Box sx={{ width: '100%', padding: '8px 0'}}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px'  }}>
-                  <TextField sx={{
-                      width: '100%',
-                      maxWidth: '300px',
-                    }}
-                    type='tel'
-                    label='Număr de telefon'
-                    color='primary'
-                    InputProps={{
-                      endAdornment: <InputAdornment position='end'>
-                          {
-                            phoneNumber.value ? (
-                              phoneNumber.error ? (
-                                <BlockIcon color='error' />
-                              ) : (
-                                <CheckIcon color='success' />
-                              )
-                            ) : null
-                          }
-                        </InputAdornment>
-                    }}
-                    inputProps={{
-                      maxLength: 16
-                    }}
-                    name='phoneNumber'
-                    autoComplete='tel-national'
-                    variant='outlined'
-                    value={phoneNumber.value}
-                    helperText={phoneNumber.helperText}
-                    error={phoneNumber.error}
-                    disabled={saving}
-                    onChange={handlePhoneNumberChange}/>
                   <Paper elevation={24}
                     sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
-                    <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-end' }}/>
+                    <LocalPhoneIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-start' }}/>
+                    <TextField sx={{
+                        width: '100%',
+                        maxWidth: '300px',
+                      }}
+                      type='tel'
+                      label='Număr de telefon'
+                      color='primary'
+                      InputProps={{
+                        endAdornment: <InputAdornment position='end'>
+                            {
+                              phoneNumber.value ? (
+                                phoneNumber.error ? (
+                                  <BlockIcon color='error' />
+                                ) : (
+                                  <CheckIcon color='success' />
+                                )
+                              ) : null
+                            }
+                          </InputAdornment>
+                      }}
+                      inputProps={{
+                        maxLength: 16
+                      }}
+                      name='phoneNumber'
+                      autoComplete='tel-national'
+                      variant='standard'
+                      value={phoneNumber.value}
+                      helperText={phoneNumber.helperText}
+                      error={phoneNumber.error}
+                      disabled={saving}
+                      onChange={handlePhoneNumberChange}/>
+                  </Paper>
+                  <Paper elevation={24}
+                    sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                    <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-start' }}/>
                     <TextField sx={{
                         width: '100%',
                         maxWidth: '300px',
@@ -505,60 +512,10 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       error={firstName1.error}
                       disabled={saving}
                       onChange={handleFirstName1Change}/>
-                  </Paper>
                     {
-                      extraParticipant ? (
-                        <>
-                          <Paper elevation={24}
-                            sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
-                            <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-end' }}/>
-                            <TextField sx={{
-                                width: '100%',
-                                maxWidth: '300px',
-                              }}
-                              label='Nume'
-                              color='primary'
-                              inputProps={{
-                                maxLength: 64
-                              }}
-                              name='lastName2'
-                              autoComplete='family-name'
-                              variant='standard'
-                              value={lastName2.value}
-                              helperText={lastName2.helperText}
-                              error={lastName2.error}
-                              disabled={saving}
-                              onChange={handleLastName2Change}/>
-                            <TextField sx={{
-                                width: '100%',
-                                maxWidth: '300px',
-                              }}
-                              label='Prenume'
-                              color='primary'
-                              inputProps={{
-                                maxLength: 64
-                              }}
-                              name='firstName2'
-                              autoComplete='given-name'
-                              variant='standard'
-                              value={firstName2.value}
-                              helperText={firstName2.helperText}
-                              error={firstName2.error}
-                              disabled={saving}
-                              onChange={handleFirstName2Change}/>
-                          </Paper>
-                          <Button
-                            sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
-                            variant='outlined'
-                            color='error'
-                            startIcon={<PersonRemoveIcon />}
-                            onClick={handleRemoveExtraParticipant}>
-                            Renunță la a doua persoană
-                          </Button>
-                        </>
-                      ) : (
+                      !extraParticipant && (
                         <Button
-                          sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
+                          sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
                           variant='outlined'
                           color='secondary'
                           startIcon={<PersonAddIcon />}
@@ -566,39 +523,93 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                           Adaugă o persoană
                         </Button>
                       )
+                    }
+                  </Paper>
+                    {
+                      extraParticipant && (
+                        <Paper elevation={24}
+                          sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                          <PersonIcon fontSize='large' color='primary' sx={{ alignSelf: 'flex-start' }}/>
+                          <TextField sx={{
+                              width: '100%',
+                              maxWidth: '300px',
+                            }}
+                            label='Nume'
+                            color='primary'
+                            inputProps={{
+                              maxLength: 64
+                            }}
+                            name='lastName2'
+                            autoComplete='family-name'
+                            variant='standard'
+                            value={lastName2.value}
+                            helperText={lastName2.helperText}
+                            error={lastName2.error}
+                            disabled={saving}
+                            onChange={handleLastName2Change}/>
+                          <TextField sx={{
+                              width: '100%',
+                              maxWidth: '300px',
+                            }}
+                            label='Prenume'
+                            color='primary'
+                            inputProps={{
+                              maxLength: 64
+                            }}
+                            name='firstName2'
+                            autoComplete='given-name'
+                            variant='standard'
+                            value={firstName2.value}
+                            helperText={firstName2.helperText}
+                            error={firstName2.error}
+                            disabled={saving}
+                            onChange={handleFirstName2Change}/>
+                          <Button
+                            sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
+                            variant='outlined'
+                            color='error'
+                            startIcon={<PersonRemoveIcon />}
+                            onClick={handleRemoveExtraParticipant}>
+                            Renunță la persoană
+                          </Button>
+                        </Paper>
+                      )
 
                     }
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', maxWidth: '300px', width: '100%' }}>
-                      <PlaceIcon color='error' fontSize='large' />
-                      <Typography>
-                        {dateObj?.locationDisplayName}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '8px', maxWidth: '300px', width: '100%' }}>
-                      <Tooltip
-                        open={copied}
-                        title='Copiat!'
-                        placement='right'
-                        arrow>
-                        <Button size='small'
-                          startIcon={<ContentCopyIcon />}
-                          sx={{ textTransform: 'none' }}
-                          onClick={handleCopyLocation}
-                          color='inherit'
-                          >
-                          Copiază adresa
-                        </Button>
-                      </Tooltip>
-                    </Box>
-                    <Button
-                      href={`https://www.waze.com/ul?ll=${dateObj?.latitude},${dateObj.longitude}&navigate=yes&zoom=18`}
-                      target='_blank'
-                      variant='contained'
-                      color='info'
-                      sx={{ textTransform: 'none', width: '100%', maxWidth: '300px' }}
-                      endIcon={<OpenInNewIcon />}>
-                      Deschide cu Waze
-                    </Button>
+                  <Paper elevation={24}
+                    sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
+                        <PlaceIcon color='error' fontSize='large' sx={{ alignSelf: 'flex-start' }} />
+                        <Typography>
+                          {dateObj?.locationDisplayName}
+                        </Typography>
+                      {
+                        isSecureContext && (
+                          <Tooltip
+                            open={copied}
+                            title='Copiat!'
+                            placement='right'
+                            arrow>
+                            <Button size='small'
+                              startIcon={<ContentCopyIcon />}
+                              sx={{ textTransform: 'none' }}
+                              onClick={handleCopyLocation}
+                              color='inherit'
+                              >
+                              Copiază adresa
+                            </Button>
+                          </Tooltip>
+                        )
+                      }
+                      <Button
+                        href={`https://www.waze.com/ul?ll=${dateObj?.latitude},${dateObj.longitude}&navigate=yes&zoom=18`}
+                        target='_blank'
+                        variant='outlined'
+                        color='info'
+                        sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
+                        endIcon={<OpenInNewIcon />}>
+                        Deschide cu Waze
+                      </Button>
+                    </Paper>
                   </Box>
                 </Box>
                 {
