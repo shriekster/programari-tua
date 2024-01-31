@@ -727,11 +727,23 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     )
                 }
               </DialogContent>
-              <DialogActions sx={{
+              <DialogActions>
+                <Box sx={{
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      gap: '16px',
+                      width: '100%'
                   }}>
+                  <Button
+                    sx={{ width: '100%', maxWidth: '300px' }}
+                    color='error'
+                    variant='contained'
+                    disabled={saving}
+                    onClick={handleClose}>
+                    Renunță
+                  </Button>
                   <Button
                     sx={{ width: '100%', maxWidth: '300px' }}
                     color='primary'
@@ -740,6 +752,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                     onClick={handleSubmit}>
                     Solicită programare
                   </Button>
+                </Box>
               </DialogActions>
               <Dialog open={showConfirmation}
                 onClose={closeConfirmationDialog}>
