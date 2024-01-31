@@ -414,7 +414,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
           setCopied(false);
 
-        }, 1500);
+        }, 2000);
 
       }
 
@@ -591,7 +591,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             arrow>
                             <Button size='small'
                               startIcon={<ContentCopyIcon />}
-                              sx={{ textTransform: 'none' }}
+                              sx={{ textTransform: 'none', alignSelf: 'flex-start' }}
                               onClick={handleCopyLocation}
                               color='inherit'
                               >
