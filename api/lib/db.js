@@ -240,6 +240,20 @@ try {
         LEFT JOIN dates ON dates.id = time_ranges.date_id
         WHERE time_ranges.published = 1`);
 
+    statements['get_user_timerange'] = db.prepare(`
+        SELECT 
+            time_ranges.capacity, 
+            (
+                SELECT
+                    COUNT(DISTINCT participants.id) from participants
+                LEFT JOIN appointments ON appointments.id = participants.appointment_id
+                WHERE appointments.time_range_id = time_ranges.id
+            ) AS occupied
+        FROM time_ranges
+        WHERE 
+            time_ranges.published = 1 AND
+            time_ranges.id = ?`);
+
     statements['get_appointments_page_ids'] = db.prepare(`
         SELECT 
             appointments.page_id AS pageId
@@ -252,6 +266,30 @@ try {
     statements['add_participant'] = db.prepare(`
         INSERT INTO participants(appointment_id, first_name, last_name, is_adult, personnel_category_id)
         VALUES (?, ?, ?, ?, ?)`);
+
+    statements['add_participants'] = db.transaction((appointmentId, participants) => {
+
+        const insertParticipant = statements['add_participant'];
+
+        if (insertParticipant) {
+
+            for (const participant of participants) {
+
+                const isAdult = 'adult' === participant.age ? 1 : 0;
+
+                insertParticipant.run(
+                    Number(appointmentId),
+                    '' + participant?.firstName,
+                    '' + participant?.lastName,
+                    isAdult,
+                    Number(participant?.personnelCategoryId),
+                );
+
+            }
+
+        }
+
+    });
 
 } catch (err) {
     
@@ -1084,6 +1122,117 @@ if (!stmtError) {
             ],
          * }
          */
+
+        let error = null, appointmentsUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false };
+
+        try {
+
+            timeRange = statements['get_user_timerange'].get(Number(timeRangeId));
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        if (!error && timeRange) {
+
+            const props = Object.getOwnPropertyNames(timeRange);
+
+            if (props.includes('capacity') && props.includes('occupied')) {
+
+                if (timeRange.occupied < timeRange.capacity) {
+
+                    try {
+
+                        appointmentsUpdateInfo = statements['add_appointment'].run(
+                            Number(timeRangeId),
+                            '' + phoneNumber,
+                            '' + pageId,
+                        );
+            
+                    } catch (err) {
+            
+                        error = err;
+            
+                    }
+            
+                    if (!error && 1 === appointmentsUpdateInfo.changes) {
+
+                        const insertParticipants = statements['add_participants'];
+
+                        if (insertParticipants) {
+
+                            const appointmentId = appointmentsUpdateInfo.lastInsertRowid;
+
+                            try {
+
+                                try {
+                
+                                    insertParticipants(appointmentId, participants);
+                
+                                } catch (err) {
+                    
+                                    error = err;
+
+                                    if (!db.inTransaction) throw err; // the transaction was forcefully rolled back
+                    
+                                }
+
+                            } catch (err) {
+
+                                error = err;
+
+                            }
+
+                            if (!error) {
+
+                                result.error = false;
+                                result.timeRangeIsFull = false;
+
+                            } else {
+
+                                result.error = true;
+                                result.timeRangeIsFull = false;
+
+                            }
+
+                        } else {
+
+                            result.error = true;
+                            result.timeRangeIsFull = false;
+
+                        }
+            
+                    } else {
+
+                        result.error = true;
+                        result.timeRangeIsFull = false;
+
+                    }
+
+                } else {
+
+                    result.error = false;
+                    result.timeRangeIsFull = true;
+
+                }
+
+            } else {
+
+                result.error = true;
+                result.timeRangeIsFull = false;
+
+            }
+
+        } else {
+
+            result.error = true;
+            result.timeRangeIsFull = false;
+
+        }
+
+        return result;
 
     }
 

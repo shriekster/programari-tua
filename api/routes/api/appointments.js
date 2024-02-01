@@ -41,16 +41,25 @@ router.post('/', validateAppointment, function(req, res) {
 
     if (nextPageId) {
 
-        const appointment = addAppointment(timeRangeId, phoneNumber, nextPageId, participants);
+        const result = addAppointment(timeRangeId, phoneNumber, nextPageId, participants);
 
-        if (appointment) {
+        if (result && !result.error && !result.timeRangeIsFull) {
 
             return res.status(200)
             .json({
                 data: {
-                    appointment
+                    pageId: nextPageId
                 }
             });
+
+        } else if (!result.error && result.timeRangeIsFull) {
+
+            return res.status(403)
+            .json({
+                data: {
+                    message: 'Forbidden'
+                }
+            })
 
         }
 

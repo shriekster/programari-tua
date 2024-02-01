@@ -110,6 +110,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       error: false
     });
     const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
+    const [showAppointmentSuccessfulDialog, setShowAppointmentSuccessfulDialog] = useState(false);
+    const [appointmentUrl, setAppointmentUrl] = useState('');
 
     const [copied, setCopied] = useState(false);
     const [isSecureContext, setSecureContext] = useState(false);
