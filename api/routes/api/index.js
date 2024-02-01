@@ -7,7 +7,6 @@ import adminLocationsRoute from './admin/locations.js';
 import adminProfilesRoute from './admin/profiles.js';
 import adminDatesRoute from './admin/dates.js';
 import adminTimeRangesRoute from './admin/timeRanges.js';
-//import adminAppointmentsRoute from './admin/appointments.js';
 
 import appointmentsRoute from './appointments.js';
 
@@ -30,7 +29,6 @@ router.use('/admin/locations', authorize, adminLocationsRoute);
 router.use('/admin/profiles', authorize, adminProfilesRoute);
 router.use('/admin/dates', authorize, adminDatesRoute);
 router.use('/admin/timeranges', authorize, adminTimeRangesRoute);
-//router.use('/admin/appointments', authorize, adminAppointmentsRoute);
 router.use('/admin/events', authorize, getSubcriptionId, eventsRoute);
 
 // user API

@@ -1,7 +1,15 @@
 import { Router } from 'express';
 import { customAlphabet } from 'nanoid';
 import validateAppointment from '../../middlewares/validateAppointment.js';
-import { getAllPageIds, addAppointment } from '../../lib/db.js';
+import { 
+    // user
+    getAllPageIds, addAppointment,
+
+    // admin
+    getTimeRanges, getAppointments
+} from '../../lib/db.js';
+
+import { publish } from './events.js';
 
 const router = Router();
 
@@ -44,6 +52,18 @@ router.post('/', validateAppointment, function(req, res) {
         const result = addAppointment(timeRangeId, phoneNumber, nextPageId, participants);
 
         if (result && !result.error && !result.timeRangeIsFull) {
+
+            const adminAppointments = getAppointments();
+            const adminTimeRanges = getTimeRanges();
+        
+            const data = {
+              registry: {
+                timeRanges: adminTimeRanges,
+                appointments: adminAppointments,
+              }
+            };
+        
+            publish('admins', 'update:appointments', data);
 
             return res.status(200)
             .json({

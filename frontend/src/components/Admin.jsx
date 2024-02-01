@@ -395,14 +395,17 @@ export default function Admin() {
 
             }
   
-            case 'update:appointment': {
+            case 'update:appointments': {
   
+              if (dataObj.registry) {
+
+                setAppointments(dataObj.registry.appointments);
+                setTimeRanges(dataObj.registry.timeRanges);
+  
+              }
+
               break;
-            }
-  
-            case 'delete:appointment': {
-  
-              break;
+
             }
   
             // if the server emits an error message, throw an exception
