@@ -35,7 +35,6 @@ const getNextPageId = () => {
 
 router.post('/', validateAppointment, function(req, res) {
 
-    console.log(req.body)
     const { timeRangeId, phoneNumber, participants } = req.body;
     
     const nextPageId = getNextPageId();
@@ -44,12 +43,24 @@ router.post('/', validateAppointment, function(req, res) {
 
         const appointment = addAppointment(timeRangeId, phoneNumber, nextPageId, participants);
 
+        if (appointment) {
+
+            return res.status(200)
+            .json({
+                data: {
+                    appointment
+                }
+            });
+
+        }
+
     }
     
 
     // TODO: send sms (websockets)
 
-    return res.status(500).json({
+    return res.status(500)
+    .json({
         data: {
             message: 'Internal Server Error'
         }
