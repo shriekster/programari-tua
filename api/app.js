@@ -14,7 +14,7 @@ app.set('trust proxy', 'loopback'); // TODO: review the proxy settings for produ
 
 app.use(logger('dev'));
 app.use(express.json({
-    limit: '16kb',
+    limit: '64kb',
     strict: true,
     type: 'application/json',
 }));
@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use('/api', apiRoutes);
 app.use('*', defaultRoute);
 
-// TODO: add a SSE route that will allow the server to keep connections for normal users and for admin(s)
+// TODO: finish the SSE functionalities
 // TODO: add a WebSocket server that will allow the server to communicate with the SMS gateway ->
 //  the sms gateway authenticates to the server with a username and a password, over HTTPS, thus obtaining an access token
 //  the sms gateway initiates a WebSocket connection using the previously obtained access token (cookie with Origin/Referrer checking or Sec-Websocket-Protocol header)
