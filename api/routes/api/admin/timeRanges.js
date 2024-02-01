@@ -1,18 +1,16 @@
 import { Router } from 'express';
 import validateTimeRange from '../../../middlewares/validateTimeRange.js';
-import { addTimeRange, updateTimeRange, deleteTimeRange } from '../../../lib/db.js';
+import { 
+  // admin
+  addTimeRange, updateTimeRange, deleteTimeRange,
+
+  // user
+  getUserDates, getUserTimeRanges 
+} from '../../../lib/db.js';
+
+import { publish } from '../events.js';
 
 const router = Router();
-
-router.get('/', function(req, res) {
-
-  res.json({
-    data: {
-      hello: 'world'
-    }
-  })
-
-});
 
 router.post('/', validateTimeRange, function(req, res) {
   
@@ -21,6 +19,18 @@ router.post('/', validateTimeRange, function(req, res) {
   const timeRange = addTimeRange(dateId, startTime, endTime, capacity, published);
 
   if (timeRange) {
+
+    const userDates = getUserDates();
+    const userTimeRanges = getUserTimeRanges();
+
+    const data = {
+      registry: {
+        dates: userDates,
+        timeRanges: userTimeRanges,
+      }
+    };
+
+    publish('users', 'update', data);
 
     return res.json({
       data: {
@@ -53,6 +63,18 @@ router.put('/:timeRangeId', validateTimeRange, function(req, res) {
     const timeRange = updateTimeRange(timeRangeId, dateId, startTime, endTime, capacity, published);
 
     if (timeRange) {
+
+      const userDates = getUserDates();
+      const userTimeRanges = getUserTimeRanges();
+  
+      const data = {
+        registry: {
+          dates: userDates,
+          timeRanges: userTimeRanges,
+        }
+      };
+  
+      publish('users', 'update', data);
 
       return res.json({
         data: {
@@ -92,6 +114,18 @@ router.delete('/:timeRangeId', function(req, res) {
     const result = deleteTimeRange(timeRangeId);
 
     if ([0, 1].includes(result)) {
+
+      const userDates = getUserDates();
+      const userTimeRanges = getUserTimeRanges();
+  
+      const data = {
+        registry: {
+          dates: userDates,
+          timeRanges: userTimeRanges,
+        }
+      };
+  
+      publish('users', 'update', data);
   
       return res.json({
         data: {

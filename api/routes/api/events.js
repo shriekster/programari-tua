@@ -58,7 +58,7 @@ const nextSubscriptionId = (targetChannel) => {
 
 };
 
-const publish = (channel, data, excludedSubscriptionId = 0) => {
+const publish = (channel, event, data, excludedSubscriptionId = 0) => {
 
   switch(channel) {
 
@@ -68,7 +68,7 @@ const publish = (channel, data, excludedSubscriptionId = 0) => {
       
       for (const [_, client] of adminSubscriptions.entries()) {
 
-        client.write((`data: ${JSON.stringify(data)}\n\n`));
+        client.write((`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
 
       }
 
@@ -84,7 +84,7 @@ const publish = (channel, data, excludedSubscriptionId = 0) => {
 
         if (subscriptionId !== excludedSubscriptionId) {
 
-          client.write((`data: ${JSON.stringify(data)}\n\n`));
+          client.write((`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`));
 
         }
 
@@ -172,7 +172,6 @@ router.get('/', function(req, res) {
       // user data
       const dates = getUserDates();
       const timeRanges = getUserTimeRanges();
-      //const appointments = getAppointments();
       const personnelCategories = getPersonnelCategories();
       
       data.registry = {

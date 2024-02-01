@@ -249,14 +249,17 @@ export default function Home() {
 
             }
   
-            case 'update:appointment': {
+            case 'update': {
   
+              if (dataObj.registry) {
+                
+                setDates(new Map(dataObj.registry.dates));
+                setTimeRanges(dataObj.registry.timeRanges);
+  
+              }
+
               break;
-            }
-  
-            case 'delete:appointment': {
-  
-              break;
+
             }
   
             // if the server emits an error message, throw an exception
