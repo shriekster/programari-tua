@@ -6,7 +6,7 @@ import {
     getAllPageIds, addAppointment,
 
     // admin
-    getTimeRanges, getAppointments
+    getTimeRanges, getAppointments, getUserAppointment
 } from '../../lib/db.js';
 
 import { publish } from './events.js';
@@ -99,6 +99,26 @@ router.post('/', validateAppointment, function(req, res) {
 
 
 router.get('/:pageId', function(req, res) {
+
+    const appointment = getUserAppointment(req.params.pageId);
+
+    if (appointment) {
+
+        return res.status(200)
+        .json({
+            data: {
+                appointment
+            }
+        });
+
+    }
+
+    return res.status(404)
+    .json({
+        data: {
+            message: 'Not Found'
+        }
+    });
 
 });
 

@@ -34,6 +34,7 @@ let getUserTimeRanges = null;
 let getContactInfo = null;
 let getAllPageIds = null;
 let addAppointment = null;
+let getUserAppointment = null;
 
 try {
 
@@ -290,6 +291,23 @@ try {
         }
 
     });
+
+    statements['get_appointment'] = db.prepare(`
+        SELECT
+            dates.day AS day,
+            time_ranges.start_time AS startTime,
+            time_ranges.end_time AS endTime,
+            participants.id AS participantId,
+            participants.last_name AS lastName,
+            participants.first_name AS firstName,
+            participants.is_adult AS isAdult,
+            personnel_categories.name AS personnelCategoryName
+        FROM participants
+        LEFT JOIN appointments ON appointments.id = participants.appointment_id
+        LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id
+        LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id
+        LEFT JOIN dates ON dates.id = time_ranges.date_id
+        WHERE appointments.page_id = ?`);
 
 } catch (err) {
     
@@ -1107,22 +1125,6 @@ if (!stmtError) {
 
     addAppointment = (timeRangeId, phoneNumber, pageId, participants) => {
 
-        /**
-         * Example: 
-         * {
-        *   timeRangeId: 3,
-            phoneNumber: '0769388493',
-            participants: [
-                {
-                lastName: 'M',
-                firstName: 'Dan',
-                age: 'minor',
-                personnelCategoryId: 1
-                }
-            ],
-         * }
-         */
-
         let error = null, appointmentsUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false };
 
         try {
@@ -1234,7 +1236,55 @@ if (!stmtError) {
 
         return result;
 
-    }
+    };
+
+    getUserAppointment = (pageId) => {
+
+        let error = null, _appointments = null, result = null;
+
+        const contactInfo = getContactInfo();
+
+        try {
+
+            _appointments = statements['get_appointment'].all(
+                '' + pageId
+            );
+
+            if (_appointments && _appointments.length) {
+
+                result = {
+                    day: _appointments[0].day,
+                    startTime: _appointments[0].startTime,
+                    endTime: _appointments[0].endTime,
+                    participants: [],
+                    contactPhone: contactInfo?.phoneNumber,
+                };
+
+            }
+
+            for (let i = 0, a = _appointments.length; i < a; ++i) {
+                
+                const participant = {
+                    id: _appointments[i].participantId,
+                    lastName: _appointments[i].lastName,
+                    firstName: _appointments[i].firstName,
+                    age: _appointments[i].isAdult ? 'adult' : 'minor',
+                    personnelCategoryName: _appointments[i].personnelCategoryName
+                };
+
+                result.participants.push(participant);
+
+            }
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return result ?? null;
+
+    };
 
 }
 
@@ -1265,6 +1315,7 @@ export {
     getUserTimeRanges,
     getContactInfo,
     getAllPageIds,
-    addAppointment
+    addAppointment,
+    getUserAppointment,
 
 };

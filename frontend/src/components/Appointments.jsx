@@ -14,29 +14,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useRoute } from 'wouter';
 import { navigate } from 'wouter/use-location';
 
-import { useGlobalStore } from '../useGlobalStore.js';
-
-// get the functions from the global store as non-reactive, fresh state,
-// because this proves the linter that the functions are not changing between renders
-// why? because it's annoying to specify functions as effect depedencies and I could not think of
-// a better solution, at least for now
-const {
-  setSubscriptionId,
-  setLocationsDownloaded,
-  setLocations,
-  setProfileDownloaded,
-  setProfileUrl,
-  setFullName,
-  setPhoneNumber,
-  setRegistryDownloaded,
-  setDates,
-  setTimeRanges,
-  setAppointments,
-  setPersonnelCategories,
-  setError,
-  setErrorMessage,
-} = useGlobalStore.getState();
-
 export default function Appointments() {
 
   const [loading, setLoading] = useState(false);
@@ -51,7 +28,7 @@ export default function Appointments() {
 
       setLoading(true);
 
-      let error = null, status = 401, data = null;
+      let error = null, status = 401, json = null;
 
       try {
 
@@ -63,7 +40,7 @@ export default function Appointments() {
         const response = await fetch(`/api/appointments/${params.pageId}`, requestOptions);
         status = response.status;
 
-        data = await response.json();
+        json = await response.json();
 
 
     } catch (err) {
@@ -82,24 +59,22 @@ export default function Appointments() {
 
         case 200: {
 
-            setLoading(false);
+          if (json && json?.data?.appointment) {
 
-            if (data) {
+            setAppointmentData(json.data.appointment);
 
-              //
+          }
 
-            }
-
-            break;
+          break;
 
         }
 
         default: {
 
-            setLoading(false);
-            setErrorMessage('Eroare! Încearcă din nou în câteva secunde.');
-            setError(true);
-            break;
+          navigate('/not-found', {
+            replace: false
+          });
+          break;
 
         }
 
@@ -137,7 +112,7 @@ export default function Appointments() {
     };
 
   }, [params.pageId]);
-
+  console.log(appointmentData)
   return (
     <Box sx={{
       margin: 0,
@@ -146,10 +121,37 @@ export default function Appointments() {
     }}>
       <Box sx={{
         margin: 0,
-        padding: 0,
+        padding: '16px 8px',
         height: 'calc(100dvh - 56px)',
+        minHeight: 'max-content',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px'
       }}>
-        Pagina {params.pageId}
+        {
+          appointmentData && (
+            <>
+            <Typography textAlign='center'>
+              {appointmentData?.day}
+            </Typography>
+            <Typography textAlign='center'>
+              {appointmentData?.startTime} - {appointmentData?.endTime}
+            </Typography>
+            {
+              appointmentData?.participants?.map((participant) => (
+                <Box key={participant?.id}
+                  sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+                  <Typography>
+                    {participant?.lastName} {participant?.firstName}
+                  </Typography>
+                </Box>
+              ))
+            }
+            </>
+          )
+        }
       </Box>
       {
         loading && (
