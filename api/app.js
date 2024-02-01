@@ -14,7 +14,7 @@ app.set('trust proxy', 'loopback'); // TODO: review the proxy settings for produ
 
 app.use(logger('dev'));
 app.use(express.json({
-    limit: '0.5kb',
+    limit: '16kb',
     strict: true,
     type: 'application/json',
 }));
