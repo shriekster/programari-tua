@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import * as XLSX from 'xlsx/xlsx.mjs';
-import path from 'node:path';
 
 import validateDate from '../../../middlewares/validateDate.js';
 import { addDate, updateDate, deleteDate, exportDate } from '../../../lib/db.js';
