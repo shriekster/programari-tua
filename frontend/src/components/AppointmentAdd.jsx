@@ -724,7 +724,9 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     }, [copied]);
     
-    if (open) {
+    const canRender = open && Boolean(date) && Boolean(dateObj) && Boolean(timeRangeId);
+
+    if (canRender) {
 
       return (
           <Dialog

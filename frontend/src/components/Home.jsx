@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -118,6 +118,10 @@ export default function Home() {
   const dates = useGlobalStore((state) => state.dates);
   const timeRanges = useGlobalStore((state) => state.timeRanges);
   const userTheme = useGlobalStore((state) => state.userTheme);
+
+  const selectedDayRef = useRef(null);
+  const selectedTimeRangeIdRef = useRef(0);
+  const openAddAppointmentRef = useRef(false);
 
   const handleChangeSelectedDate = (newDate) => {
 
@@ -253,8 +257,29 @@ export default function Home() {
   
               if (dataObj.registry) {
                 
-                setDates(new Map(dataObj.registry.dates));
-                setTimeRanges(dataObj.registry.timeRanges);
+                const nextDates = new Map(dataObj.registry.dates);
+                const nextTimeRanges = dataObj.registry.timeRanges;
+
+                const currentlySelectedDay = selectedDayRef.current;
+                const currentlySelectedTimeRangeId = selectedTimeRangeIdRef.current;
+                const currentlyAddingAppointment = openAddAppointmentRef.current;
+
+                if (currentlyAddingAppointment) {
+
+                  const nextSelectedTimeRange = nextTimeRanges.find((timeRange) => timeRange?.id == currentlySelectedTimeRangeId);
+                
+                  if (( currentlySelectedDay && !nextDates.has(currentlySelectedDay) ) || !nextSelectedTimeRange) {
+
+                    setOpenAddAppointment(false);
+                    setErrorMessage('Intervalul orar nu mai este disponibil!');
+                    setError(true);
+  
+                  }
+
+                }
+
+                setDates(nextDates);
+                setTimeRanges(nextTimeRanges);
   
               }
 
@@ -317,6 +342,33 @@ export default function Home() {
     };
 
   }, []);
+
+  // update the selected date ref, the selected timeRangeId ref and the openAddAppointment ref (for the SSE handler)
+  useEffect(() => {
+
+    selectedDayRef.current = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
+    selectedTimeRangeIdRef.current = selectedTimeRangeId;
+    openAddAppointmentRef.current = openAddAppointment;
+
+  }, [selectedDate, selectedTimeRangeId, openAddAppointment]);
+
+  // close the error snackbar when the user wants to add an apointment and opens the dialogue
+  useEffect(() => {
+
+    if (openAddAppointment) {
+
+      setError(false);
+
+      const timeoutId = setTimeout(() => {
+
+        clearTimeout(timeoutId);
+        setErrorMessage('');
+
+      });
+      
+    }
+
+  }, [openAddAppointment]);
 
   // eslint-disable-next-line react/prop-types
   const selectedDay = selectedDate?.$d?.toLocaleDateString('ro-RO') ?? '';
