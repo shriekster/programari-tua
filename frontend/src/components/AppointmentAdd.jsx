@@ -110,8 +110,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       error: false
     });
     const [showTermsAndConditions, setShowTermsAndConditions] = useState(false);
-    const [showAppointmentSuccessfulDialog, setShowAppointmentSuccessfulDialog] = useState(false);
-    const [appointmentUrl, setAppointmentUrl] = useState('');
+    const [showAppointmentSuccessful, setShowAppointmentSuccessful] = useState(false);
 
     const [copied, setCopied] = useState(false);
     const [isSecureContext, setSecureContext] = useState(false);
@@ -275,6 +274,19 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
+    const handleCopyLocation = () => {
+
+      navigator.clipboard.writeText(dateObj?.locationDisplayName?.toString())
+      .then(() => {
+        setCopied(true);
+      })
+      // eslint-disable-next-line no-unused-vars
+      .catch((reason) => {
+        setCopied(false);
+      });
+
+    };
+
     const closeConfirmationDialog = (event, reason) => {
 
       if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
@@ -303,7 +315,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
-    const handleCloseTermsAndConditions = (event, reason) => {
+    const closeTermsAndConditionsDialog = (event, reason) => {
 
       if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
 
@@ -312,6 +324,19 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       }
 
       setShowTermsAndConditions(false);
+
+    };
+
+    const closeAppointmentSuccessfulDialog = (event, reason) => {
+
+      if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+        return;
+
+      }
+
+      setShowAppointmentSuccessful(false);
+      handleClose();
 
     };
 
@@ -517,7 +542,6 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
         const response = await fetch(`/api/appointments`, requestOptions);
         status = response.status;
   
-  
       } catch (err) {
 
           // eslint-disable-next-line no-unused-vars
@@ -530,13 +554,10 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
           case 200: {
 
-              setSaving(false);
+            setSaving(false);
+            setShowAppointmentSuccessful(true);
 
-              // TODO: dialog: everything is ok, maybe display the appointment link
-
-              handleClose();
-
-              break;
+            break;
 
           }
 
@@ -565,19 +586,6 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
     };
 
-    const handleCopyLocation = () => {
-
-      navigator.clipboard.writeText(dateObj?.locationDisplayName?.toString())
-      .then(() => {
-        setCopied(true);
-      })
-      // eslint-disable-next-line no-unused-vars
-      .catch((reason) => {
-        setCopied(false);
-      });
-
-    };
-
     const onClose = (event, reason) => {
 
       if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
@@ -586,7 +594,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
       }
 
-      handleClose(false);
+      handleClose();
 
     };
 
@@ -670,6 +678,10 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
           helperText: ' ',
           error: false
         });
+        
+        setShowConfirmation(false);
+        setShowTermsAndConditions(false);
+        setShowAppointmentSuccessful(false);
 
       }
 
@@ -819,7 +831,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                           firstErrorRef.current = node;
                         }
                       }}/>
-                    <FormControl error={maturity1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                    <FormControl error={maturity1.error} sx={{ width: '100%', maxWidth: '300px' }}
+                      disabled={saving}>
                       <FormLabel id='maturity1'>Vârstă</FormLabel>
                       <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
                         aria-labelledby='maturity1'
@@ -837,7 +850,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       </RadioGroup>
                       <FormHelperText>{maturity1.helperText}</FormHelperText>
                     </FormControl>
-                    <FormControl error={personnelCategory1.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                    <FormControl error={personnelCategory1.error} sx={{ width: '100%', maxWidth: '300px' }}
+                      disabled={saving}>
                       <Typography>Categoria de personal pentru care candidează</Typography>
                       <Select
                         id='select-personnel-category-1'
@@ -867,6 +881,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                           variant='outlined'
                           color='secondary'
                           startIcon={<PersonAddIcon />}
+                          disabled={saving}
                           onClick={handleAddExtraParticipant}>
                           Adaugă o persoană
                         </Button>
@@ -922,7 +937,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                                 firstErrorRef.current = node;
                               }
                             }}/>
-                          <FormControl error={maturity2.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                          <FormControl error={maturity2.error} sx={{ width: '100%', maxWidth: '300px' }}
+                            disabled={saving}>
                             <FormLabel id='maturity2'>Vârstă</FormLabel>
                             <RadioGroup sx={{ display: 'flex', flexDirection: 'row !important', alignItems: 'center', justifyContent: 'space-between' }}
                               aria-labelledby='maturity2'
@@ -940,7 +956,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             </RadioGroup>
                             <FormHelperText>{maturity2.helperText}</FormHelperText>
                           </FormControl>
-                          <FormControl error={personnelCategory2.error} sx={{ width: '100%', maxWidth: '300px' }}>
+                          <FormControl error={personnelCategory2.error} sx={{ width: '100%', maxWidth: '300px' }}
+                            disabled={saving}>
                             <Typography>Categoria de personal pentru care candidează</Typography>
                             <Select
                               id='select-personnel-category-2'
@@ -968,6 +985,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                             variant='outlined'
                             color='error'
                             startIcon={<PersonRemoveIcon />}
+                            disabled={saving}
                             onClick={handleRemoveExtraParticipant}>
                             Renunță la persoană
                           </Button>
@@ -1012,7 +1030,8 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                   <Paper elevation={24}
                     sx={{ borderRadius: '4px', padding: '16px', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', flexDirection: 'column', gap: '16px', width: '100%' }}>
                     <InfoIcon color='info' fontSize='large' sx={{ alignSelf: 'flex-start' }} />
-                    <FormControl error={agreement.error} sx={{ width: '100%' }}>
+                    <FormControl error={agreement.error} sx={{ width: '100%' }}
+                      disabled={saving}>
                       <FormControlLabel
                         control={
                           <Checkbox checked={agreement.value} onChange={handleAgreementChange} name='agreement' />
@@ -1031,6 +1050,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       sx={{ textTransform: 'none', alignSelf: 'flex-end' }}
                       onClick={handleOpenTermsAndConditions}
                       color='info'
+                      disabled={saving}
                       >
                       Termeni și condiții
                     </Button>
@@ -1119,7 +1139,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
               </Dialog>
 
               <Dialog open={showTermsAndConditions}
-                onClose={handleCloseTermsAndConditions}>
+                onClose={closeTermsAndConditionsDialog}>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', cursor: 'default', userSelect: 'none' }}>
                   <ArticleIcon fontSize='large' color='info' sx={{ marginRight: '4px' }}/>
                   <Typography fontWeight={500} fontSize={20}>
@@ -1157,8 +1177,30 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                       alignItems: 'center',
                       justifyContent: 'center'
                   }}>
-                  <Button onClick={handleCloseTermsAndConditions}
+                  <Button onClick={closeTermsAndConditionsDialog}
                       color='info'
+                      variant='contained'
+                      sx={{ width: '100%', maxWidth: '300px' }}
+                      disabled={saving}>
+                      OK
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Dialog open={showAppointmentSuccessful}
+                onClose={closeAppointmentSuccessfulDialog}>
+                <DialogContent>
+                  <Typography textAlign='center'>
+                    Rezervarea ta a fost efectuată cu succes! În câteva minute vei primi un SMS cu toate detaliile necesare.
+                  </Typography>
+                </DialogContent>
+                <DialogActions sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                  }}>
+                  <Button onClick={closeAppointmentSuccessfulDialog}
+                      color='primary'
                       variant='contained'
                       sx={{ width: '100%', maxWidth: '300px' }}
                       disabled={saving}>

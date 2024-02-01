@@ -48,7 +48,7 @@ router.post('/', validateAppointment, function(req, res) {
             return res.status(200)
             .json({
                 data: {
-                    pageId: nextPageId
+                    message: 'OK'
                 }
             });
 
