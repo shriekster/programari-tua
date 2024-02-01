@@ -1,4 +1,7 @@
 import { navigate } from 'wouter/use-location';
+import { useGlobalStore } from './useGlobalStore.js';
+
+const { setLoading } = useGlobalStore.getState();
 
 export default async function refreshAccessToken(callback) {
 
@@ -38,6 +41,13 @@ export default async function refreshAccessToken(callback) {
       callback();
 
     } else {
+
+
+      if (setLoading) {
+
+        setLoading(false);
+
+      }
 
       navigate('/admin/login', {
         replace: true
