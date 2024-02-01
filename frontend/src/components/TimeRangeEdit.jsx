@@ -291,9 +291,10 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                               flexDirection: 'column',
                               alignItems: 'center',
                               justifyContent: 'center',
-                              border: '1px solid rgba(255, 255, 255, .25)',
+                              border: '1px solid rgba(128, 128, 128, .5)',
                               borderRadius: '4px',
-                              padding: '8px'
+                              padding: '8px',
+                              marginBottom: '16px',
                             }}>
                           <Button href={`tel:${appointment.phoneNumber}`}
                             sx={{
@@ -338,7 +339,6 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                             }
                           </Box>
                         </Box>
-
                       ) : null
                     )
                   }
