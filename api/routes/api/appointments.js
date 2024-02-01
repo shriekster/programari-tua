@@ -97,4 +97,9 @@ router.post('/', validateAppointment, function(req, res) {
 
 });
 
+
+router.get('/:pageId', function(req, res) {
+
+});
+
 export default router;
