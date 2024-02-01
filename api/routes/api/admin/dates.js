@@ -2,19 +2,17 @@ import { Router } from 'express';
 import * as XLSX from 'xlsx/xlsx.mjs';
 
 import validateDate from '../../../middlewares/validateDate.js';
-import { addDate, updateDate, deleteDate, exportDate } from '../../../lib/db.js';
+import { 
+  //admin
+  addDate, updateDate, deleteDate, exportDate,
+
+  // user
+  getUserDates, getUserTimeRanges,
+} from '../../../lib/db.js';
+
+import { publish } from '../events.js';
 
 const router = Router();
-
-router.get('/', function(req, res) {
-
-  res.json({
-    data: {
-      hello: 'world'
-    }
-  })
-
-});
 
 router.get('/:dateId/download', function(req, res) {
 
@@ -95,6 +93,18 @@ router.post('/', validateDate, function(req, res) {
 
   if (date) {
 
+    const userDates = getUserDates();
+    const userTimeRanges = getUserTimeRanges();
+
+    const data = {
+      registry: {
+        dates: userDates,
+        timeRanges: userTimeRanges,
+      }
+    };
+
+    publish('users', 'update', data);
+
     return res.json({
       data: {
         date
@@ -120,6 +130,18 @@ router.put('/:dateId', validateDate, function(req, res) {
   const date = updateDate(dateId, locationId, day);
 
   if (date) {
+
+    const userDates = getUserDates();
+    const userTimeRanges = getUserTimeRanges();
+
+    const data = {
+      registry: {
+        dates: userDates,
+        timeRanges: userTimeRanges,
+      }
+    };
+
+    publish('users', 'update', data);
 
     return res.json({
       data: {
@@ -147,6 +169,18 @@ router.delete('/:dateId', function(req, res) {
     const result = deleteDate(dateId);
 
     if ([0, 1].includes(result)) {
+
+      const userDates = getUserDates();
+      const userTimeRanges = getUserTimeRanges();
+  
+      const data = {
+        registry: {
+          dates: userDates,
+          timeRanges: userTimeRanges,
+        }
+      };
+  
+      publish('users', 'update', data);
   
       return res.json({
         data: {
