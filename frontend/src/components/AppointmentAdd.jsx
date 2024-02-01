@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-
 import { useState, useEffect, useRef } from 'react';
 
 import Dialog from '@mui/material/Dialog';
@@ -570,6 +569,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
       .then(() => {
         setCopied(true);
       })
+      // eslint-disable-next-line no-unused-vars
       .catch((reason) => {
         setCopied(false);
       });
