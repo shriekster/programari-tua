@@ -32,6 +32,8 @@ let getPersonnelCategories = null;
 let getUserDates = null;
 let getUserTimeRanges = null;
 let getContactInfo = null;
+let getAllPageIds = null;
+let addAppointment = null;
 
 try {
 
@@ -237,6 +239,19 @@ try {
         FROM time_ranges
         LEFT JOIN dates ON dates.id = time_ranges.date_id
         WHERE time_ranges.published = 1`);
+
+    statements['get_appointments_page_ids'] = db.prepare(`
+        SELECT 
+            appointments.page_id AS pageId
+        FROM appointments`);
+
+    statements['add_appointment'] = db.prepare(`
+        INSERT INTO appointments(time_range_id, phone_number, page_id)
+        VALUES (?, ?, ?)`);
+    
+    statements['add_participant'] = db.prepare(`
+        INSERT INTO participants(appointment_id, first_name, last_name, is_adult, personnel_category_id)
+        VALUES (?, ?, ?, ?, ?)`);
 
 } catch (err) {
     
@@ -1032,6 +1047,46 @@ if (!stmtError) {
 
     };
 
+    getAllPageIds = () => {
+
+        let error = null, pageIds = null;
+
+        try {
+
+            pageIds = statements['get_appointments_page_ids'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        const result = pageIds ?? [];
+
+        return new Set(result);
+
+    };
+
+    addAppointment = (timeRangeId, phoneNumber, pageId, participants) => {
+
+        /**
+         * Example: 
+         * {
+        *   timeRangeId: 3,
+            phoneNumber: '0769388493',
+            participants: [
+                {
+                lastName: 'M',
+                firstName: 'Dan',
+                age: 'minor',
+                personnelCategoryId: 1
+                }
+            ],
+         * }
+         */
+
+    }
+
 }
 
 export {
@@ -1060,5 +1115,7 @@ export {
     getUserDates,
     getUserTimeRanges,
     getContactInfo,
+    getAllPageIds,
+    addAppointment
 
 };
