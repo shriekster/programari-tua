@@ -35,6 +35,7 @@ let getContactInfo = null;
 let getAllPageIds = null;
 let addAppointment = null;
 let getUserAppointment = null;
+let deleteUserAppointment = null;
 
 // utility functions
 const replaceAt = (string, index, replacement) => {
@@ -327,6 +328,12 @@ try {
         LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id
         LEFT JOIN dates ON dates.id = time_ranges.date_id
         LEFT JOIN locations ON locations.id = dates.location_id
+        WHERE
+            time_ranges.published = 1 AND
+            appointments.page_id = ?`);
+
+    statements['delete_appointment'] = db.prepare(`
+        DELETE FROM appointments
         WHERE appointments.page_id = ?`);
 
 } catch (err) {
@@ -1309,6 +1316,38 @@ if (!stmtError) {
 
     };
 
+    deleteUserAppointment = (pageId) => {
+
+        let error, updateInfo;
+
+        try {
+
+            updateInfo = statements['delete_appointment'].run(
+                '' + pageId
+            );
+
+        } catch (err) {
+
+            error = err; console.log(err)
+
+        }
+
+        if (!error) {
+
+            if (1 === updateInfo.changes) {
+
+                return 1;
+
+            }
+
+            return 0;
+
+        }
+
+        return -1;
+
+    };
+
 }
 
 export {
@@ -1340,5 +1379,6 @@ export {
     getAllPageIds,
     addAppointment,
     getUserAppointment,
+    deleteUserAppointment,
 
 };

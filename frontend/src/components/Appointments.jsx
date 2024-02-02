@@ -24,12 +24,24 @@ import ReportIcon from '@mui/icons-material/Report';
 import { useRoute } from 'wouter';
 import { navigate } from 'wouter/use-location';
 
+import { useGlobalStore } from '../useGlobalStore.js';
+
+// get the functions from the global store as non-reactive, fresh state,
+// because this proves the linter that the functions are not changing between renders
+// why? because it's annoying to specify functions as effect depedencies and I could not think of
+// a better solution, at least for now
+const {
+  setError,
+  setErrorMessage,
+} = useGlobalStore.getState();
+
 export default function Appointments() {
 
   const [loading, setLoading] = useState(false);
   const [appointmentData, setAppointmentData] = useState(null);
   const [showConfirmationDialog, setConfirmationDialog] = useState(false);
 
+  // eslint-disable-next-line no-unused-vars
   const [match, params] = useRoute('/appointments/:pageId');
 
   const handleCancelAppointment = () => {
@@ -51,6 +63,59 @@ export default function Appointments() {
   };
 
   const requestCancelAppointment = async () => {
+
+    setConfirmationDialog(false);
+    setLoading(true);
+
+    let error = null, status = 200;
+
+    try {
+
+      const requestOptions = {
+          method: 'DELETE',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          credentials: 'same-origin'
+      };
+
+      const response = await fetch(`/api/appointments/${params.pageId}`, requestOptions);
+      status = response.status;
+
+    } catch (err) {
+
+        // eslint-disable-next-line no-unused-vars
+        error = err;
+        status = 400; // client-side error
+
+    }
+
+    setLoading(false);
+
+    switch (status) {
+
+        case 200: {
+
+          navigate('/', {
+            replace: true
+          });
+
+          setErrorMessage('Programarea a fost anulată!');
+          setError(true);
+
+          break;
+
+        }
+
+        default: {
+
+          setErrorMessage('Eroare! Încearcă din nou.');
+          setError(true);
+          break;
+
+        }
+
+    }
 
   };
 

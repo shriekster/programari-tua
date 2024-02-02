@@ -6,7 +6,7 @@ import {
     getAllPageIds, addAppointment,
 
     // admin
-    getTimeRanges, getAppointments, getUserAppointment
+    getTimeRanges, getAppointments, getUserAppointment, deleteUserAppointment
 } from '../../lib/db.js';
 
 import { publish } from './events.js';
@@ -40,6 +40,7 @@ const getNextPageId = () => {
       return nextPageId;
 
 };
+
 
 router.post('/', validateAppointment, function(req, res) {
 
@@ -97,7 +98,6 @@ router.post('/', validateAppointment, function(req, res) {
 
 });
 
-
 router.get('/:pageId', function(req, res) {
 
     const appointment = getUserAppointment(req.params.pageId);
@@ -117,6 +117,40 @@ router.get('/:pageId', function(req, res) {
     .json({
         data: {
             message: 'Not Found'
+        }
+    });
+
+});
+
+router.delete('/:pageId', function(req, res) {
+
+    const result = deleteUserAppointment(req.params.pageId);
+
+    if (1 === result) {
+
+        const adminAppointments = getAppointments();
+        const adminTimeRanges = getTimeRanges();
+    
+        const data = {
+          registry: {
+            timeRanges: adminTimeRanges,
+            appointments: adminAppointments,
+          }
+        };
+    
+        publish('admins', 'update:appointments', data);
+  
+      return res.json({
+        data: {
+          message: 'OK'
+        }
+      });
+  
+    }
+
+    return res.status(500).json({
+        data: {
+          message: 'Internal Server Error'
         }
     });
 
