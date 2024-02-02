@@ -3,6 +3,7 @@ import gsm from 'serialport-gsm';
 import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
 
 const baseUrl = 'http://192.168.0.53:5173';
+const apiKey = '2mzie2w6rxe0u91t';
 
 const modem = gsm.Modem();
 
@@ -164,7 +165,7 @@ const fetchMessages = async () => {
 
     try {
 
-        const response = await fetch(`${baseUrl}/api/sms/?apiKey=2mzie2w6rxe0u91t&fromId=${fromId}`);
+        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=${fromId}`);
         status = response.status;
         
         const json = await response.json();
