@@ -11,6 +11,7 @@ const statements = {};
 let getMaxMessageId = null;
 let insertMessages = null;
 let updateMessage = null;
+let getUnsentMessages = null;
 
 
 try {
@@ -58,6 +59,14 @@ try {
         }
 
     });
+
+    statements['get_unsent_messages'] = db.prepare(`
+        SELECT
+            appointment_id AS appointmentId,
+            phone_number AS phoneNumber,
+            page_id AS pageId
+        FROM messages
+        WHERE sent = 0`);
 
     statements['update_message'] = db.prepare(`
         UPDATE messages
@@ -154,7 +163,25 @@ if (!stmtError) {
             error
         };
 
-    }
+    };
+
+    getUnsentMessages = () => {
+
+        let error = null, messages = null;
+
+        try {
+
+            messages = statements['get_unsent_messages'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return messages ?? null;
+
+    };
 
 }
 
@@ -164,5 +191,6 @@ export {
     getMaxMessageId,
     insertMessages,
     updateMessage,
+    getUnsentMessages,
 
 };

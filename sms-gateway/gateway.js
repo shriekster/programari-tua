@@ -1,6 +1,8 @@
 import rpio from 'rpio';
 import gsm from 'serialport-gsm';
-import { getMaxMessageId, insertMessages, updateMessage } from './db.js';
+import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
+
+const baseUrl = 'http://localhost:5173';
 
 const modem = gsm.Modem();
 
@@ -22,6 +24,9 @@ const options = {
     cnmiCommand: 'AT+CNMI=2,1,0,2,1',
     //logger: console
 };
+
+const timeout = Object.create(null);
+timeout.id = 0;
 
 const openCallback = (result) => {
 
@@ -65,7 +70,7 @@ const checkCallback = (result) => {
 
     if (result && result?.status && 'success' === result?.status) {
 
-        console.log(result);
+        fetchMessages();
 
     } else {
 
@@ -85,10 +90,61 @@ modem.on('open', openCallback);
 
 modem.open('/dev/ttyUSB0', options);
 
-const timeout = Object.create(null);
-timeout.id = 0;
 
-const fetchMessages = async () => {
+const sendMessage = (index, unsentMessages) => {
+
+    if (index < unsentMessages.length) {
+
+        const message = unsentMessages[index];
+        console.log('sending message', index)
+        modem.sendSMS(
+            message.phoneNumber,
+            `Salutare!\nAccesează detaliile rezervării tale aici:\n${baseUrl}/appointments/${message.pageId}`,
+            false,
+            (result) => {
+                console.log('message callback:', result);
+                updateMessage(message.pageId, 1);
+                
+                sendMessage(index + 1, unsentMessages);
+
+            }
+        );
+
+    } else {
+
+        clearTimeout(timeout.id);
+        timeout.id = setTimeout(() => {
+    
+            fetchMessages();
+    
+        }, 30000);
+
+    }
+
+};
+
+const sendMessages = () => {
+
+    const unsentMessages = getUnsentMessages();
+
+    if (unsentMessages && unsentMessages.length) {
+
+        sendMessage(0, unsentMessages);
+
+    } else {
+
+        clearTimeout(timeout.id);
+        timeout.id = setTimeout(() => {
+
+            fetchMessages();
+
+        }, 30000);
+
+    }
+
+};
+
+const fetchMessages = async () => { console.log('fetching messages')
 
     let error = null, status = 401, messages = null;
 
@@ -96,7 +152,7 @@ const fetchMessages = async () => {
 
     try {
 
-        const response = await fetch(`http://localhost:5173/api/sms/?apiKey=2mzie2w6rxe0u91t&fromId=${fromId}`);
+        const response = await fetch(`${baseUrl}/api/sms/?apiKey=2mzie2w6rxe0u91t&fromId=${fromId}`);
         status = response.status;
         
         const json = await response.json();
@@ -118,20 +174,20 @@ const fetchMessages = async () => {
 
         if (result && !result?.error) {
 
-            // SEND SMS
+            sendMessages();
 
         }
 
+    } else {
+
+        clearTimeout(timeout.id);
+        timeout.id = setTimeout(() => {
+    
+            fetchMessages();
+    
+        }, 30000);
+
     }
-
-    /*
-    clearTimeout(timeout.id);
-    timeout.id = setTimeout(async () => {
-
-        await fetchMessages();
-
-    }, 30000);
-    */
 
 };
 
