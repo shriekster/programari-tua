@@ -177,10 +177,9 @@ const fetchMessages = async () => {
         // eslint-disable-next-line no-unused-vars
         error = err;
         status = 400; // client-side error
-        console.log(err)
 
     }
-
+    console.log({err, status, messages})
     if (200 === status && messages && messages?.length) {
 
         console.log('Got', messages.length, 'messages. Updating the database...');
