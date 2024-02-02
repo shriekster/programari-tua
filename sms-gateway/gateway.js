@@ -101,7 +101,7 @@ const sendMessage = (index, unsentMessages) => {
         
         modem.sendSMS(
             message.phoneNumber,
-            `Salutare!\nAccesează detaliile rezervării tale aici:\n${baseUrl}/appointments/${message.pageId}`,
+            `Salutare!\nAcceseaza detaliile rezervarii tale aici:\n${baseUrl}/appointments/${message.pageId}\nAsociatia Spirit Tanar`,
             false,
             (result) => {
                 

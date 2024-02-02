@@ -3,7 +3,7 @@ import { customAlphabet } from 'nanoid';
 import validateAppointment from '../../middlewares/validateAppointment.js';
 import { 
     // user
-    getAllPageIds, addAppointment,
+    getAllPageIds, addAppointment, getUserDates, getUserTimeRanges, 
 
     // admin
     getTimeRanges, getAppointments, getUserAppointment, deleteUserAppointment
@@ -57,14 +57,26 @@ router.post('/', validateAppointment, function(req, res) {
             const adminAppointments = getAppointments();
             const adminTimeRanges = getTimeRanges();
         
-            const data = {
+            const adminData = {
               registry: {
                 timeRanges: adminTimeRanges,
                 appointments: adminAppointments,
               }
             };
         
-            publish('admins', 'update:appointments', data);
+            publish('admins', 'update:appointments', adminData);
+
+            const userDates = getUserDates();
+            const userTimeRanges = getUserTimeRanges();
+        
+            const userData = {
+              registry: {
+                dates: userDates,
+                timeRanges: userTimeRanges,
+              }
+            };
+        
+            publish('users', 'update', userData);
 
             return res.status(200)
             .json({
@@ -131,14 +143,26 @@ router.delete('/:pageId', function(req, res) {
         const adminAppointments = getAppointments();
         const adminTimeRanges = getTimeRanges();
     
-        const data = {
+        const adminData = {
           registry: {
             timeRanges: adminTimeRanges,
             appointments: adminAppointments,
           }
         };
     
-        publish('admins', 'update:appointments', data);
+        publish('admins', 'update:appointments', adminData);
+
+        const userDates = getUserDates();
+        const userTimeRanges = getUserTimeRanges();
+    
+        const userData = {
+          registry: {
+            dates: userDates,
+            timeRanges: userTimeRanges,
+          }
+        };
+    
+        publish('users', 'update', userData);
   
       return res.json({
         data: {
