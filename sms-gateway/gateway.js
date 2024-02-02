@@ -130,8 +130,6 @@ const sendMessage = (index, unsentMessages) => {
 
 const sendMessages = () => {
 
-    console.log('Sending messages...');
-
     const unsentMessages = getUnsentMessages();
 
     if (unsentMessages && unsentMessages.length) {
