@@ -191,4 +191,4 @@ const fetchMessages = async () => { console.log('fetching messages')
 
 };
 
-fetchMessages();
+//fetchMessages();
