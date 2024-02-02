@@ -1,13 +1,13 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Divider from '@mui/material/Divider';
@@ -16,9 +16,10 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import PersonIcon from '@mui/icons-material/Person';
 import ContactPhoneIcon from '@mui/icons-material/ContactPhone';
-import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
-import CheckIcon from '@mui/icons-material/Check';
 import PlaceIcon from '@mui/icons-material/Place';
+import EventIcon from '@mui/icons-material/Event';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ReportIcon from '@mui/icons-material/Report';
 
 import { useRoute } from 'wouter';
 import { navigate } from 'wouter/use-location';
@@ -38,6 +39,14 @@ export default function Appointments() {
   };
 
   const closeConfirmationDialog = (event, reason) => {
+
+    if (['escapeKeyDown', 'backdropClick'].includes(reason)) {
+
+      return;
+
+    }
+
+    setConfirmationDialog(false);
 
   };
 
@@ -136,118 +145,172 @@ export default function Appointments() {
     };
 
   }, [params.pageId]);
-  console.log(appointmentData)
+
   return (
     <Box sx={{
       margin: 0,
       padding: 0,
-      position: 'relative',
     }}>
-      <Box sx={{
-        margin: 0,
-        height: 'calc(100dvh - 56px)',
-        minHeight: 'max-content',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        {
-          appointmentData && (
-            <Box sx={{
-                margin: '16px',
-                padding: '16px',
-                minHeight: 'max-content',
-                minWidth: '300px',
-                width: '100%',
-                maxWidth: '450px',
+      {
+        appointmentData && (
+          <Box sx={{
+              margin: '16px auto',
+              padding: '16px',
+              minHeight: 'max-content',
+              minWidth: '300px',
+              width: '100%',
+              maxWidth: '450px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              cursor: 'default',
+              userSelect: 'none'
+            }}>
+              <Box sx={{ 
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
-                gap: '32px',
-                border: '1px solid rgba(128, 128, 128, .5)',
-                borderRadius: '4px',
-                cursor: 'default',
-                userSelect: 'none'
-              }}>
-              <Box sx={{
-                margin: 0,
-                minHeight: 'max-content',
-                minWidth: '300px',
+                justifyContent: 'flex-start',
+                gap: '8px',
                 width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
               }}>
-                <Typography textAlign='center'>
+                <EventIcon />
+                <Typography>
                   {appointmentData?.day}
                 </Typography>
-                <Typography textAlign='center'>
+              </Box>
+              <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'flex-start',
+                  gap: '8px',
+                  width: '100%',
+                  marginBottom: '16px',
+              }}>
+                <AccessTimeIcon />
+                <Typography>
                   {appointmentData?.startTime} - {appointmentData?.endTime}
                 </Typography>
-                {
-                  appointmentData?.participants?.map((participant) => (
-                    <Box key={participant?.id}
-                      sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', }}>
+              </Box>
+              {
+                appointmentData?.participants?.map((participant) => (
+                  <Fragment key={participant?.id}>
+                    <Box 
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        width: '100%',
+                        gap: '8px'
+                    }}>
                       <PersonIcon />
                       <Typography>
                         {participant?.lastName} {participant?.firstName}
                       </Typography>
                     </Box>
-                  ))
-                }
-              </Box>
-              <Button
-                href={`https://www.waze.com/ul?ll=${appointmentData?.latitude},${appointmentData?.longitude}&navigate=yes&zoom=18`}
-                target='_blank'
-                variant='outlined'
-                color='inherit'
-                sx={{ textTransform: 'none', width: '100%' }}
-                startIcon={<PlaceIcon color='error'/>}
-                endIcon={<OpenInNewIcon color='info' />}>
-                {appointmentData?.location}
-              </Button>
-              <Button
-                href={`tel:${appointmentData?.contactPhone}`}
-                target='_blank'
+                    <Box sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        width: '100%',
+                        gap: '8px'
+                      }}>
+                      <Chip variant='filled' 
+                        label={participant.age}
+                        size='small'
+                        sx={{ marginRight: '8px' }}/>
+                      <Chip variant='outlined' 
+                        label={`candidează pt. ${participant.personnelCategoryName}`}
+                        size='small'/>
+                    </Box>
+                  </Fragment>
+                ))
+              }
+            <Button
+              href={`https://www.waze.com/ul?ll=${appointmentData?.latitude},${appointmentData?.longitude}&navigate=yes&zoom=18`}
+              target='_blank'
+              variant='outlined'
+              color='inherit'
+              sx={{ textTransform: 'none', width: '100%', marginTop: '32px' }}
+              startIcon={<PlaceIcon color='error'/>}
+              endIcon={<OpenInNewIcon color='info' />}
+              disabled={loading}>
+              {appointmentData?.location}
+            </Button>
+            <Button
+              href={`tel:${appointmentData?.contactPhone}`}
+              target='_blank'
+              variant='contained'
+              color='success'
+              sx={{ textTransform: 'none', width: '100%', marginTop: '32px' }}
+              startIcon={<ContactPhoneIcon />}
+              disabled={loading}>
+              {appointmentData?.contactPhone}
+            </Button>
+            <Box sx={{ width: '100%', marginTop: '64px' }}>
+              <Divider variant='fullWidth' sx={{ borderTop: '1px solid rgba(128, 128, 128, .5)', marginBottom: '16px' }} />
+              <Button onClick={handleCancelAppointment}
                 variant='contained'
-                color='success'
-                sx={{ textTransform: 'none', width: '100%' }}
-                startIcon={<ContactPhoneIcon />}>
-                {appointmentData?.contactPhone}
+                color='error'
+                sx={{ width: '100%' }}
+                startIcon={<DeleteForeverIcon />}
+                disabled={loading}>
+                Anulează programarea
               </Button>
-              <Box sx={{ width: '100%', marginTop: '64px' }}>
-                <Divider variant='fullWidth' sx={{ borderTop: '1px solid rgba(128, 128, 128, .5)', marginBottom: '16px' }} />
-                <Button
-                  variant='contained'
-                  color='error'
-                  sx={{ width: '100%' }}
-                  startIcon={<DeleteForeverIcon />}>
-                  Anulează programarea
-                </Button>
-              </Box>
             </Box>
-          )
-        }
-      </Box>
-      {
-        loading && (
-          <CircularProgress
-            size={48}
-            color='primary'
-            thickness={8}
-            sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: '-24px',
-                marginLeft: '-24px',
-            }}
-            disableShrink
-          />
+          </Box>
         )
       }
+      {
+        loading && (
+          <Box sx={{
+            margin: 0,
+            height: 'calc(100dvh - 56px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <CircularProgress
+              size={48}
+              color='primary'
+              thickness={8}
+              disableShrink
+            />
+          </Box>
+        )
+      }
+      <Dialog open={showConfirmationDialog}
+        onClose={closeConfirmationDialog}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>
+          <ReportIcon fontSize='large' color='error'/>
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Dorești să anulezi programarea?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly'
+          }}>
+          <Button onClick={requestCancelAppointment}
+              color='error'
+              variant='contained'
+              sx={{ width: '50%' }}
+              disabled={loading}>
+              DA
+          </Button>
+          <Button onClick={closeConfirmationDialog}
+              color='primary'
+              variant='contained'
+              sx={{ width: '50%' }}
+              disabled={loading}>
+              NU
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }

@@ -1108,7 +1108,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
               <Dialog open={showConfirmation}
                 onClose={closeConfirmationDialog}>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'default', userSelect: 'none' }}>
-                  <WarningIcon fontSize='large' color='warning' sx={{ marginRight: '4px' }}/>
+                  <WarningIcon fontSize='large' color='warning'/>
                 </DialogTitle>
                 <DialogContent>
                   <Typography>
