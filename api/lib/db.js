@@ -36,6 +36,22 @@ let getAllPageIds = null;
 let addAppointment = null;
 let getUserAppointment = null;
 
+// utility functions
+const replaceAt = (string, index, replacement) => {
+
+    return string.substring(0, index) + replacement + this.substring(index + replacement.length);
+
+};
+
+const replaceFrom = (string, index, replacementChar) => {
+
+    const replacementLength = string.substring(1).length;
+    const replacementString = new Array(replacementLength).fill(replacementChar).join('');
+
+    return string.substring(0, index) + replacementChar + replacementString;
+
+};
+
 try {
 
     db = new Database(dbFilePath, {
@@ -295,6 +311,9 @@ try {
     statements['get_appointment'] = db.prepare(`
         SELECT
             dates.day AS day,
+            locations.display_name AS location,
+            locations.lat AS latitude,
+            locations.lon AS longitude,
             time_ranges.start_time AS startTime,
             time_ranges.end_time AS endTime,
             participants.id AS participantId,
@@ -307,6 +326,7 @@ try {
         LEFT JOIN personnel_categories on personnel_categories.id = participants.personnel_category_id
         LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id
         LEFT JOIN dates ON dates.id = time_ranges.date_id
+        LEFT JOIN locations ON locations.id = dates.location_id
         WHERE appointments.page_id = ?`);
 
 } catch (err) {
@@ -1254,6 +1274,9 @@ if (!stmtError) {
 
                 result = {
                     day: _appointments[0].day,
+                    location: _appointments[0].location,
+                    latitude: _appointments[0].latitude,
+                    longitude: _appointments[0].longitude,
                     startTime: _appointments[0].startTime,
                     endTime: _appointments[0].endTime,
                     participants: [],
@@ -1266,7 +1289,7 @@ if (!stmtError) {
                 
                 const participant = {
                     id: _appointments[i].participantId,
-                    lastName: _appointments[i].lastName,
+                    lastName: replaceFrom(_appointments[i].lastName, 1, '*'),
                     firstName: _appointments[i].firstName,
                     age: _appointments[i].isAdult ? 'adult' : 'minor',
                     personnelCategoryName: _appointments[i].personnelCategoryName
