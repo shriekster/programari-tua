@@ -37,6 +37,9 @@ let addAppointment = null;
 let getUserAppointment = null;
 let deleteUserAppointment = null;
 
+// sms gateway
+let getMessages = null;
+
 // utility functions
 const replaceAt = (string, index, replacement) => {
 
@@ -335,6 +338,15 @@ try {
     statements['delete_appointment'] = db.prepare(`
         DELETE FROM appointments
         WHERE appointments.page_id = ?`);
+
+    // sms gateway
+    statements['get_messages'] = db.prepare(`
+        SELECT
+            appointments.id AS appointmentId,
+            appointments.phone_number AS phoneNumber,
+            appointments.page_id AS pageId
+        FROM appointments
+        WHERE appointments.id > ?`);
 
 } catch (err) {
     
@@ -1348,6 +1360,27 @@ if (!stmtError) {
 
     };
 
+    // sms gateway
+    getMessages = (fromAppointmentId) => {
+
+        let error = null, messages = null;
+
+        const fromId = isNaN(fromAppointmentId) ? 0 : Number(fromAppointmentId);
+
+        try {
+
+            messages = statements['get_messages'].all(fromId);
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return messages ?? null;
+
+    };
+
 }
 
 export {
@@ -1380,5 +1413,8 @@ export {
     addAppointment,
     getUserAppointment,
     deleteUserAppointment,
+
+    // sms gateway
+    getMessages,
 
 };

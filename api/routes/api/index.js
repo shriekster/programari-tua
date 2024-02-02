@@ -10,6 +10,8 @@ import adminTimeRangesRoute from './admin/timeRanges.js';
 
 import appointmentsRoute from './appointments.js';
 
+import smsRoute from './sms/messages.js';
+
 import { router as eventsRoute } from './events.js';
 
 
@@ -35,6 +37,8 @@ router.use('/admin/events', authorize, getSubcriptionId, eventsRoute);
 router.use('/events', getSubcriptionId, eventsRoute);
 router.use('/appointments', appointmentsRoute);
 
+// sms API
+router.use('/', smsRoute);
 
 //module.exports = router;
 export default router;
