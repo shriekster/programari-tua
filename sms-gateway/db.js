@@ -36,10 +36,22 @@ try {
         SELECT MAX(messages.appointment_id) AS maxId
         FROM messages`);
 
+    statements['get_messages'] = db.prepare(`
+        SELECT
+            phone_number AS phoneNumber,
+            page_id AS pageId
+        FROM messages`);
+
+    /*
     statements['insert_message'] = db.prepare(`
         INSERT INTO messages(appointment_id, phone_number, page_id)
         VALUES (?, ?, ?)`);
+    */
+    statements['insert_message'] = db.prepare(`
+        INSERT INTO messages(phone_number, page_id)
+        VALUES (?, ?)`);
 
+    /*
     statements['insert_messages'] = db.transaction((messages) => {
 
         const insertMessage = statements['insert_message'];
@@ -59,10 +71,38 @@ try {
         }
 
     });
+    */
+    statements['insert_messages'] = db.transaction((messages) => {
 
+        const insertMessage = statements['insert_message'];
+
+        if (insertMessage) {
+
+            for (const message of messages) {
+
+                insertMessage.run(
+                    '' + message.phoneNumber,
+                    '' + message.pageId,
+                );
+
+            }
+
+        }
+
+    });
+
+    /*
     statements['get_unsent_messages'] = db.prepare(`
         SELECT
             appointment_id AS appointmentId,
+            phone_number AS phoneNumber,
+            page_id AS pageId
+        FROM messages
+        WHERE sent = 0`);
+    */
+
+    statements['get_unsent_messages'] = db.prepare(`
+        SELECT
             phone_number AS phoneNumber,
             page_id AS pageId
         FROM messages
@@ -103,21 +143,32 @@ if (!stmtError) {
 
     insertMessages = (messages) => {
 
-        let error = false;
+        let error = false, _currentMessages, currentMessages = new Map();
 
         try {
 
             try {
 
+                _currentMessages = statements['get_messages'].all(); // 
+
+                for (let i = 0, l = currentMessages.length; i < l; ++i) { //
+
+                    currentMessages.set(_currentMessages[i].pageId, _currentMessages[i]); //
+
+                } //
+
+                const filteredMessages = messages.filter((message) => !currentMessages.has(message.pageId)); //
+
                 const insertMany = statements['insert_messages'];
 
                 if (insertMany) {
 
-                    insertMany(messages);
+                    //insertMany(messages);
+                    insertMany(filteredMessages);
 
                 } else {
 
-                    throw new Error('Transaction does noe exist!')
+                    throw new Error('Transaction does not exist!')
 
                 }
 

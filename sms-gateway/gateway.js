@@ -158,13 +158,14 @@ const fetchMessages = async () => {
 
     let error = null, status = 401, messages = null;
 
-    const fromId = getMaxMessageId();
+    //const fromId = getMaxMessageId();
 
-    console.log({fromId})
+    //console.log({fromId})
 
     try {
 
-        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=${fromId}`);
+        //const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=${fromId}`);
+        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=0`);
         status = response.status;
         
         const json = await response.json();
