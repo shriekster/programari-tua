@@ -160,6 +160,8 @@ const fetchMessages = async () => {
 
     const fromId = getMaxMessageId();
 
+    console.log({fromId})
+
     try {
 
         const response = await fetch(`${baseUrl}/api/sms/?apiKey=2mzie2w6rxe0u91t&fromId=${fromId}`);
