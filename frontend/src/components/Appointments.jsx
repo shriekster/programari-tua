@@ -297,6 +297,7 @@ export default function Appointments() {
               target='_blank'
               variant='outlined'
               color='inherit'
+              size='large'
               sx={{ textTransform: 'none', width: '100%', marginTop: '32px' }}
               startIcon={<PlaceIcon color='error'/>}
               endIcon={<OpenInNewIcon color='info' />}
@@ -308,6 +309,7 @@ export default function Appointments() {
               target='_blank'
               variant='contained'
               color='success'
+              size='large'
               sx={{ textTransform: 'none', width: '100%', marginTop: '32px' }}
               startIcon={<ContactPhoneIcon />}
               disabled={loading}>
@@ -318,6 +320,7 @@ export default function Appointments() {
               <Button onClick={handleCancelAppointment}
                 variant='contained'
                 color='error'
+                size='large'
                 sx={{ width: '100%' }}
                 startIcon={<DeleteForeverIcon />}
                 disabled={loading}>
