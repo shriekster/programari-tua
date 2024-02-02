@@ -179,8 +179,8 @@ const fetchMessages = async () => {
         status = 400; // client-side error
 
     }
-    console.log({error, status, messages})
-    if (200 === status && messages && messages?.length) {
+
+    if (200 === status && messages) {
 
         console.log('Got', messages.length, 'messages. Updating the database...');
 

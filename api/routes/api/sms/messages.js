@@ -12,7 +12,7 @@ const router = Router();
 
 
 router.get('/', function(req, res) {
-    console.log(req.query)
+
     if (req.query) {
 
         const apiKey = req.query.apiKey;
