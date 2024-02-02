@@ -2,7 +2,8 @@ import rpio from 'rpio';
 import gsm from 'serialport-gsm';
 import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
 
-const baseUrl = 'http://192.168.0.53:5173';
+//const baseUrl = 'http://192.168.0.53:5173';
+const baseUrl = 'https://programari-tua.duckdns.org';
 const apiKey = '2mzie2w6rxe0u91t';
 
 const modem = gsm.Modem();
