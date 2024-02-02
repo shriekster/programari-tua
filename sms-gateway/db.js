@@ -10,6 +10,7 @@ const statements = {};
 // sms gateway
 let getMaxMessageId = null;
 let insertMessages = null;
+let updateMessage = null;
 
 
 try {
@@ -58,6 +59,13 @@ try {
 
     });
 
+    statements['update_message'] = db.prepare(`
+        UPDATE messages
+        SET
+            sent = ?
+        WHERE
+            page_id = ?`);
+
 } catch (err) {
     
     stmtError = err;
@@ -80,7 +88,7 @@ if (!stmtError) {
 
         } 
 
-        return data ?? 0;
+        return data?.maxId ?? 0;
 
     };
 
@@ -125,6 +133,29 @@ if (!stmtError) {
 
     };
 
+    updateMessage = (pageId, sent) => {
+
+        let error = false, updateInfo = null;
+
+        try {
+
+            updateInfo = statements['update_message'].run(
+                Number(sent),
+                '' + pageId
+            );
+
+        } catch (err) {
+
+            error = Boolean(err);
+
+        }
+
+        return {
+            error
+        };
+
+    }
+
 }
 
 export {
@@ -132,5 +163,6 @@ export {
     // sms gateway
     getMaxMessageId,
     insertMessages,
+    updateMessage,
 
 };

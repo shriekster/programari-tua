@@ -38,7 +38,7 @@ router.use('/events', getSubcriptionId, eventsRoute);
 router.use('/appointments', appointmentsRoute);
 
 // sms API
-router.use('/', smsRoute);
+router.use('/sms', smsRoute);
 
 //module.exports = router;
 export default router;

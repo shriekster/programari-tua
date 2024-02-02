@@ -20,7 +20,7 @@ const options = {
     customInitCommand: '',
     cnmiCommand: 'AT+CNMI=2,1,0,2,1',
     logger: console
-}
+};
 
 gsm.list((err, result) => {
     console.log(result)
