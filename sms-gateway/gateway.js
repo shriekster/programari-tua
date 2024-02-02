@@ -2,7 +2,7 @@ import rpio from 'rpio';
 import gsm from 'serialport-gsm';
 import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
 
-const baseUrl = 'http://localhost:5173';
+const baseUrl = 'http://192.168.0.53:5173';
 
 const modem = gsm.Modem();
 
@@ -95,14 +95,18 @@ const sendMessage = (index, unsentMessages) => {
 
     if (index < unsentMessages.length) {
 
+        console.log('Sending message', index);
+
         const message = unsentMessages[index];
-        console.log('sending message', index)
+        
         modem.sendSMS(
             message.phoneNumber,
             `Salutare!\nAccesează detaliile rezervării tale aici:\n${baseUrl}/appointments/${message.pageId}`,
             false,
             (result) => {
+                
                 console.log('message callback:', result);
+                
                 updateMessage(message.pageId, 1);
                 
                 sendMessage(index + 1, unsentMessages);
@@ -125,9 +129,13 @@ const sendMessage = (index, unsentMessages) => {
 
 const sendMessages = () => {
 
+    console.log('Sending messages...');
+
     const unsentMessages = getUnsentMessages();
 
     if (unsentMessages && unsentMessages.length) {
+
+        console.log(unsentMessages.length, 'unsent messages. Starting to send...');
 
         sendMessage(0, unsentMessages);
 
@@ -144,7 +152,9 @@ const sendMessages = () => {
 
 };
 
-const fetchMessages = async () => { console.log('fetching messages')
+const fetchMessages = async () => { 
+
+    console.log('Fetching messages...');
 
     let error = null, status = 401, messages = null;
 
@@ -170,10 +180,13 @@ const fetchMessages = async () => { console.log('fetching messages')
 
     if (200 === status && messages && messages?.length) {
 
+        console.log('Got', messages.length, 'messages. Updating the database...');
+
         const result = insertMessages(messages);
 
         if (result && !result?.error) {
 
+            console.log('Database updated.');
             sendMessages();
 
         }
