@@ -18,6 +18,9 @@ import Divider from '@mui/material/Divider';
 import Badge from '@mui/material/Badge';
 import Chip from '@mui/material/Chip';
 import InsertInvitationIcon from '@mui/icons-material/InsertInvitation';
+import TodayIcon from '@mui/icons-material/Today';
+
+import dayjs from 'dayjs';
 
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
@@ -253,6 +256,14 @@ export default function Admin() {
         }
 
     }
+
+  };
+
+  const handleClickToday = () => {
+
+    const today = dayjs();
+
+    setSelectedDate(today);
 
   };
 
@@ -521,8 +532,14 @@ export default function Admin() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '40px',
+          height: '64px',
         }}>
+          <IconButton color='info' 
+            sx={{ justifySelf: 'flex-start' }}
+            disabled={loading}
+            onClick={handleClickToday}>
+            <TodayIcon fontSize='large' />
+          </IconButton>
           <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
           {
             displaySettings && (
