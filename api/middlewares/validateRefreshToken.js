@@ -6,7 +6,7 @@ export default function validateRefreshToken(req, res, next) {
 
   if (refresh_token) {
 
-    const tokenStatus = checkToken('refresh', refresh_token);
+    const tokenStatus = checkToken('refresh_token', refresh_token);
 
     // if the refresh token is valid...
     if ('ok' === tokenStatus) {

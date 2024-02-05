@@ -1,8 +1,7 @@
 import { Router } from 'express';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
-import { getProfileName } from '../../lib/token.js';
-import { getSecret } from '../../lib/db.js';
+import { getTokenSecret, getProfileName } from '../../lib/token.js';
 
 import validateRefreshToken from '../../middlewares/validateRefreshToken.js';
 
@@ -19,10 +18,10 @@ router.post('/', validateRefreshToken, function (req, res) {
 
   const { refresh_token } = req.cookies;
 
-  const profileName = getProfileName('refresh', refresh_token);
+  const profileName = getProfileName('refresh_token', refresh_token);
 
-  const accessSecret = getSecret('access');
-  const refreshSecret = getSecret('refresh');
+  const accessTokenSecret = getTokenSecret('access_token');
+  const refreshTokenSecret = getTokenSecret('refresh_token');
 
   try {
 
@@ -39,7 +38,7 @@ router.post('/', validateRefreshToken, function (req, res) {
       aud: `${profileName}`,
       jti: jwtId,
     },
-    accessSecret, {
+    accessTokenSecret, {
       algorithm: 'HS512',
       expiresIn: '30m', // the access token should expire after 30 minutes, *expressed in seconds or a string describing a time span (vercel/ms)*
     });
@@ -48,7 +47,7 @@ router.post('/', validateRefreshToken, function (req, res) {
       iss: 'AST',
       aud: `${profileName}`,
     },
-    refreshSecret, {
+    refreshTokenSecret, {
       algorithm: 'HS512',
       expiresIn: '7d', // the refresh token should expire after 7 days, *expressed in seconds or a string describing a time span (vercel/ms)*
     });

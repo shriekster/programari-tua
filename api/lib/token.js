@@ -1,11 +1,38 @@
 import { default as jwt } from 'jsonwebtoken';
-import { getSecret } from './db.js';
+
+const getTokenSecret = (tokenType) => {
+
+  let secret = '';
+
+  switch (tokenType) {
+
+    case 'access_token': {
+
+      secret = process.env.ACCESS_TOKEN_SECRET;
+      break;
+
+    }
+
+    case 'refresh_token': {
+
+      secret = process.env.REFRESH_TOKEN_SECRET;
+      break;
+
+    }
+
+    default: break;
+
+  }
+
+  return secret;
+
+};
 
 const checkToken = (tokenType, token) => {
 
   if (token) {
 
-    const secret = getSecret(tokenType);
+    const secret = getTokenSecret(tokenType);
 
     if (secret) {
 
@@ -51,7 +78,7 @@ const getProfileName = (tokenType, token) => {
 
   if (token) {
 
-    const secret = getSecret(tokenType);
+    const secret = getTokenSecret(tokenType);
 
     if (secret) {
 
@@ -65,7 +92,7 @@ const getProfileName = (tokenType, token) => {
 
       } catch (err) {
 
-        tokenError = err; console.log(err)
+        tokenError = err;
 
       }
 
@@ -84,6 +111,7 @@ const getProfileName = (tokenType, token) => {
 };
 
 export {
+  getTokenSecret,
   checkToken,
   getProfileName
 };

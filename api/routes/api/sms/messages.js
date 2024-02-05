@@ -4,8 +4,6 @@ import {
     // sms gateway
     getMessages,
 
-    // admin
-    getSecret
 } from '../../../lib/db.js';
 
 const router = Router();
@@ -15,17 +13,15 @@ router.get('/', function(req, res) {
 
     if (req.query) {
 
-        const apiKey = req.query.apiKey;
-        const fromId = req.query.fromId;
+        const clientApiKey = req.query.apiKey;
 
-        if (apiKey) {
+        if (clientApiKey) {
 
-            const serverApiKey = getSecret('api_key');
-            console.log(serverApiKey)
+            const apiKey = process.env.API_KEY;
 
-            if (serverApiKey && apiKey === serverApiKey && !isNaN(fromId)) {
+            if (apiKey && clientApiKey === apiKey) {
 
-                const messages = getMessages(fromId);
+                const messages = getMessages(0); // TODO!! modify - get messages with sent = 0
 
                 return res.status(200)
                 .json({

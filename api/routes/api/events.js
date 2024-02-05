@@ -143,7 +143,7 @@ router.get('/', function(req, res) {
 
       // admin data
       const accessToken = req.cookies?.['access_token'];
-      const userName = getProfileName('access', accessToken);
+      const userName = getProfileName('access_token', accessToken);
 
       const dates = getDates();
       const timeRanges = getTimeRanges();

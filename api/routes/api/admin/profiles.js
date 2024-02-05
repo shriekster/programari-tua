@@ -8,7 +8,7 @@ const router = Router();
 router.get('/current', function(req, res) {
 
   const accessToken = req.cookies?.['access_token'];
-  const profileName = getProfileName('access', accessToken);
+  const profileName = getProfileName('access_token', accessToken);
 
   if (profileName) {
 

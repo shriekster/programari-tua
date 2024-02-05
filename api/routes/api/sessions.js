@@ -3,7 +3,8 @@ import * as argon2 from 'argon2';
 import { default as jwt } from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
 
-import { getSecret, getCredentials } from '../../lib/db.js';
+import { getTokenSecret } from '../../lib/token.js';
+import { getCredentials } from '../../lib/db.js';
 import validateCredentials from '../../middlewares/validateCredentials.js';
 
 const router = Router();
@@ -13,8 +14,7 @@ router.post('/', validateCredentials, async function (req, res) {
 
   let error = null,
   accessToken = '', refreshToken = '',
-  credentials,
-  data = null;
+  credentials;
 
   const { username, password } = req.body;
   
@@ -29,8 +29,8 @@ router.post('/', validateCredentials, async function (req, res) {
 
       if (isCorrectPassword) {
 
-        const accessSecret = getSecret('access');
-        const refreshSecret = getSecret('refresh');
+        const accessTokenSecret = getTokenSecret('access_token');
+        const refreshTokenSecret = getTokenSecret('refresh_token');
         
         const jwtId = nanoid();
 
@@ -39,7 +39,7 @@ router.post('/', validateCredentials, async function (req, res) {
           aud: `${username}`,
           jti: jwtId
         }, 
-        accessSecret, {
+        accessTokenSecret, {
           algorithm: 'HS512',
           expiresIn: '30m', // the access token should expire after 30 minutes, *expressed in seconds or a string describing a time span (vercel/ms)*
         });
@@ -48,7 +48,7 @@ router.post('/', validateCredentials, async function (req, res) {
           iss: 'AST',
           aud: `${username}`
         }, 
-        refreshSecret, {
+        refreshTokenSecret, {
           algorithm: 'HS512',
           expiresIn: '7d', // the refresh token should expire after 7 days, *expressed in seconds or a string describing a time span (vercel/ms)*
         });
