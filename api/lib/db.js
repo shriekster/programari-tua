@@ -324,6 +324,10 @@ try {
 
     });
 
+    statements['add_message'] = db.prepare(`
+        INSERT INTO messages(appointment_id, text)
+        VALUES (?, ?)`);
+
     statements['get_appointment'] = db.prepare(`
         SELECT
             dates.day AS day,

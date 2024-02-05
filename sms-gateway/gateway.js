@@ -1,5 +1,7 @@
 import rpio from 'rpio';
 import gsm from 'serialport-gsm';
+import 'dotenv/config';
+
 import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
 
 //const baseUrl = 'http://192.168.0.53:5173';
@@ -90,7 +92,7 @@ const checkCallback = (result) => {
 modem.on('open', openCallback);
 
 
-modem.open('/dev/ttyUSB0', options);
+//modem.open('/dev/ttyUSB0', options);
 
 
 const sendMessage = (index, unsentMessages) => {
@@ -207,4 +209,3 @@ const fetchMessages = async () => {
 
 };
 
-//fetchMessages();

@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 //import createHttpError from 'http-errors';
+import 'dotenv/config';
 
 import apiRoutes from './routes/api/index.js';
 import defaultRoute from './routes/default.js';
