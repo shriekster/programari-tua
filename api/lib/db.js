@@ -10,7 +10,6 @@ let stmtError = null;
 const statements = {};
 
 // admin
-let getSecret = null;
 let getCredentials = null;
 let getProfileId = null;
 let getProfile = null;
@@ -375,24 +374,6 @@ try {
 if (!stmtError) {
 
     // admin
-    getSecret = (scope) => {
-
-        let error = null, secret = null;
-
-        try {
-
-            secret = statements['get_secret'].get('' + scope);
-
-        } catch (err) {
-
-            error = err;
-
-        }
-
-        return secret?.value ?? '';
-
-    };
-
     getCredentials = (username) => {
 
         let error = null, credentials = null;
@@ -1483,7 +1464,6 @@ if (!stmtError) {
 export {
 
     // admin
-    getSecret,
     getCredentials,
     getProfile,
     updateProfile,
