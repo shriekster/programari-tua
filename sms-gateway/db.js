@@ -8,10 +8,12 @@ let stmtError = null;
 const statements = {};
 
 // sms gateway
-let getMaxMessageId = null;
 let insertMessages = null;
 let updateMessage = null;
+let markMessageAsSent = null;
+let markMessageAsSynced = null;
 let getUnsentMessages = null;
+let getUnsyncedMessages = null;
 
 
 try {
@@ -32,26 +34,10 @@ try {
 try {
 
     // sms gateway
-    statements['get_last_message_id'] = db.prepare(`
-        SELECT MAX(messages.appointment_id) AS maxId
-        FROM messages`);
-
-    statements['get_messages'] = db.prepare(`
-        SELECT
-            phone_number AS phoneNumber,
-            page_id AS pageId
-        FROM messages`);
-
-    /*
     statements['insert_message'] = db.prepare(`
-        INSERT INTO messages(appointment_id, phone_number, page_id)
+        INSERT INTO messages(id, recipient, text)
         VALUES (?, ?, ?)`);
-    */
-    statements['insert_message'] = db.prepare(`
-        INSERT INTO messages(phone_number, page_id)
-        VALUES (?, ?)`);
 
-    /*
     statements['insert_messages'] = db.transaction((messages) => {
 
         const insertMessage = statements['insert_message'];
@@ -61,28 +47,9 @@ try {
             for (const message of messages) {
 
                 insertMessage.run(
-                    Number(message.appointmentId),
-                    '' + message.phoneNumber,
-                    '' + message.pageId,
-                );
-
-            }
-
-        }
-
-    });
-    */
-    statements['insert_messages'] = db.transaction((messages) => {
-
-        const insertMessage = statements['insert_message'];
-
-        if (insertMessage) {
-
-            for (const message of messages) {
-
-                insertMessage.run(
-                    '' + message.phoneNumber,
-                    '' + message.pageId,
+                    Number(message.id),
+                    '' + message.recipient,
+                    '' + message.text,
                 );
 
             }
@@ -91,29 +58,33 @@ try {
 
     });
 
-    /*
-    statements['get_unsent_messages'] = db.prepare(`
-        SELECT
-            appointment_id AS appointmentId,
-            phone_number AS phoneNumber,
-            page_id AS pageId
-        FROM messages
-        WHERE sent = 0`);
-    */
-
-    statements['get_unsent_messages'] = db.prepare(`
-        SELECT
-            phone_number AS phoneNumber,
-            page_id AS pageId
-        FROM messages
-        WHERE sent = 0`);
-
-    statements['update_message'] = db.prepare(`
+    statements['mark_message_as_sent'] = db.prepare(`
         UPDATE messages
         SET
-            sent = ?
+            sent = 1
         WHERE
-            page_id = ?`);
+            id = ?`);
+
+    statements['mark_message_as_synced'] = db.prepare(`
+        UPDATE messages
+        SET
+            synced = 1
+        WHERE
+            id = ?`);
+
+    statements['get_unsent_messages'] = db.prepare(`
+        SELECT id, recipient, text
+        FROM messages
+        WHERE sent = 0`);
+
+    statements['get_unsynced_messages'] = db.prepare(`
+        SELECT 
+            id, recipient, text, sent, 
+            sent_at AS sentAt
+        FROM messages
+        WHERE 
+            sent = 1 AND
+            synced = 0`);
 
 } catch (err) {
     
@@ -123,52 +94,23 @@ try {
 
 if (!stmtError) {
 
-    getMaxMessageId = () => {
-
-        let error = null, data = null;
-
-        try {
-
-            data = statements['get_last_message_id'].get();
-
-        } catch (err) {
-
-            error = err;
-
-        } 
-
-        return data?.maxId ?? 0;
-
-    };
-
     insertMessages = (messages) => {
 
-        let error = false, _currentMessages, currentMessages = new Map();
+        let error = false;
 
         try {
 
             try {
 
-                _currentMessages = statements['get_messages'].all(); // 
-
-                for (let i = 0, l = currentMessages.length; i < l; ++i) { //
-
-                    currentMessages.set(_currentMessages[i].pageId, _currentMessages[i]); //
-
-                } //
-
-                const filteredMessages = messages.filter((message) => !currentMessages.has(message.pageId)); //
-
                 const insertMany = statements['insert_messages'];
 
                 if (insertMany) {
 
-                    //insertMany(messages);
-                    insertMany(filteredMessages);
+                    insertMany(messages);
 
                 } else {
 
-                    throw new Error('Transaction does not exist!')
+                    throw new Error('Transaction does not exist!');
 
                 }
 
@@ -193,15 +135,14 @@ if (!stmtError) {
 
     };
 
-    updateMessage = (pageId, sent) => {
+    markMessageAsSent = (messageId) => {
 
         let error = false, updateInfo = null;
 
         try {
 
-            updateInfo = statements['update_message'].run(
-                Number(sent),
-                '' + pageId
+            updateInfo = statements['mark_message_as_sent'].run(
+                Number(messageId),
             );
 
         } catch (err) {
@@ -215,6 +156,29 @@ if (!stmtError) {
         };
 
     };
+
+    markMessageAsSynced = (messageId) => {
+
+        let error = false, updateInfo = null;
+
+        try {
+
+            updateInfo = statements['mark_message_as_synced'].run(
+                Number(messageId),
+            );
+
+        } catch (err) {
+
+            error = Boolean(err);
+
+        }
+
+        return {
+            error
+        };
+
+    };
+
 
     getUnsentMessages = () => {
 
@@ -234,14 +198,33 @@ if (!stmtError) {
 
     };
 
+    getUnsyncedMessages = () => {
+
+        let error = null, messages = null;
+
+        try {
+
+            messages = statements['get_unsynced_messages'].all();
+
+        } catch (err) {
+
+            error = err;
+
+        }
+
+        return messages ?? null;
+
+    };
+
 }
 
 export {
 
     // sms gateway
-    getMaxMessageId,
     insertMessages,
-    updateMessage,
+    markMessageAsSent,
+    markMessageAsSynced,
     getUnsentMessages,
+    getUnsyncedMessages,
 
 };

@@ -2,7 +2,7 @@ import { Router } from 'express';
 
 import { 
     // sms gateway
-    getMessages,
+    getUnsentMessages,
 
 } from '../../../lib/db.js';
 
@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
 
             if (apiKey && clientApiKey === apiKey) {
 
-                const messages = getMessages(0); // TODO!! modify - get messages with sent = 0
+                const messages = getUnsentMessages();
 
                 return res.status(200)
                 .json({

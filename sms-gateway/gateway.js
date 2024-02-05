@@ -2,7 +2,13 @@ import rpio from 'rpio';
 import gsm from 'serialport-gsm';
 import 'dotenv/config';
 
-import { insertMessages, getUnsentMessages, updateMessage } from './db.js';
+import { 
+    insertMessages,
+    markMessageAsSent,
+    markMessageAsSynced,
+    getUnsentMessages,
+    getUnsyncedMessages, 
+} from './db.js';
 
 const baseUrl = process.env.BASE_URL;
 const apiKey = process.env.API_KEY;
@@ -28,8 +34,7 @@ const options = {
     //logger: console
 };
 
-const timeout = Object.create(null);
-timeout.id = 0;
+let timeoutId;
 
 const openCallback = (result) => {
 
@@ -73,7 +78,7 @@ const checkCallback = (result) => {
 
     if (result && result?.status && 'success' === result?.status) {
 
-        fetchMessages();
+        fetchUnsentMessages();
 
     } else {
 
@@ -122,7 +127,7 @@ const sendMessage = (index, unsentMessages) => {
         clearTimeout(timeout.id);
         timeout.id = setTimeout(() => {
     
-            fetchMessages();
+            fetchUnsentMessages();
     
         }, 30000);
 
@@ -145,7 +150,7 @@ const sendMessages = () => {
         clearTimeout(timeout.id);
         timeout.id = setTimeout(() => {
 
-            fetchMessages();
+            fetchUnsentMessages();
 
         }, 30000);
 
@@ -153,25 +158,19 @@ const sendMessages = () => {
 
 };
 
-const fetchMessages = async () => { 
+const fetchUnsentMessages = async () => { 
 
     console.log('Fetching messages...');
 
     let error = null, status = 401, messages = null;
 
-    //const fromId = getMaxMessageId();
-
-    //console.log({fromId})
-
     try {
 
-        //const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=${fromId}`);
-        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}&fromId=0`);
+        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}`);
         status = response.status;
         
         const json = await response.json();
-        messages = json?.data;
-        
+        messages = json?.data ?? [];
 
 
     } catch (err) {
@@ -182,29 +181,47 @@ const fetchMessages = async () => {
 
     }
 
-    if (200 === status && messages) {
+    if (200 === status) {
 
-        console.log('Got', messages.length, 'messages. Updating the database...');
+        console.log('Got', messages.length, 'messages.');
 
-        const result = insertMessages(messages);
+        if (messages?.length) {
 
-        if (result && !result?.error) {
+            console.log('Updating the database...');
 
-            console.log('Database updated.');
-            sendMessages();
+            const result = insertMessages(messages);
+
+            if (result && !result?.error) {
+
+                console.log('Database updated.');
+                //sendMessages();
+
+            }
 
         }
 
     } else {
 
-        clearTimeout(timeout.id);
-        timeout.id = setTimeout(() => {
+        /*
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
     
-            fetchMessages();
+            fetchUnsentMessages();
     
         }, 30000);
-
+        */
     }
 
 };
 
+//fetchUnsentMessages();
+
+/**
+ * TODO
+ * 
+ * 0. test opening the modem with promises that wrap the callbacks
+ * 00. test sending messages sequentially (also with promises)
+ * 1. get unsent messages; for each unsent message, send it, then mark it as sent; for each newly sent message, update it on the server and then mark it as synced
+ * 2. get unsynced messages; if there are any, for each unsynced message, update it on the server and then mark it as synced
+ * 3. fetch unsent messages; insert those messages, then go to step 1
+ */
