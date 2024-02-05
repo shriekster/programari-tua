@@ -330,9 +330,13 @@ export default function TimeRangeEdit({ open, handleClose, date, timeRangeId }) 
                                         color={participant.isAdult ? 'default' : 'warning'}
                                         size='small'
                                         sx={{ marginRight: '8px' }}/>
-                                      <Chip variant='outlined' 
-                                        label={`candidează pt. ${participant.personnelCategoryAbbreviation}`}
-                                        size='small'/>
+                                      {
+                                        participant?.personnelCategoryAbbreviation && (
+                                          <Chip variant='outlined' 
+                                            label={`candidează pt. ${participant.personnelCategoryAbbreviation}`}
+                                            size='small'/>
+                                        )
+                                      }
                                   </Box>
                                 </Box>
                               ))

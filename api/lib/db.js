@@ -1000,7 +1000,7 @@ if (!stmtError) {
                     result.rows.push({
                         c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
                         c2: `${_appointments[i].isAdult}`,
-                        c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                        c3: _appointments[i].personnelCategoryAbbreviation ? `pt. ${_appointments[i].personnelCategoryAbbreviation}` : '',
                         c4: `${_appointments[i].phoneNumber}`,
                     });
 
@@ -1031,7 +1031,7 @@ if (!stmtError) {
                         result.rows.push({
                             c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
                             c2: `${_appointments[i].isAdult}`,
-                            c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                            c3: _appointments[i].personnelCategoryAbbreviation ? `pt. ${_appointments[i].personnelCategoryAbbreviation}` : '',
                             c4: `${_appointments[i].phoneNumber}`,
                         });
     
@@ -1053,7 +1053,7 @@ if (!stmtError) {
                         result.rows.push({
                             c1: `${_appointments[i].lastName} ${_appointments[i].firstName}`,
                             c2: `${_appointments[i].isAdult}`,
-                            c3: `pt. ${_appointments[i].personnelCategoryAbbreviation}`,
+                            c3: _appointments[i].personnelCategoryAbbreviation ? `pt. ${_appointments[i].personnelCategoryAbbreviation}` : '',
                             c4: `${_appointments[i].phoneNumber}`,
                         });
 
