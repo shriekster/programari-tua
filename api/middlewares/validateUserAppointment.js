@@ -1,6 +1,6 @@
 import validator from 'validator';
 
-export default function validateAppointment(req, res, next) {
+export default function validateUserAppointment(req, res, next) {
 
   if (req?.body) {
 

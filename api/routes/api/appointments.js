@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { customAlphabet } from 'nanoid';
-import validateAppointment from '../../middlewares/validateAppointment.js';
+import validateUserAppointment from '../../middlewares/validateUserAppointment.js';
 import { 
     // user
     getPageId, addAppointment, getUserDates, getUserTimeRanges, 
@@ -49,7 +49,7 @@ const getNextPageId = () => {
 };
 
 
-router.post('/', validateAppointment, function(req, res) {
+router.post('/', validateUserAppointment, function(req, res) {
 
     const { timeRangeId, phoneNumber, participants } = req.body;
     
