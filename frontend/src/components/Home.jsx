@@ -153,7 +153,9 @@ export default function Home() {
 
       if ('visible' === document.visibilityState) {
 
+        setOpenAddAppointment(false);
         setLoading(true);
+        setSelectedTimeRangeId(0);
 
       }
 
