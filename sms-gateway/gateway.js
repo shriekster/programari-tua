@@ -2,11 +2,10 @@ import rpio from 'rpio';
 import gsm from 'serialport-gsm';
 import 'dotenv/config';
 
-import { getMaxMessageId, insertMessages, getUnsentMessages, updateMessage } from './db.js';
+import { insertMessages, getUnsentMessages, updateMessage } from './db.js';
 
-//const baseUrl = 'http://192.168.0.53:5173';
-const baseUrl = 'https://programari-tua.duckdns.org';
-const apiKey = '2mzie2w6rxe0u91t';
+const baseUrl = process.env.BASE_URL;
+const apiKey = process.env.API_KEY;
 
 const modem = gsm.Modem();
 
