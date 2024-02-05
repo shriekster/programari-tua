@@ -1,6 +1,8 @@
 import path from 'node:path';
 import Database from 'better-sqlite3';
 
+const baseUrl = process.env.BASE_URL;
+
 let db = null, dbOpenError = null;
 const dbFilePath = path.resolve(process.cwd(), './data/tua.db');
 
@@ -1208,7 +1210,7 @@ if (!stmtError) {
 
     addAppointment = (timeRangeId, phoneNumber, pageId, participants) => {
 
-        let error = null, bookings, appointmentsUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false, alreadyBooked: false };
+        let error = null, bookings, appointmentsUpdateInfo, messagesUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false, alreadyBooked: false };
 
         try {
 
@@ -1234,7 +1236,7 @@ if (!stmtError) {
                 error = err;
 
             }
-            console.log({bookings})
+            
             if (!error && bookings && !isNaN(bookings?.count)) {
 
                 if (0 === bookings.count) {
@@ -1252,6 +1254,17 @@ if (!stmtError) {
                                     '' + phoneNumber,
                                     '' + pageId,
                                 );
+
+                                if (appointmentsUpdateInfo && 1 === appointmentsUpdateInfo.changes && appointmentsUpdateInfo.lastInsertRowid) {
+
+                                    const text = `Salutare!\nAcceseaza detaliile rezervarii tale aici:\n${baseUrl}/appointments/${pageId}\nAsociatia Spirit Tanar`;
+
+                                    messagesUpdateInfo = statements['add_message'].run(
+                                        Number(appointmentsUpdateInfo.lastInsertRowid),
+                                        text
+                                    );
+
+                                }
                     
                             } catch (err) {
                     
