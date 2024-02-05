@@ -224,4 +224,5 @@ const fetchUnsentMessages = async () => {
  * 1. get unsent messages; for each unsent message, send it, then mark it as sent; for each newly sent message, update it on the server and then mark it as synced
  * 2. get unsynced messages; if there are any, for each unsynced message, update it on the server and then mark it as synced
  * 3. fetch unsent messages; insert those messages, then go to step 1
+ * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
