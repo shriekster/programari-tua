@@ -32,7 +32,7 @@ let getPersonnelCategories = null;
 let getUserDates = null;
 let getUserTimeRanges = null;
 let getContactInfo = null;
-let getAllPageIds = null;
+let getPageId = null;
 let addAppointment = null;
 let getUserAppointment = null;
 let deleteUserAppointment = null;
@@ -262,7 +262,8 @@ try {
         WHERE time_ranges.published = 1`);
 
     statements['get_user_timerange'] = db.prepare(`
-        SELECT 
+        SELECT
+            dates.id AS dateId, 
             time_ranges.capacity, 
             (
                 SELECT
@@ -271,14 +272,25 @@ try {
                 WHERE appointments.time_range_id = time_ranges.id
             ) AS occupied
         FROM time_ranges
+        LEFT JOIN dates ON dates.id = time_ranges.date_id
         WHERE 
             time_ranges.published = 1 AND
             time_ranges.id = ?`);
 
-    statements['get_appointments_page_ids'] = db.prepare(`
+    statements['get_page_id'] = db.prepare(`
         SELECT 
             appointments.page_id AS pageId
-        FROM appointments`);
+        FROM appointments
+        WHERE appointments.page_id = ?`);
+
+    statements['get_bookings_count'] = db.prepare(`
+        SELECT COUNT (appointments.phone_number) AS count
+        FROM appointments
+        LEFT JOIN time_ranges ON time_ranges.id = appointments.time_range_id
+        LEFT JOIN dates ON dates.id = time_ranges.date_id
+        WHERE 
+            appointments.phone_number = ?
+            AND dates.id = ?`);
 
     statements['add_appointment'] = db.prepare(`
         INSERT INTO appointments(time_range_id, phone_number, page_id)
@@ -1142,29 +1154,57 @@ if (!stmtError) {
 
     };
 
-    getAllPageIds = () => {
+    getPageId = (pageId) => {
 
-        let error = null, pageIds = null;
+        let error = null, data = null;
+        let result = Object.create(null, {
+            pageId: {
+                value: null,
+                writable: true,
+                configurable: false,
+                enumerable: true
+            },
+            error: {
+                value: false,
+                writable: true,
+                configurable: false,
+                enumerable: true
+            },
+        });
+
+        
 
         try {
 
-            pageIds = statements['get_appointments_page_ids'].all();
+            data = statements['get_page_id'].get(
+                '' + pageId
+            );
 
         } catch (err) {
 
             error = err;
+            result.error = true;
 
         }
 
-        const result = pageIds ?? [];
+        if (!error) {
 
-        return new Set(result);
+            if (data && data?.pageId) {
+
+                result.pageId = data.pageId;
+
+            }
+
+        }
+
+        return result;
+        
 
     };
 
     addAppointment = (timeRangeId, phoneNumber, pageId, participants) => {
 
-        let error = null, appointmentsUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false };
+        let error = null, bookings, appointmentsUpdateInfo, timeRange = null, result = { error: false, timeRangeIsFull: false, alreadyBooked: false };
 
         try {
 
@@ -1177,85 +1217,123 @@ if (!stmtError) {
         }
 
         if (!error && timeRange) {
-
-            const props = Object.getOwnPropertyNames(timeRange);
-
-            if (props.includes('capacity') && props.includes('occupied')) {
-
-                if (timeRange.occupied < timeRange.capacity) {
-
-                    try {
-
-                        appointmentsUpdateInfo = statements['add_appointment'].run(
-                            Number(timeRangeId),
-                            '' + phoneNumber,
-                            '' + pageId,
-                        );
             
-                    } catch (err) {
-            
-                        error = err;
-            
-                    }
-            
-                    if (!error && 1 === appointmentsUpdateInfo.changes) {
+            try {
 
-                        const insertParticipants = statements['add_participants'];
+                bookings = statements['get_bookings_count'].get(
+                    '' + phoneNumber,
+                    Number(timeRange?.dateId),
+                );
 
-                        if (insertParticipants) {
+            } catch (err) {
 
-                            const appointmentId = appointmentsUpdateInfo.lastInsertRowid;
+                error = err;
+
+            }
+            console.log({bookings})
+            if (!error && bookings && !isNaN(bookings?.count)) {
+
+                if (0 === bookings.count) {
+
+                    const props = Object.getOwnPropertyNames(timeRange);
+
+                    if (props.includes('capacity') && props.includes('occupied')) {
+
+                        if (timeRange.occupied < timeRange.capacity) {
 
                             try {
 
-                                try {
-                
-                                    insertParticipants(appointmentId, participants);
-                
-                                } catch (err) {
+                                appointmentsUpdateInfo = statements['add_appointment'].run(
+                                    Number(timeRangeId),
+                                    '' + phoneNumber,
+                                    '' + pageId,
+                                );
                     
-                                    error = err;
-
-                                    if (!db.inTransaction) throw err; // the transaction was forcefully rolled back
-                    
-                                }
-
                             } catch (err) {
-
+                    
                                 error = err;
-
+                    
                             }
+                    
+                            if (!error && 1 === appointmentsUpdateInfo.changes) {
 
-                            if (!error) {
+                                const insertParticipants = statements['add_participants'];
 
-                                result.error = false;
-                                result.timeRangeIsFull = false;
+                                if (insertParticipants) {
 
+                                    const appointmentId = appointmentsUpdateInfo.lastInsertRowid;
+
+                                    try {
+
+                                        try {
+                        
+                                            insertParticipants(appointmentId, participants);
+                        
+                                        } catch (err) {
+                            
+                                            error = err;
+
+                                            if (!db.inTransaction) throw err; // the transaction was forcefully rolled back
+                            
+                                        }
+
+                                    } catch (err) {
+
+                                        error = err;
+
+                                    }
+
+                                    if (!error) {
+
+                                        result.error = false;
+                                        result.timeRangeIsFull = false;
+                                        result.alreadyBooked = false;
+
+                                    } else {
+
+                                        result.error = true;
+                                        result.timeRangeIsFull = false;
+                                        result.alreadyBooked = false;
+
+                                    }
+
+                                } else {
+
+                                    result.error = true;
+                                    result.timeRangeIsFull = false;
+                                    result.alreadyBooked = false;
+
+                                }
+                    
                             } else {
 
                                 result.error = true;
                                 result.timeRangeIsFull = false;
+                                result.alreadyBooked = false;
 
                             }
 
                         } else {
 
-                            result.error = true;
-                            result.timeRangeIsFull = false;
+                            result.error = false;
+                            result.timeRangeIsFull = true;
+                            result.alreadyBooked = false;
 
                         }
-            
+
                     } else {
 
                         result.error = true;
                         result.timeRangeIsFull = false;
+                        result.alreadyBooked = false;
 
                     }
 
                 } else {
 
                     result.error = false;
-                    result.timeRangeIsFull = true;
+                    result.timeRangeIsFull = false;
+                    result.alreadyBooked = true;
 
                 }
 
@@ -1263,6 +1341,7 @@ if (!stmtError) {
 
                 result.error = true;
                 result.timeRangeIsFull = false;
+                result.alreadyBooked = false;
 
             }
 
@@ -1270,6 +1349,7 @@ if (!stmtError) {
 
             result.error = true;
             result.timeRangeIsFull = false;
+            result.alreadyBooked = false;
 
         }
 
@@ -1409,7 +1489,7 @@ export {
     getUserDates,
     getUserTimeRanges,
     getContactInfo,
-    getAllPageIds,
+    getPageId,
     addAppointment,
     getUserAppointment,
     deleteUserAppointment,

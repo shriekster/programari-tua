@@ -103,7 +103,7 @@ const publish = (channel, event, data, excludedSubscriptionId = 0) => {
 const router = Router();
 
 router.get('/', function(req, res) {
-
+  
   const isAdmin = Boolean(req?.isAdmin);
 
   const channel = isAdmin? 'admins' : 'users';

@@ -3,7 +3,7 @@ import { customAlphabet } from 'nanoid';
 import validateAppointment from '../../middlewares/validateAppointment.js';
 import { 
     // user
-    getAllPageIds, addAppointment, getUserDates, getUserTimeRanges, 
+    getPageId, addAppointment, getUserDates, getUserTimeRanges, 
 
     // admin
     getTimeRanges, getAppointments, getUserAppointment, deleteUserAppointment
@@ -17,18 +17,25 @@ const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz0123456789', 16);
 
 const getNextPageId = () => {
 
-    const pageIds = getAllPageIds();
     let nextPageId = '';
 
     try {
 
         nextPageId = nanoid();
+        let result = getPageId(nextPageId);
     
         // dangerous!
-        while (pageIds.has(nextPageId)) {
+        while (!result.error && result.pageId) {
     
           nextPageId = nanoid();
+          result = getPageId(nextPageId);
     
+        }
+
+        if (result?.error) {
+
+          throw new Error('Error: getNextPageId');
+
         }
     
       } catch (_) {
@@ -52,7 +59,9 @@ router.post('/', validateAppointment, function(req, res) {
 
         const result = addAppointment(timeRangeId, phoneNumber, nextPageId, participants);
 
-        if (result && !result.error && !result.timeRangeIsFull) {
+        if (result && !result.error) {
+
+          if (!result.alreadyBooked &&!result.timeRangeIsFull) {
 
             const adminAppointments = getAppointments();
             const adminTimeRanges = getTimeRanges();
@@ -85,21 +94,30 @@ router.post('/', validateAppointment, function(req, res) {
                 }
             });
 
-        } else if (!result.error && result.timeRangeIsFull) {
+          } else if (!result.alreadyBooked && result.timeRangeIsFull) {
 
             return res.status(403)
             .json({
                 data: {
                     message: 'Forbidden'
                 }
-            })
+            });
+
+          } else {
+            
+            //already booked!
+            return res.status(409)
+            .json({
+                data: {
+                    message: 'Conflict'
+                }
+            });
+
+          }
 
         }
 
     }
-    
-
-    // TODO: send sms (websockets)
 
     return res.status(500)
     .json({

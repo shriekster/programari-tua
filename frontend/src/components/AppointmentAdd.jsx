@@ -572,6 +572,17 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
 
           }
 
+          // this case means that an appointment has already been made with this phone number
+          case 409: {
+
+            setSaving(false);
+            setErrorMessage('Deja te-ai programat pentru această dată!');
+            setError(true);
+            handleClose();
+            break;
+
+          }
+
           default: {
 
               setSaving(false);
@@ -770,7 +781,7 @@ export default function AppointmentAdd({ open, handleClose, date, dateObj, timeR
                           </InputAdornment>
                       }}
                       inputProps={{
-                        maxLength: 16
+                        maxLength: 12
                       }}
                       name='phoneNumber'
                       autoComplete='tel-national'

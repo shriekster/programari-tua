@@ -7,7 +7,7 @@ export default function validateAppointment(req, res, next) {
     const timeRangeId = req.body?.timeRangeId?.toString()?.trim()?.normalize('NFC') ?? '';
     const isValidTimeRangeId = validator.isInt('' + timeRangeId, { gt: 0 });
 
-    const phoneNumber = req.body?.phoneNumber?.toString()?.trim()?.normalize('NFC') ?? '';
+    let phoneNumber = req.body?.phoneNumber?.toString()?.trim()?.normalize('NFC') ?? '';
     const isValidPhoneNumber = validator.isMobilePhone(phoneNumber, 'ro-RO');
 
     const participants = req.body?.participants;
@@ -56,6 +56,13 @@ export default function validateAppointment(req, res, next) {
     
     if (allDataIsValid) {
       
+      // remove the leading '+4'
+      if (phoneNumber.startsWith('+4') && 12 === phoneNumber.length) {
+
+        phoneNumber = phoneNumber.substring(2);
+
+      }
+
       req.body = { timeRangeId, phoneNumber, participants };
 
       return next();
