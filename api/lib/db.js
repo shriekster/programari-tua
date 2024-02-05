@@ -1079,7 +1079,7 @@ if (!stmtError) {
 
         return result ?? null;
 
-    }
+    };
 
     getPersonnelCategories = () => {
 
