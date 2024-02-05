@@ -15,6 +15,8 @@ import Badge from '@mui/material/Badge';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
+import dayjs from 'dayjs';
+
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { useGlobalStore } from '../useGlobalStore.js';
@@ -132,6 +134,14 @@ export default function Home() {
   const handleToggleAddAppointment = () => {
 
     setOpenAddAppointment((prevState) => !prevState);
+
+  };
+
+  const handleClickToday = () => {
+
+    const today = dayjs();
+
+    setSelectedDate(today);
 
   };
 
@@ -409,8 +419,15 @@ export default function Home() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            height: '40px',
+            flexDirection: 'column',
+            //height: '40px',
+            padding: '8px 0',
           }}>
+            <Button sx={{ alignSelf: 'flex-end', marginBottom: '4px' }}
+              disabled={loading}
+              onClick={handleClickToday}>
+              Astăzi
+            </Button>
             <Divider variant='fullWidth' sx={{ width: '100%', flex: 1 }} />
           </Box>
             {
