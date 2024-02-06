@@ -127,23 +127,39 @@ async function openModem() {
 
 async function hardwareToggle () {
 
-    console.log('before', performance.now())
-    await new Promise(resolve => {
+     return new Promise(resolve => {
 
-        rpio.open(7, rpio.OUTPUT, rpio.LOW);
-        rpio.write(7, rpio.LOW);
-        rpio.sleep(4);
-        rpio.write(7, rpio.HIGH);
+        let result = true;
 
-        resolve();
+        try {
+
+            rpio.open(7, rpio.OUTPUT, rpio.LOW);
+            rpio.write(7, rpio.LOW);
+            rpio.sleep(4);
+            rpio.write(7, rpio.HIGH);
+
+        } catch {
+
+            result = false;
+
+        } finally {
+
+            resolve(result);
+
+        }
 
     })
 
-    console.log('after', performance.now())
+}
+
+async function test() {
+
+    const toggled = await hardwareToggle();
+    console.log({toggled})
 
 }
 
-hardwareToggle();
+test();
 
 
 const sendMessage = (index, unsentMessages) => {
