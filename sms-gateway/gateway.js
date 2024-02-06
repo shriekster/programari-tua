@@ -226,3 +226,38 @@ const fetchUnsentMessages = async () => {
  * 3. fetch unsent messages; insert those messages, then go to step 1
  * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
+
+modem.sendSMS(
+    '0769388493',
+    `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+    false,
+    (result) => {
+        
+        console.log('message callback:', result);
+
+    }
+);
+
+async function test() {
+
+    let count = 0;
+    await new Promise(resolve =>
+        modem.sendSMS(
+            '0769388493',
+            `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+            false,
+            (result) => {
+                
+                console.log('message callback:', result);
+                ++count;
+                console.log(`message callback #${count}`)
+
+                if (2 === count) {
+                    resolve();
+                }
+        
+            }
+        )
+    )
+
+}
