@@ -94,10 +94,34 @@ const checkCallback = (result) => {
 
 };
 
-modem.on('open', openCallback);
+//modem.on('open', openCallback);
+
+/*
+modem.open('/dev/ttyUSB0', options, (result) => {
 
 
-modem.open('/dev/ttyUSB0', options);
+
+});
+*/
+
+async function openModem() {
+
+
+    const r = await new Promise(resolve => {
+
+        modem.open('/dev/ttyUSB0', options, (result) => {
+
+            resolve(result);            
+
+        });
+
+    })
+
+    console.log('OPEN', r)
+
+}
+
+openModem();
 
 
 const sendMessage = (index, unsentMessages) => {
@@ -228,8 +252,9 @@ const fetchUnsentMessages = async () => {
  * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
 
-modem.on('onSendingMessage', result => console.log('Sending message', result))
+//modem.on('onSendingMessage', result => console.log('Sending message', result))
 
+/*
 async function test() {
 
     let count = 0;
@@ -255,3 +280,4 @@ async function test() {
     console.log('promise resolved', r)
 
 }
+*/
