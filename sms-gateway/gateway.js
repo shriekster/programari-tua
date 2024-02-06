@@ -344,6 +344,8 @@ const fetchUnsentMessages = async () => {
 
 async function run() {
 
+    console.log('Running...');
+
     const modemIsAvailable = await bootstrap();
     
     if (modemIsAvailable) {
@@ -366,6 +368,8 @@ async function run() {
 
         await fetchUnsentMessages();
 
+        console.log('Scheduling new run in 30 seconds.');
+        
         timeoutId = setTimeout(() => {
 
             clearTimeout(timeoutId);
