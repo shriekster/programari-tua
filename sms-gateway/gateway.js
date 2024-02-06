@@ -272,6 +272,38 @@ async function bootstrap() {
 
 }
 
+async function sendMessages(messages) {
+
+    for (let i = 0, m = messages.length; i < m; ++i) {
+
+        const result = await new Promise(resolve => {
+
+            let count = 0;
+
+            modem.sendSMS(
+                '0769388493',
+                `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+                false,
+                (result) => {
+                    
+                    ++count;
+    
+                    if (2 === count) {
+
+                        resolve(result);
+
+                    }
+            
+                }
+            )
+        });
+
+        console.log(result);
+
+    }
+
+}
+
 async function run() {
 
     const modemIsAvailable = await bootstrap();
@@ -282,7 +314,7 @@ async function run() {
 
         if (unsentMessages && unsentMessages.length) {
 
-            console.log(unsentMessages)
+            await sendMessages(unsentMessages);
 
         }
 
