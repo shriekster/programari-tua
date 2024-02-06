@@ -245,7 +245,7 @@ async function test() {
                 console.log(`message callback #${count}`)
 
                 if (2 === count) {
-                    resolve();
+                    resolve(result);
                 }
         
             }
