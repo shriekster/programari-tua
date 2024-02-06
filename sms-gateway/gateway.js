@@ -39,7 +39,7 @@ const options = {
     //logger: console
 };
 
-let timeoutId;
+let timeoutId, modemIsAvailable;
 
 async function openModem() {
 
@@ -344,11 +344,17 @@ const fetchUnsentMessages = async () => {
 
 };
 
+async function init() {
+
+    console.log('Bootstrapping...');
+    
+    modemIsAvailable = await bootstrap();
+
+}
+
 async function run() {
 
     console.log('Running...');
-
-    const modemIsAvailable = await bootstrap();
     
     if (modemIsAvailable) {
 
@@ -375,15 +381,20 @@ async function run() {
         timeoutId = setTimeout(() => {
 
             clearTimeout(timeoutId);
-            console.log('here')
+            
             run();
 
         }, 30000);
+
+    } else {
+
+        await init();
 
     }
 
 }
 
+init();
 run();
 
 /**
