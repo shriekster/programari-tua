@@ -13,6 +13,11 @@ import {
 const baseUrl = process.env.BASE_URL;
 const apiKey = process.env.API_KEY;
 
+/**
+ * NB! The modem will always open successfully, so we must try to initialize it in order to 
+ * check the power state
+ */
+
 const modem = gsm.Modem();
 
 const options = {
@@ -150,6 +155,20 @@ async function initializeModem() {
 
 }
 
+async function checkModem() {
+
+    return new Promise(resolve => {
+
+        modem.checkModem((result, error) => {
+
+            resolve({result, error})
+
+        })
+
+    });
+
+}
+
 //openModem();
 
 async function tryPowerToggle () {
@@ -199,10 +218,10 @@ async function openTest() {
 
 async function test() {
 
-    const opened = await openModem();
-    console.log({opened})
+    // the modem will always succeed on opening
+    await openModem();
+    
     let initialized = await initializeModem();
-    console.log({initialized})
 
     if (!initialized) {
 
@@ -211,7 +230,14 @@ async function test() {
         if (toggled) {
 
             initialized = await initializeModem();
-            console.log({initialized});
+            
+            if (initialized) {
+
+                const checkResult = await checkModem();
+                console.log({checkResult})
+
+            }
+
 
         }
 
