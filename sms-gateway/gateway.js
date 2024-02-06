@@ -79,6 +79,7 @@ const checkCallback = (result) => {
     if (result && result?.status && 'success' === result?.status) {
 
         //fetchUnsentMessages();
+        test();
 
     } else {
 
@@ -254,5 +255,3 @@ async function test() {
     }, 50000))
 
 }
-
-test();
