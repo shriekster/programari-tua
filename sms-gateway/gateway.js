@@ -233,25 +233,25 @@ modem.on('onSendingMessage', result => console.log('Sending message', result))
 async function test() {
 
     let count = 0;
-    await modem.sendSMS(
-        '0769388493',
-        `Salutare!\nTEST\nAsociatia Spirit Tanar`,
-        false,
-        (result) => {
-            
-            console.log('message callback:', result);
-            ++count;
-            console.log(`message callback #${count}`)
+    const r = await new Promise(resolve =>
+        modem.sendSMS(
+            '0769388493',
+            `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+            false,
+            (result) => {
+                
+                console.log('message callback:', result);
+                ++count;
+                console.log(`message callback #${count}`)
 
-            if (2 === count) {
-                console.log(2)
+                if (2 === count) {
+                    resolve();
+                }
+        
             }
-    
-        }
+        )
     )
 
-    await new Promise(resolve => setTimeout(() => {
-        resolve();
-    }, 50000))
+    console.log('promise resolved', r)
 
 }
