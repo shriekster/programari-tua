@@ -199,8 +199,8 @@ async function openTest() {
 
 async function test() {
 
-    //const opened = await openModem();
-    //console.log({opened})
+    const opened = await openModem();
+    console.log({opened})
     const initialized = await initializeModem();
     console.log({initialized})
 
