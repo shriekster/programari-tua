@@ -136,7 +136,7 @@ async function initializeModem() {
 
             if (result) {
 
-                console.log(result);
+                resolve(result);
 
             } else {
 
