@@ -272,14 +272,25 @@ async function bootstrap() {
 
 }
 
-async function test() {
+async function run() {
 
     const modemIsAvailable = await bootstrap();
-    console.log({modemIsAvailable})
+    
+    if (modemIsAvailable) {
+
+        const unsentMessages = getUnsentMessages();
+
+        if (unsentMessages && unsentMessages.length) {
+
+            console.log(unsentMessages)
+
+        }
+
+    }
 
 }
 
-test();
+run();
 
 
 const sendMessage = (index, unsentMessages) => {
