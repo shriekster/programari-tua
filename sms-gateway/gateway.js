@@ -347,7 +347,7 @@ const fetchUnsentMessages = async () => {
 async function init() {
 
     console.log('Bootstrapping...');
-    
+
     modemIsAvailable = await bootstrap();
 
 }
@@ -357,6 +357,8 @@ async function run() {
     console.log('Running...');
     
     if (modemIsAvailable) {
+
+        console.log('Modem available!');
 
         const unsyncedMessages = getUnsyncedMessages();
 
@@ -388,6 +390,8 @@ async function run() {
 
     } else {
 
+        console.log('Modem not available!');
+        
         await init();
 
     }
