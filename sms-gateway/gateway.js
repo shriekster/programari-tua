@@ -108,28 +108,33 @@ modem.open('/dev/ttyUSB0', options, (result) => {
 
 async function openModem() {
 
+    return new Promise(resolve => {
 
-    const r = await new Promise(resolve => {
+        modem.open('/dev/ttyUSB0', options, (error, result) => {
 
-        modem.open('/dev/ttyUSB0', options, (...result) => {
+            if (error) {
 
-            resolve(result);            
+                resolve(false);
+
+            } else {
+
+                resolve(result);
+
+            }
 
         });
 
     })
 
-    console.log('OPEN', r)
-
 }
 
 //openModem();
 
-async function hardwareToggle () {
+async function tryPowerToggle () {
 
      return new Promise(resolve => {
 
-        let result = true;
+        let toggled = true;
 
         try {
 
@@ -140,11 +145,11 @@ async function hardwareToggle () {
 
         } catch {
 
-            result = false;
+            toggled = false;
 
         } finally {
 
-            resolve(result);
+            resolve(toggled);
 
         }
 
@@ -154,7 +159,7 @@ async function hardwareToggle () {
 
 async function test() {
 
-    const toggled = await hardwareToggle();
+    const toggled = await tryPowerToggle();
     console.log({toggled})
 
 }
