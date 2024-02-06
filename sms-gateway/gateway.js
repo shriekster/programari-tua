@@ -225,6 +225,8 @@ async function syncMessage(message) {
 
     return new Promise(async (resolve) => {
 
+        console.log('Syncing message with id', message?.id);
+
         let error = null, status = 401;
 
         try {
@@ -369,7 +371,7 @@ async function run() {
         await fetchUnsentMessages();
 
         console.log('Scheduling new run in 30 seconds.');
-        
+
         timeoutId = setTimeout(() => {
 
             clearTimeout(timeoutId);
