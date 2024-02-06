@@ -279,6 +279,8 @@ async function test() {
 
 }
 
+test();
+
 
 const sendMessage = (index, unsentMessages) => {
 
