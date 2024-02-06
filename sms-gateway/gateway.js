@@ -348,6 +348,8 @@ const fetchUnsentMessages = async () => {
 
 };
 
+
+// TODO: check why the hardware module powers off
 async function init() {
 
     console.log('Bootstrapping...');
