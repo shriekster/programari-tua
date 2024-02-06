@@ -128,6 +128,28 @@ async function openModem() {
 
 }
 
+async function initializeModem() {
+
+    return new Promise(resolve => {
+
+        modem.initializeModem(result => {
+
+            if (result) {
+
+                console.log(result);
+
+            } else {
+
+                resolve(false);
+
+            }
+
+        });
+
+    });
+
+}
+
 //openModem();
 
 async function tryPowerToggle () {
@@ -173,7 +195,14 @@ async function openTest() {
 
 }
 
-openTest();
+//openTest();
+
+async function test() {
+
+    const initialized = await initializeModem();
+    console.log({initialized})
+
+}
 
 
 const sendMessage = (index, unsentMessages) => {
