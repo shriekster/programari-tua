@@ -111,6 +111,7 @@ async function openModem() {
 
         modem.open('/dev/ttyUSB0', options, (result) => {
 
+            console.log(result)
             resolve(result);            
 
         });
