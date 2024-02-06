@@ -361,6 +361,7 @@ const sendMessage = (index, unsentMessages) => {
 
 };
 
+/*
 const sendMessages = () => {
 
     const unsentMessages = getUnsentMessages();
@@ -383,6 +384,7 @@ const sendMessages = () => {
     }
 
 };
+*/
 
 const fetchUnsentMessages = async () => { 
 
