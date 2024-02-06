@@ -201,8 +201,21 @@ async function test() {
 
     const opened = await openModem();
     console.log({opened})
-    const initialized = await initializeModem();
+    let initialized = await initializeModem();
     console.log({initialized})
+
+    if (!initialized) {
+
+        const toggled = await tryPowerToggle();
+
+        if (toggled) {
+
+            initialized = await initializeModem();
+            console.log({initialized});
+
+        }
+
+    }
 
 }
 
