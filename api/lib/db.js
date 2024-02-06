@@ -40,6 +40,7 @@ let deleteUserAppointment = null;
 
 // sms gateway
 let getUnsentMessages = null;
+let updateMessage = null;
 
 // utility functions
 const replaceAt = (string, index, replacement) => {
@@ -75,11 +76,6 @@ try {
 try {
 
     // admin
-    statements['get_secret'] = db.prepare(`
-        SELECT value
-        FROM secrets
-        WHERE scope = ?`);
-
     statements['get_credentials'] = db.prepare(`
         SELECT id, username, password AS passwordHash, type
         FROM users
@@ -357,7 +353,7 @@ try {
         WHERE appointments.page_id = ?`);
 
     // sms gateway
-    statements['get_messages'] = db.prepare(`
+    statements['get_unsent_messages'] = db.prepare(`
         SELECT
             messages.id,
             appointments.phone_number AS recipient,
@@ -365,6 +361,14 @@ try {
         FROM messages
         JOIN appointments ON appointments.id = messages.appointment_id
         WHERE messages.sent = 0`);
+
+    statements['update_message'] = db.prepare(`
+        UPDATE messages
+        SET
+            sent = ?,
+            sent_at = ?
+        WHERE
+            id = ?`);
 
 } catch (err) {
     
@@ -1446,7 +1450,7 @@ if (!stmtError) {
 
         try {
 
-            messages = statements['get_messages'].all();
+            messages = statements['get_unsent_messages'].all();
 
         } catch (err) {
 
@@ -1455,6 +1459,30 @@ if (!stmtError) {
         }
 
         return messages ?? null;
+
+    };
+
+    updateMessage = (id, sent, sentAt) => {
+
+        let error = false, updateInfo;
+
+        try {
+
+            updateInfo = statements['update_message'].run(
+                Number(sent),
+                '' + sentAt,
+                Number(id)
+            );
+
+        } catch (err) {
+
+            error = Boolean(err);
+
+        }
+
+        return {
+            error
+        };
 
     };
 
@@ -1492,5 +1520,6 @@ export {
 
     // sms gateway
     getUnsentMessages,
+    updateMessage,
 
 };

@@ -41,76 +41,6 @@ const options = {
 
 let timeoutId;
 
-const openCallback = (result) => {
-
-    if (result && result?.status && 'success' === result?.status) {
-
-        modem.initializeModem(initializeCallback);
-
-    } else {
-
-        rpio.open(7, rpio.OUTPUT, rpio.LOW);
-        rpio.write(7, rpio.LOW);
-        rpio.sleep(4);
-        rpio.write(7, rpio.HIGH);
-
-        modem.open('/dev/ttyUSB0', options, openCallback);
-
-    }
-
-};
-
-const initializeCallback = (result) => {
-
-    if (result && result?.status && 'success' === result?.status) {
-
-        modem.checkModem(checkCallback);
-
-    } else {
-
-        rpio.open(7, rpio.OUTPUT, rpio.LOW);
-        rpio.write(7, rpio.LOW);
-        rpio.sleep(4);
-        rpio.write(7, rpio.HIGH);
-
-        modem.initializeModem(initializeCallback);
-
-    }
-
-};
-
-const checkCallback = (result) => {
-
-    if (result && result?.status && 'success' === result?.status) {
-
-        //fetchUnsentMessages();
-        test();
-
-    } else {
-
-        rpio.open(7, rpio.OUTPUT, rpio.LOW);
-        rpio.write(7, rpio.LOW);
-        rpio.sleep(4);
-        rpio.write(7, rpio.HIGH);
-
-        modem.initializeModem(initializeCallback);
-
-    }
-
-};
-
-//modem.on('open', openCallback);
-
-/*
-modem.open('/dev/ttyUSB0', options, (result) => {
-
-
-
-});
-*/
-
-//modem.on('open', result => console.log(result))
-
 async function openModem() {
 
     return new Promise(resolve => {
@@ -198,24 +128,6 @@ async function tryPowerToggle () {
 
 }
 
-async function powerTest() {
-
-    const toggled = await tryPowerToggle();
-    console.log({toggled})
-
-}
-
-//powerTest();
-
-async function openTest() {
-
-    const opened = await openModem();
-    console.log({opened})
-
-}
-
-//openTest();
-
 async function bootstrap() {
 
     return new Promise(async (resolve) => {
@@ -298,17 +210,151 @@ async function sendMessages(messages) {
             )
         });
 
-        console.log(result);
+        if (result && result?.status && 'success' === result.status) {
+
+            markMessageAsSent(messages[i].id);
+            console.log('Successfully sent message with id', messages[i]?.id, ' to ', messages[i].recipient);
+
+        }
 
     }
 
 }
+
+async function syncMessage(message) {
+
+    return new Promise(async (resolve) => {
+
+        let error = null, status = 401;
+
+        try {
+
+            const requestOptions = {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: message.id,
+                    sent: message.sent,
+                    sentAt: message.sentAt
+                }),
+            };
+
+            const url = `${baseUrl}/api/sms/messages/${message.id}/?apiKey=${apiKey}`;
+
+            const response = await fetch(url, requestOptions);
+            status = response.status;
+
+
+        } catch (err) {
+
+            // eslint-disable-next-line no-unused-vars
+            error = err;
+            status = 400; // client-side error
+
+        }
+
+        if (200 === status) {
+
+            resolve(true);
+
+        } else {
+
+            resolve(false);
+
+        }
+
+    });
+
+}
+
+async function syncMessages(messages) {
+
+    for (let i = 0, m = messages.length; i < m; ++i) {
+
+        const synced = await syncMessage(messages[i]);
+
+        if (synced) {
+
+            markMessageAsSynced(messages[i].id);
+
+        }
+
+    }
+
+}
+
+const fetchUnsentMessages = async () => { 
+
+    return new Promise(async (resolve) => {
+
+        console.log('Fetching messages...');
+
+        let error = null, status = 401, messages = null;
+
+        try {
+
+            const url = `${baseUrl}/api/sms/?apiKey=${apiKey}`;
+
+            const response = await fetch(url);
+            status = response.status;
+            
+            const json = await response.json();
+            messages = json?.data ?? [];
+
+
+        } catch (err) {
+
+            // eslint-disable-next-line no-unused-vars
+            error = err;
+            status = 400; // client-side error
+
+        }
+
+        if (200 === status) {
+
+            console.log('Got', messages.length, 'messages.');
+
+            if (messages?.length) {
+
+                console.log('Updating the database...');
+
+                const result = insertMessages(messages);
+
+                if (result && !result?.error) {
+
+                    console.log('Database updated.');
+
+                }
+
+            }
+
+            resolve(true);
+
+        } else {
+
+            resolve(false);
+
+        }
+
+    });
+
+};
 
 async function run() {
 
     const modemIsAvailable = await bootstrap();
     
     if (modemIsAvailable) {
+
+        const unsyncedMessages = getUnsyncedMessages();
+
+        if (unsyncedMessages && unsyncedMessages.length) {
+
+            await syncMessages(unsyncedMessages);
+
+        }
 
         const unsentMessages = getUnsentMessages();
 
@@ -318,169 +364,28 @@ async function run() {
 
         }
 
+        await fetchUnsentMessages();
+
+        timeoutId = setTimeout(() => {
+
+            clearTimeout(timeoutId);
+
+            run();
+
+        }, 30000);
+
     }
 
 }
 
 run();
 
-
-const sendMessage = (index, unsentMessages) => {
-
-    if (index < unsentMessages.length) {
-
-        console.log('Sending message', index);
-
-        const message = unsentMessages[index];
-        
-        modem.sendSMS(
-            message.phoneNumber,
-            `Salutare!\nAcceseaza detaliile rezervarii tale aici:\n${baseUrl}/appointments/${message.pageId}\nAsociatia Spirit Tanar`,
-            false,
-            (result) => {
-                
-                console.log('message callback:', result);
-                
-                updateMessage(message.pageId, 1);
-                
-                sendMessage(index + 1, unsentMessages);
-
-            }
-        );
-
-    } else {
-
-        clearTimeout(timeout.id);
-        timeout.id = setTimeout(() => {
-    
-            fetchUnsentMessages();
-    
-        }, 30000);
-
-    }
-
-};
-
-/*
-const sendMessages = () => {
-
-    const unsentMessages = getUnsentMessages();
-
-    if (unsentMessages && unsentMessages.length) {
-
-        console.log(unsentMessages.length, 'unsent messages. Starting to send...');
-
-        sendMessage(0, unsentMessages);
-
-    } else {
-
-        clearTimeout(timeout.id);
-        timeout.id = setTimeout(() => {
-
-            fetchUnsentMessages();
-
-        }, 30000);
-
-    }
-
-};
-*/
-
-const fetchUnsentMessages = async () => { 
-
-    console.log('Fetching messages...');
-
-    let error = null, status = 401, messages = null;
-
-    try {
-
-        const response = await fetch(`${baseUrl}/api/sms/?apiKey=${apiKey}`);
-        status = response.status;
-        
-        const json = await response.json();
-        messages = json?.data ?? [];
-
-
-    } catch (err) {
-
-        // eslint-disable-next-line no-unused-vars
-        error = err;
-        status = 400; // client-side error
-
-    }
-
-    if (200 === status) {
-
-        console.log('Got', messages.length, 'messages.');
-
-        if (messages?.length) {
-
-            console.log('Updating the database...');
-
-            const result = insertMessages(messages);
-
-            if (result && !result?.error) {
-
-                console.log('Database updated.');
-                //sendMessages();
-
-            }
-
-        }
-
-    } else {
-
-        /*
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-    
-            fetchUnsentMessages();
-    
-        }, 30000);
-        */
-    }
-
-};
-
-//fetchUnsentMessages();
-
 /**
  * TODO
  * 
- * 0. test opening the modem with promises that wrap the callbacks
- * 00. test sending messages sequentially (also with promises)
- * 1. get unsent messages; for each unsent message, send it, then mark it as sent; for each newly sent message, update it on the server and then mark it as synced
- * 2. get unsynced messages; if there are any, for each unsynced message, update it on the server and then mark it as synced
+ * 0. test opening the modem with promises that wrap the callbacks [done]
+ * 00. test sending messages sequentially (also with promises) [done]
+ * 2. get unsent messages; for each unsent message, send it, then mark it as sent; for each newly sent message, update it on the server and then mark it as synced
+ * 1. get unsynced messages; if there are any, for each unsynced message, update it on the server and then mark it as synced
  * 3. fetch unsent messages; insert those messages, then go to step 1
- * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
-
-//modem.on('onSendingMessage', result => console.log('Sending message', result))
-
-/*
-async function test() {
-
-    let count = 0;
-    const r = await new Promise(resolve =>
-        modem.sendSMS(
-            '0769388493',
-            `Salutare!\nTEST\nAsociatia Spirit Tanar`,
-            false,
-            (result) => {
-                
-                console.log('message callback:', result);
-                ++count;
-                console.log(`message callback #${count}`)
-
-                if (2 === count) {
-                    resolve(result);
-                }
-        
-            }
-        )
-    )
-
-    console.log('promise resolved', r)
-
-}
-*/

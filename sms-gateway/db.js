@@ -61,7 +61,8 @@ try {
     statements['mark_message_as_sent'] = db.prepare(`
         UPDATE messages
         SET
-            sent = 1
+            sent = 1,
+            sent_at = (strftime('%d.%m.%Y %H:%M:%f', 'now', 'localtime')
         WHERE
             id = ?`);
 
@@ -79,7 +80,7 @@ try {
 
     statements['get_unsynced_messages'] = db.prepare(`
         SELECT 
-            id, recipient, text, sent, 
+            id, recipient, text, sent,
             sent_at AS sentAt
         FROM messages
         WHERE 
