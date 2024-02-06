@@ -104,14 +104,14 @@ modem.open('/dev/ttyUSB0', options, (result) => {
 });
 */
 
-modem.on('open', result => console.log(result))
+//modem.on('open', result => console.log(result))
 
 async function openModem() {
 
 
     const r = await new Promise(resolve => {
 
-        modem.open('/dev/ttyUSB0', options, (result) => {
+        modem.open('/dev/ttyUSB0', options, (...result) => {
 
             console.log(result)
             resolve(result);            
