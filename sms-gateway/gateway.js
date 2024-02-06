@@ -186,6 +186,8 @@ async function bootstrap() {
 
 async function sendMessages(messages) {
 
+    console.log(`${messages.length} unsent messages, sending...`);
+
     for (let i = 0, m = messages.length; i < m; ++i) {
 
         const result = await new Promise(resolve => {
@@ -272,6 +274,8 @@ async function syncMessage(message) {
 }
 
 async function syncMessages(messages) {
+
+    console.log(`${messages.length} unsynced messages, syncing...`);
 
     for (let i = 0, m = messages.length; i < m; ++i) {
 
@@ -391,7 +395,7 @@ async function run() {
     } else {
 
         console.log('Modem not available!');
-        
+
         await init();
 
     }
