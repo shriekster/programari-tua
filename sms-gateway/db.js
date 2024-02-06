@@ -61,7 +61,7 @@ try {
         UPDATE messages
         SET
             sent = 1,
-            sent_at = (strftime('%d.%m.%Y %H:%M:%f', 'now', 'localtime')
+            sent_at = (strftime('%d.%m.%Y %H:%M:%f', 'now', 'localtime'))
         WHERE
             id = ?`);
 
