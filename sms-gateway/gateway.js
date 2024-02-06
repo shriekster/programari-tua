@@ -241,6 +241,11 @@ async function test() {
 
         }
 
+    } else {
+
+        const checkResult = await checkModem();
+        console.log({checkResult})
+
     }
 
 }
