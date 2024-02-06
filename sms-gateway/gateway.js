@@ -157,14 +157,23 @@ async function tryPowerToggle () {
 
 }
 
-async function test() {
+async function powerTest() {
 
     const toggled = await tryPowerToggle();
     console.log({toggled})
 
 }
 
-test();
+//powerTest();
+
+async function openTest() {
+
+    const opened = await openModem();
+    console.log({opened})
+
+}
+
+openTest();
 
 
 const sendMessage = (index, unsentMessages) => {
