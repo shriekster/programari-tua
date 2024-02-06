@@ -113,7 +113,6 @@ async function openModem() {
 
         modem.open('/dev/ttyUSB0', options, (...result) => {
 
-            console.log(result)
             resolve(result);            
 
         });
@@ -124,7 +123,27 @@ async function openModem() {
 
 }
 
-openModem();
+//openModem();
+
+async function hardwareToggle () {
+
+    console.log('before', performance.now())
+    await new Promise(resolve => {
+
+        rpio.open(7, rpio.OUTPUT, rpio.LOW);
+        rpio.write(7, rpio.LOW);
+        rpio.sleep(4);
+        rpio.write(7, rpio.HIGH);
+
+        resolve();
+
+    })
+
+    console.log('after', performance.now())
+
+}
+
+hardwareToggle();
 
 
 const sendMessage = (index, unsentMessages) => {
