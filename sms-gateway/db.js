@@ -9,7 +9,6 @@ const statements = {};
 
 // sms gateway
 let insertMessages = null;
-let updateMessage = null;
 let markMessageAsSent = null;
 let markMessageAsSynced = null;
 let getUnsentMessages = null;
@@ -89,7 +88,7 @@ try {
 
 } catch (err) {
     
-    stmtError = err;
+    stmtError = err; console.log(err)
 
 }
 
