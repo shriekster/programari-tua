@@ -227,17 +227,6 @@ const fetchUnsentMessages = async () => {
  * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
 
-modem.sendSMS(
-    '0769388493',
-    `Salutare!\nTEST\nAsociatia Spirit Tanar`,
-    false,
-    (result) => {
-        
-        console.log('message callback:', result);
-
-    }
-);
-
 async function test() {
 
     let count = 0;
@@ -261,3 +250,5 @@ async function test() {
     )
 
 }
+
+test();
