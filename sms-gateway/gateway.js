@@ -281,8 +281,8 @@ async function sendMessages(messages) {
             let count = 0;
 
             modem.sendSMS(
-                '0769388493',
-                `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+                messages[i].recipient,
+                messages[i].text,
                 false,
                 (result) => {
                     
