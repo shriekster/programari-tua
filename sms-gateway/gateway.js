@@ -104,6 +104,8 @@ modem.open('/dev/ttyUSB0', options, (result) => {
 });
 */
 
+modem.on('open', result => console.log(result))
+
 async function openModem() {
 
 
