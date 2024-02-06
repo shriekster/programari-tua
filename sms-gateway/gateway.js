@@ -227,6 +227,8 @@ const fetchUnsentMessages = async () => {
  * 4. do not hope for the best, do the following instead: read, think, write and test code!
  */
 
+modem.on('onSendingMessage', result => console.log('Sending message', result))
+
 async function test() {
 
     let count = 0;
