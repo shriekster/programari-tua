@@ -230,24 +230,13 @@ const fetchUnsentMessages = async () => {
 async function test() {
 
     let count = 0;
-    await new Promise(resolve =>
-        modem.sendSMS(
-            '0769388493',
-            `Salutare!\nTEST\nAsociatia Spirit Tanar`,
-            false,
-            (result) => {
-                
-                console.log('message callback:', result);
-                ++count;
-                console.log(`message callback #${count}`)
-
-                if (2 === count) {
-                    resolve();
-                }
-        
-            }
-        )
+    const result = await modem.sendSMS(
+        '0769388493',
+        `Salutare!\nTEST\nAsociatia Spirit Tanar`,
+        false,
     )
+
+    console.log(result)
 
 }
 
