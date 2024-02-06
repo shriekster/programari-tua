@@ -78,7 +78,7 @@ const checkCallback = (result) => {
 
     if (result && result?.status && 'success' === result?.status) {
 
-        fetchUnsentMessages();
+        //fetchUnsentMessages();
 
     } else {
 
@@ -96,7 +96,7 @@ const checkCallback = (result) => {
 modem.on('open', openCallback);
 
 
-//modem.open('/dev/ttyUSB0', options);
+modem.open('/dev/ttyUSB0', options);
 
 
 const sendMessage = (index, unsentMessages) => {
