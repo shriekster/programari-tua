@@ -249,7 +249,7 @@ async function test() {
 
     await new Promise(resolve => setTimeout(() => {
         resolve();
-    }, 5000))
+    }, 50000))
 
 }
 
