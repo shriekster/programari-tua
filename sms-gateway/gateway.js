@@ -216,41 +216,68 @@ async function openTest() {
 
 //openTest();
 
-async function test() {
+async function bootstrap() {
 
-    // the modem will always succeed on opening
-    await openModem();
-    
-    let initialized = await initializeModem();
+    return new Promise(async (resolve) => {
 
-    if (!initialized) {
+        // the modem will always succeed on opening
+        await openModem();
+        
+        let initialized = await initializeModem();
 
-        const toggled = await tryPowerToggle();
+        if (!initialized) {
 
-        if (toggled) {
+            const toggled = await tryPowerToggle();
 
-            initialized = await initializeModem();
-            
-            if (initialized) {
+            if (toggled) {
 
-                const checkResult = await checkModem();
-                console.log({checkResult})
+                initialized = await initializeModem();
+                
+                if (initialized) {
+
+                    const checkResult = await checkModem();
+                    
+                    if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
+
+                        resolve(true);
+
+                    } else {
+
+                        resolve(false);
+
+                    }
+
+                }
+
 
             }
 
+        } else {
+
+            const checkResult = await checkModem();
+            
+            if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
+
+                resolve(true);
+
+            } else {
+
+                resolve(false);
+
+            }
 
         }
 
-    } else {
-
-        const checkResult = await checkModem();
-        console.log({checkResult})
-
-    }
+    });
 
 }
 
-test();
+async function test() {
+
+    const modemIsAvailable = await bootstrap();
+    console.log({modemIsAvailable})
+
+}
 
 
 const sendMessage = (index, unsentMessages) => {
