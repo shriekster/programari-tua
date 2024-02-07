@@ -374,7 +374,7 @@ async function fetchUnsentMessages() {
 
     return new Promise(async (resolve) => {
 
-        console.log('Fetching unsent messages...');
+        console.log('Fetching remote (unsent) messages...');
 
         let error = null, status = 401, messages = null;
 
@@ -405,13 +405,13 @@ async function fetchUnsentMessages() {
 
             if (messages?.length) {
 
-                console.log('Updating the local database...');
+                console.log('Adding the new messages to the local database...');
 
                 const result = insertMessages(messages);
 
                 if (result && !result?.error) {
 
-                    console.log('Successfully updated the local database.');
+                    console.log('The new messages were added successfully.');
 
                 }
 
@@ -445,6 +445,10 @@ async function exchangeMessages() {
     
                 await syncMessages(unsyncedMessages);
     
+            } else {
+
+                console.log('The local database is synced.');
+
             }
     
             const unsentMessages = getUnsentMessages();
@@ -453,6 +457,10 @@ async function exchangeMessages() {
     
                 await sendMessages(unsentMessages);
     
+            } else {
+
+                console.log('All the local messages have been sent.');
+
             }
     
             await fetchUnsentMessages();
