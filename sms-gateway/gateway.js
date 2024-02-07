@@ -462,7 +462,7 @@ async function exchangeMessages() {
     
             } else {
 
-                console.log('The local database is synced.');
+                console.log('All the local messages have been synced.');
 
             }
 
