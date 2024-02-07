@@ -439,6 +439,8 @@ async function exchangeMessages() {
 
             console.log('Modem available!');
 
+            await fetchUnsentMessages();
+
             const unsentMessages = getUnsentMessages();
     
             if (unsentMessages && unsentMessages.length) {
@@ -462,8 +464,6 @@ async function exchangeMessages() {
                 console.log('The local database is synced.');
 
             }
-    
-            await fetchUnsentMessages();
 
         } else {
 
