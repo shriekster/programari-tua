@@ -452,15 +452,5 @@ async function run() {
 
 }
 
-modemIsAvailable = await bootstrap();
-run();
 
-/**
- * TODO
- * 
- * 0. test opening the modem with promises that wrap the callbacks [done]
- * 00. test sending messages sequentially (also with promises) [done]
- * 2. get unsent messages; for each unsent message, send it, then mark it as sent; for each newly sent message, update it on the server and then mark it as synced
- * 1. get unsynced messages; if there are any, for each unsynced message, update it on the server and then mark it as synced
- * 3. fetch unsent messages; insert those messages, then go to step 1
- */
+run();
