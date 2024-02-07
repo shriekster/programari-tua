@@ -45,14 +45,18 @@ async function openModem() {
 
     return new Promise(resolve => {
 
+        console.log('Opening modem...');
+
         modem.open('/dev/ttyUSB0', options, (error, result) => {
 
             if (error) {
 
+                console.log('Error opening modem!');
                 resolve(false);
 
             } else {
 
+                console.log('Modem opening operation result:', result);
                 resolve(result);
 
             }
@@ -136,6 +140,7 @@ async function bootstrap() {
         await openModem();
         
         let initialized = await initializeModem();
+        console.log({initialized})
 
         if (!initialized) {
 
