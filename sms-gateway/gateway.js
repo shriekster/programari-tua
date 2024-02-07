@@ -453,4 +453,5 @@ async function run() {
 }
 
 
-run();
+//run();
+powerOn();
