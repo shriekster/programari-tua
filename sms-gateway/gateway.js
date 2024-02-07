@@ -68,6 +68,33 @@ async function openModem() {
 
 }
 
+async function closeModem() {
+
+    return new Promise(resolve => {
+
+        console.log('Closing modem...');
+
+        modem.close((error, result) => {
+            
+            if (error) {
+
+                console.log('Error closing modem:\n', error);
+
+                resolve(false);
+
+            } else {
+
+                console.log('Modem closing operation result:', result);
+                resolve(result);
+
+            }
+
+        });
+
+    })
+
+}
+
 async function initializeModem() {
 
     return new Promise(resolve => {
@@ -141,6 +168,9 @@ async function powerOn() {
     let opened = await openModem();
 
     while (!opened) {
+
+        let closed = await closeModem();
+        console.log({closed})
 
         await tryPowerToggle();
 
