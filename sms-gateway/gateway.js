@@ -447,7 +447,7 @@ async function run() {
 
         modemIsAvailable = await bootstrap();
 
-        await run();
+        run();
         
 
     }
