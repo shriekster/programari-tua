@@ -446,6 +446,8 @@ async function run() {
         console.log('Modem not available!');
 
         modemIsAvailable = await bootstrap();
+
+        await run();
         
 
     }
