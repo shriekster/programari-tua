@@ -12,6 +12,7 @@ import {
 
 const baseUrl = process.env.BASE_URL;
 const apiKey = process.env.API_KEY;
+const interval = 15; // seconds
 
 /**
  * NB! The modem will always open successfully, so we must try to initialize it in order to 
@@ -477,7 +478,7 @@ async function exchangeMessages() {
 
         }
 
-        console.log('Scheduling new message exchange in 30 seconds.');
+        console.log(`Scheduling new message exchange in ${interval} seconds.`);
     
         timeoutId = setTimeout(async () => {
 
@@ -485,7 +486,7 @@ async function exchangeMessages() {
 
             await exchangeMessages();
 
-        }, 30000);
+        }, interval * 1000);
 
         resolve();
 
