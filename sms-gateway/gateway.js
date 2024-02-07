@@ -48,11 +48,11 @@ async function openModem() {
         console.log('Opening modem...');
 
         modem.open('/dev/ttyUSB0', options, (error, result) => {
-            console.log('opened', modem.isOpened)
+            
             if (error) {
 
-                console.log('Error opening modem!');
-                console.log({error})
+                console.log('Error opening modem:\n', error);
+
                 resolve(false);
 
             } else {
@@ -133,12 +133,29 @@ async function tryPowerToggle () {
 
 }
 
+// TODO: check why the hardware module powers off
+async function init() {
+
+    console.log('Init...');
+
+    modemIsAvailable = await bootstrap();
+
+}
+
 async function bootstrap() {
 
     return new Promise(async (resolve) => {
 
         // the modem will always succeed on opening
-        await openModem();
+        let opened = await openModem();
+
+        while (!opened) {
+
+            await tryPowerToggle();
+            
+            opened = await openModem();
+
+        }
         
         let initialized = await initializeModem();
         console.log({initialized})
@@ -353,16 +370,6 @@ const fetchUnsentMessages = async () => {
     });
 
 };
-
-
-// TODO: check why the hardware module powers off
-async function init() {
-
-    console.log('Bootstrapping...');
-
-    modemIsAvailable = await bootstrap();
-
-}
 
 async function run() {
 
