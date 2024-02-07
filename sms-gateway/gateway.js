@@ -408,6 +408,10 @@ const fetchUnsentMessages = async () => {
 async function run() {
 
     console.log('Running...');
+
+    await powerOn();
+
+    modemIsAvailable = await bootstrap();
     
     if (modemIsAvailable) {
 
@@ -453,5 +457,4 @@ async function run() {
 }
 
 
-//run();
-powerOn();
+run();
