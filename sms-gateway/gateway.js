@@ -41,13 +41,41 @@ const options = {
 
 let timeoutId, modemIsAvailable;
 
-async function openModem() {
+async function getPort() {
+
+    return new Promise(resolve => {
+
+        let error = null, port = null;
+
+        gsm.list((err, result) => {
+            
+            try {
+
+                const device = result.find(dev => dev.path.startsWith('/dev/ttyUSB'));
+                port = device.path;
+
+            } catch (err) {
+
+                error = err;
+
+            }
+
+            resolve(port);
+
+        });
+        
+
+    });
+
+}
+
+async function openModem(path) {
 
     return new Promise(resolve => {
 
         console.log('Opening modem...');
 
-        modem.open('/dev/ttyUSB0', options, (error, result) => {
+        modem.open(path, options, (error, result) => {
             
             if (error) {
 
@@ -165,7 +193,9 @@ async function powerOn() {
 
     console.log('Powering on...');
 
-    let opened = await openModem();
+    let path = await getPort();
+
+    let opened = await openModem(path);
 
     while (!opened) {
 
@@ -445,10 +475,6 @@ async function run() {
     }
 
 }
-
-gsm.list((err, result) => {
-    console.log(result)
-})
 
 //run();
 
