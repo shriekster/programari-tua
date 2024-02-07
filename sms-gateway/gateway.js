@@ -238,48 +238,59 @@ async function bootstrap() {
 
 async function sendMessages(messages) {
 
-    console.log(`${messages.length} unsent messages, sending...`);
+    return new Promise(async (resolve) => {
 
-    for (let i = 0, m = messages.length; i < m; ++i) {
+        console.log(`${messages.length} unsent messages, sending...`);
 
-        const result = await new Promise(resolve => {
+        for (let i = 0, m = messages.length; i < m; ++i) {
 
-            let count = 0;
+            const result = await new Promise(resolve => {
 
-            modem.sendSMS(
-                messages[i].recipient,
-                messages[i].text,
-                false,
-                (result) => {
-                    
-                    ++count;
-    
-                    if (2 === count) {
+                let count = 0;
 
-                        resolve(result);
+                modem.sendSMS(
+                    messages[i].recipient,
+                    messages[i].text,
+                    false,
+                    (result) => {
+                        
+                        ++count;
+        
+                        if (2 === count) {
 
+                            resolve(result);
+
+                        }
+                
                     }
-            
+                )
+            });
+
+            if (result && result?.status && 'success' === result.status) {
+
+                console.log(`Successfully sent message with id ${messages[i]?.id} to ${messages[i]?.recipient}, updating the local database...`);
+
+                let markedAsSent = markMessageAsSent(messages[i]?.id);
+                
+                if (!markedAsSent?.error) {
+
+                    console.log('Successfully updated the local database.');
+
                 }
-            )
-        });
 
-        if (result && result?.status && 'success' === result.status) {
-
-            markMessageAsSent(messages[i].id);
-            console.log('Successfully sent message with id', messages[i]?.id, ' to ', messages[i].recipient);
+            }
 
         }
 
-    }
+        resolve();
+
+    });
 
 }
 
 async function syncMessage(message) {
 
     return new Promise(async (resolve) => {
-
-        console.log('Syncing message with id', message?.id);
 
         let error = null, status = 401;
 
@@ -327,19 +338,35 @@ async function syncMessage(message) {
 
 async function syncMessages(messages) {
 
-    console.log(`${messages.length} unsynced messages, syncing...`);
+    return new Promise(async (resolve) => {
 
-    for (let i = 0, m = messages.length; i < m; ++i) {
+        console.log(`${messages.length} unsynced messages, syncing...`);
 
-        const synced = await syncMessage(messages[i]);
+        for (let i = 0, m = messages.length; i < m; ++i) {
 
-        if (synced) {
+            console.log('Syncing message with id', messages[i]?.id);
 
-            markMessageAsSynced(messages[i].id);
+            const synced = await syncMessage(messages[i]);
+
+            if (synced) {
+
+                console.log('Synced successfully, updating the local database...');
+
+                let markedAsSynced = markMessageAsSynced(messages[i].id);
+
+                if (!markedAsSynced?.error) {
+
+                    console.log('Successfully updated the local database.');
+
+                }
+
+            }
 
         }
 
-    }
+        resolve();
+
+    });
 
 }
 

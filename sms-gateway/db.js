@@ -179,7 +179,6 @@ if (!stmtError) {
 
     };
 
-
     getUnsentMessages = () => {
 
         let error = null, messages = null;
