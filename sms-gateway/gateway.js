@@ -439,18 +439,6 @@ async function exchangeMessages() {
 
             console.log('Modem available!');
 
-            const unsyncedMessages = getUnsyncedMessages();
-
-            if (unsyncedMessages && unsyncedMessages.length) {
-    
-                await syncMessages(unsyncedMessages);
-    
-            } else {
-
-                console.log('The local database is synced.');
-
-            }
-    
             const unsentMessages = getUnsentMessages();
     
             if (unsentMessages && unsentMessages.length) {
@@ -460,6 +448,18 @@ async function exchangeMessages() {
             } else {
 
                 console.log('All the local messages have been sent.');
+
+            }
+
+            const unsyncedMessages = getUnsyncedMessages();
+
+            if (unsyncedMessages && unsyncedMessages.length) {
+    
+                await syncMessages(unsyncedMessages);
+    
+            } else {
+
+                console.log('The local database is synced.');
 
             }
     
