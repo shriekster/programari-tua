@@ -370,11 +370,11 @@ async function syncMessages(messages) {
 
 }
 
-const fetchUnsentMessages = async () => { 
+async function fetchUnsentMessages() { 
 
     return new Promise(async (resolve) => {
 
-        console.log('Fetching messages...');
+        console.log('Fetching unsent messages...');
 
         let error = null, status = 401, messages = null;
 
@@ -399,17 +399,19 @@ const fetchUnsentMessages = async () => {
 
         if (200 === status) {
 
-            console.log('Got', messages.length, 'messages.');
+            let lastWord = 1 === messages?.length ? 'message' : 'messages';
+
+            console.log(`Fetched ${messages?.length} ${lastWord}.`);
 
             if (messages?.length) {
 
-                console.log('Updating the database...');
+                console.log('Updating the local database...');
 
                 const result = insertMessages(messages);
 
                 if (result && !result?.error) {
 
-                    console.log('Database updated.');
+                    console.log('Successfully updated the local database.');
 
                 }
 
@@ -425,19 +427,11 @@ const fetchUnsentMessages = async () => {
 
     });
 
-};
+}
 
-async function run() {
+async function exchangeMessages() {
 
-    console.log('Running...');
-
-    await powerOn();
-
-    modemIsAvailable = await bootstrap();
-    
-    if (modemIsAvailable) {
-
-        console.log('Modem available!');
+    return new Promise(async (resolve) => {
 
         const unsyncedMessages = getUnsyncedMessages();
 
@@ -457,29 +451,35 @@ async function run() {
 
         await fetchUnsentMessages();
 
+        resolve();
+
+    });
+
+}
+
+
+
+async function run() {
+
+    console.log('Running...');
+
+    await powerOn();
+
+    modemIsAvailable = await bootstrap();
+    
+    if (modemIsAvailable) {
+
+        console.log('Modem available!');
+
+        await exchangeMessages();
+
         console.log('Scheduling new message exchange in 30 seconds.');
 
         timeoutId = setTimeout(async () => {
 
             clearTimeout(timeoutId);
 
-            const unsyncedMessages = getUnsyncedMessages();
-
-            if (unsyncedMessages && unsyncedMessages.length) {
-    
-                await syncMessages(unsyncedMessages);
-    
-            }
-    
-            const unsentMessages = getUnsentMessages();
-    
-            if (unsentMessages && unsentMessages.length) {
-    
-                await sendMessages(unsentMessages);
-    
-            }
-            
-            await fetchUnsentMessages();
+            await exchangeMessages();
 
         }, 30000);
 
