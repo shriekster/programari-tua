@@ -48,7 +48,7 @@ async function openModem() {
         console.log('Opening modem...');
 
         modem.open('/dev/ttyUSB0', options, (error, result) => {
-
+            console.log('opened', modem.isOpened)
             if (error) {
 
                 console.log('Error opening modem!');
