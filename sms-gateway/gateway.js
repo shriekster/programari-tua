@@ -159,8 +159,6 @@ async function checkModem() {
 
 }
 
-//openModem();
-
 async function tryPowerToggle () {
 
      return new Promise(resolve => {
@@ -188,7 +186,6 @@ async function tryPowerToggle () {
 
 }
 
-// TODO: check why the hardware module powers off
 async function powerOn() {
 
     console.log('Powering on...');
@@ -199,12 +196,13 @@ async function powerOn() {
 
     while (!opened) {
 
-        let closed = await closeModem();
-        console.log({closed})
+        //await closeModem();
 
         await tryPowerToggle();
 
-        opened = await openModem();
+        path = await getPort();
+
+        opened = await openModem(path);
 
     }
 
@@ -215,48 +213,27 @@ async function bootstrap() {
     return new Promise(async (resolve) => {
 
         let initialized = await initializeModem();
-        console.log({initialized})
 
-        if (!initialized) {
+        while (!initialized) {
 
-            const toggled = await tryPowerToggle();
+            await closeModem();
+            
+            await powerOn();
 
-            if (toggled) {
+            initialized = await initializeModem();
+             
 
-                initialized = await initializeModem();
-                
-                if (initialized) {
+        }
 
-                    const checkResult = await checkModem();
-                    
-                    if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
+        const checkResult = await checkModem();
+            
+        if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
 
-                        resolve(true);
-
-                    } else {
-
-                        resolve(false);
-
-                    }
-
-                }
-
-
-            }
+            resolve(true);
 
         } else {
 
-            const checkResult = await checkModem();
-            
-            if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
-
-                resolve(true);
-
-            } else {
-
-                resolve(false);
-
-            }
+            resolve(false);
 
         }
 
@@ -468,7 +445,6 @@ async function run() {
 
         console.log('Modem not available!');
 
-        await powerOn();
         modemIsAvailable = await bootstrap();
         
 
