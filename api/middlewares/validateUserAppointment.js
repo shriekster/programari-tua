@@ -63,6 +63,13 @@ export default function validateUserAppointment(req, res, next) {
 
       }
 
+      // remove the leading '4'
+      if (phoneNumber.startsWith('4') && 11 === phoneNumber.length) {
+
+        phoneNumber = phoneNumber.substring(1);
+
+      }
+
       req.body = { timeRangeId, phoneNumber, participants };
 
       return next();
