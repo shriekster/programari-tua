@@ -194,9 +194,7 @@ async function powerOn() {
 
     let opened = await openModem(path);
 
-    while (!opened) {
-
-        //await closeModem();
+    if (!opened) {
 
         await tryPowerToggle();
 
@@ -214,22 +212,19 @@ async function bootstrap() {
 
         let initialized = await initializeModem();
 
-        while (!initialized) {
+        if (initialized) {
 
-            await closeModem();
-            
-            await powerOn();
+            const checkResult = await checkModem();
+                
+            if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
 
-            initialized = await initializeModem();
-             
+                resolve(true);
 
-        }
+            } else {
 
-        const checkResult = await checkModem();
-            
-        if (checkResult?.result && !checkResult?.error && 'success' === checkResult.result?.status) {
+                resolve(false);
 
-            resolve(true);
+            }
 
         } else {
 
@@ -435,19 +430,37 @@ async function run() {
 
         await fetchUnsentMessages();
 
-        console.log('Scheduling new run in 30 seconds.');
+        console.log('Scheduling new message exchange in 30 seconds.');
 
-        timeoutId = setTimeout(() => {
+        timeoutId = setTimeout(async () => {
 
             clearTimeout(timeoutId);
+
+            const unsyncedMessages = getUnsyncedMessages();
+
+            if (unsyncedMessages && unsyncedMessages.length) {
+    
+                await syncMessages(unsyncedMessages);
+    
+            }
+    
+            const unsentMessages = getUnsentMessages();
+    
+            if (unsentMessages && unsentMessages.length) {
+    
+                await sendMessages(unsentMessages);
+    
+            }
             
-            run();
+            await fetchUnsentMessages();
 
         }, 30000);
 
     } else {
 
         console.log('Modem not available!');
+
+        await powerOn();
 
         modemIsAvailable = await bootstrap();
         
