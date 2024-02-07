@@ -433,23 +433,51 @@ async function exchangeMessages() {
 
     return new Promise(async (resolve) => {
 
-        const unsyncedMessages = getUnsyncedMessages();
+        console.log('Exchanging messages...');
 
-        if (unsyncedMessages && unsyncedMessages.length) {
+        if (modemIsAvailable) {
 
-            await syncMessages(unsyncedMessages);
+            console.log('Modem available!');
+
+            const unsyncedMessages = getUnsyncedMessages();
+
+            if (unsyncedMessages && unsyncedMessages.length) {
+    
+                await syncMessages(unsyncedMessages);
+    
+            }
+    
+            const unsentMessages = getUnsentMessages();
+    
+            if (unsentMessages && unsentMessages.length) {
+    
+                await sendMessages(unsentMessages);
+    
+            }
+    
+            await fetchUnsentMessages();
+
+        } else {
+
+            console.log('Modem not available, powering on...');
+
+            await powerOn();
+
+            console.log('Powered on, bootstrapping...');
+    
+            modemIsAvailable = await bootstrap();
 
         }
 
-        const unsentMessages = getUnsentMessages();
+        console.log('Scheduling new message exchange in 30 seconds.');
+    
+        timeoutId = setTimeout(async () => {
 
-        if (unsentMessages && unsentMessages.length) {
+            clearTimeout(timeoutId);
 
-            await sendMessages(unsentMessages);
+            await exchangeMessages();
 
-        }
-
-        await fetchUnsentMessages();
+        }, 30000);
 
         resolve();
 
@@ -466,33 +494,8 @@ async function run() {
     await powerOn();
 
     modemIsAvailable = await bootstrap();
-    
-    if (modemIsAvailable) {
 
-        console.log('Modem available!');
-
-        await exchangeMessages();
-
-        console.log('Scheduling new message exchange in 30 seconds.');
-
-        timeoutId = setTimeout(async () => {
-
-            clearTimeout(timeoutId);
-
-            await exchangeMessages();
-
-        }, 30000);
-
-    } else {
-
-        console.log('Modem not available!');
-
-        await powerOn();
-
-        modemIsAvailable = await bootstrap();
-        
-
-    }
+    await exchangeMessages();
 
 }
 
