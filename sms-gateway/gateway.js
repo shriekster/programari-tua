@@ -52,6 +52,7 @@ async function openModem() {
             if (error) {
 
                 console.log('Error opening modem!');
+                console.log({error})
                 resolve(false);
 
             } else {
