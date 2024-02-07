@@ -134,11 +134,19 @@ async function tryPowerToggle () {
 }
 
 // TODO: check why the hardware module powers off
-async function init() {
+async function powerOn() {
 
-    console.log('Init...');
+    console.log('Powering on...');
 
-    modemIsAvailable = await bootstrap();
+    let opened = await openModem();
+
+    while (!opened) {
+
+        await tryPowerToggle();
+
+        opened = await openModem();
+
+    }
 
 }
 
@@ -146,17 +154,6 @@ async function bootstrap() {
 
     return new Promise(async (resolve) => {
 
-        // the modem will always succeed on opening
-        let opened = await openModem();
-
-        while (!opened) {
-
-            await tryPowerToggle();
-            
-            opened = await openModem();
-
-        }
-        
         let initialized = await initializeModem();
         console.log({initialized})
 
@@ -411,13 +408,14 @@ async function run() {
 
         console.log('Modem not available!');
 
-        await init();
+        await powerOn();
+        modemIsAvailable = await bootstrap();
+        
 
     }
 
 }
 
-init();
 run();
 
 /**
