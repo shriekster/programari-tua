@@ -446,7 +446,11 @@ async function run() {
 
 }
 
-run();
+gsm.list((err, result) => {
+    console.log(result)
+})
+
+//run();
 
 /**
  * TODO
