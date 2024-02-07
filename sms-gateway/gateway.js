@@ -476,7 +476,7 @@ async function run() {
 
 }
 
-//run();
+run();
 
 /**
  * TODO
